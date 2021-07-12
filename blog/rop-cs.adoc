@@ -1,0 +1,236 @@
+= Railroad Oriented Programming in C#
+
+## The problem: implicit function failure
+
+Functions are often designed for the *success path*: the output type only consists of the type the function will return in case of a successful execution.
+The following function definition likely wouldn't stand out in an average code base.
+
+[source,cs]
+....
+string GetEmailAddress(string username)
+{
+  // ...
+}
+....
+
+This function is supposed to return an email address for a user with the username that is passed into the function.
+If the function isn't able to meet this expectation, e.g. because the user doesn't exist, or it has no email address defined, usually one of the following things happens.
+
+. A default value is returned, such as a null reference.
+. An exception is thrown.
+
+[blockdiag]
+....
+blockdiag {
+username -> GetEmailAddress -> emailAddress;
+GetEmailAddress -> "?";
+"?" [color = "orange"];
+"emailAddress" [color = "lightblue"];
+}
+....
+
+### Problems with using default values for failure
+- For *value types* the default value is a valid member of the value space of the type. So there would be no way to distinguish between a success return value and a failure return value in this case.
+- For *reference types* the default value is not a valid member of the value space. However, null references have their own set of problems. (Since the addition of nonnullable reference types in C# 8.0 this set of problems has been diminished a great deal, but a non-negligible pool of pitfalls remains.)
+- There is no way to return any data along with the failure, such as an error message or some object indicating the reason or nature of the failure.
+
+### Problems with using exceptions for failure
+- Exceptions are not part of the function signature. As such a caller of a function does not know which exceptions to catch unless he reads all the code that is possibly hit by the function, assuming that he even has access to it.
+- In well-defined and well-maintained APIs the list of possible exceptions a function can throw is stated in the documentation. However:
+  * The user of the API can easily overlook exceptions without compiler warnings.
+  * If the API changes over time and adds more exceptions, the user will not be notified of this by the compiler, simply because the compiler doesn't know anything about the exceptions a function can throw.
+  * Most functions are not part of a well-defined API.
+
+### The problem of implicit failure in general
+While the above paragraphs point out some problems with the respective failure-handling strategies, perhaps the biggest of all problems is this: the *failure path* of `GetEmailAddress` is *implicitly defined*.
+As such, it doesn't get the same amount of attention as the success path and is, frankly, too often completely overlooked.
+This is not surprising, since either of the strategies leaves the compiler clueless and unable to help the programmer to write code that properly handles failures.
+
+### Solution: explicit failure
+The solution is fairly straightforward: make the failure path part of the normal returntype of the function.
+Have the returntype resemble that the function can return with a failure object.
+
+[blockdiag]
+....
+blockdiag {
+username -> GetEmailAddress -> emailAddress;
+GetEmailAddress -> "userNotFound";
+"emailAddress" [color = "lightblue"];
+"userNotFound" [color = "orange"];
+}
+....
+
+This sounds trivial, so why isn't this done traditionally?
+At least part of that has to do with the fact C-like languages do not make it easy to do this.
+You would need to have a returntype that can be _either_ the success type _or_ the failure type.
+In functional programming languages such a construct _does_ exist and is called a https://en.wikipedia.org/wiki/Tagged_union[Discriminated Union].
+But C-like languages, including C#, do not have support for such a type.
+Luckily C# has had added lots of language features over the years that make it possible to emulate discriminated unions in a neat way.
+We will have a look at one way of implementing explicit failure in C#: a `Result` type with two types of possible instances.
+One for the success path, and one for the failure path.
+
+### There is still a place for exceptions
+Making the failure path part of the function returntype does not mean that there are no exceptional situations for which the exception throwing mechanism is a good fit.
+To give an extreme example, almost any function can _in theory_ encounter an `OutOfMemoryException` while doing an allocation.
+Or any function could _in theory_ contain a bug causing a `NullReferenceException` to be thrown.
+But this does not mean that we should write every function with that in mind, and have it be part of the normal failure path.
+These cases are really exceptions which are *unexpected*, and should not happen.
+There is often no proper way to handle them other than to cancel the whole "operation" and present the user with an appropriate error, indicating that something went completely sideways.
+
+A good way for deciding whether to propagate a failure by throwing an exception is by asking the following question.
+_Would the exeption be handled with no error-specific logic and should it cause the entire operation that is being done to be aborted_?
+If the answer is yes, then it is probably appropriate to let the failure be handled by throwing an exception and catch it up the callchain at the "edge of the operation".
+
+What the scope of that "operation" should be is completely context dependent.
+For instance, in a web application that could be the http request. 
+In other contexts, like a CLI progam, it could be the whole process. 
+Again, note that the edges of the code that constitutes an "operation" should have appropriate try/catch clauses.
+
+Tldr, exceptions should not be dealt with on a function level but rather on an "operation" level, and they are really *exceptional*.
+
+## Implementing a Result type supporting the failure path
+While C# does not directory support Discriminated Unions, it does support subclassing.
+Since a class can have multiple subclasses, and any object is always just one of them, we can use this phenomenon to implement the notion of having two returntypes, one for success result, and one for the failure result.
+
+[source,cs]
+....
+abstract class Result {
+  class Success : Result { }
+  class Failure : Result { }
+  // Private constructor so we are certain that Success and Failure are the only subclasses
+  private Result () { }
+}
+....
+
+However, this class does not allow us to associate any return data with either the success or the failure result.
+We can fix that.
+
+[source,cs]
+....
+abstract class Result<TResult, TError> {
+  sealed class Success : Result<TResult, TError> {
+    public readonly TResult ResultValue;
+    public Success(TResult result){
+      ResultValue = result;
+    }
+  }
+  sealed class Failure : Result<TResult, TError> {
+    public readonly TError ErrorValue;
+    public Failure(TError error){
+      ErrorValue = error;
+    }
+  }
+  // Private constructor so we are certain that Success and Failure are the only subclasses
+  private Result () { }
+}
+....
+
+With this in our toolkit we can now implement our `GetEmailAddress` function from earlier with an explicit failure path.
+
+[source,cs]
+....
+Result<string, string> GetEmailAddress(string username)
+{
+  var user = GetUser(username);
+  if (user != null) {
+    var email = user.Email;
+    if (!string.IsNullOrEmpty(email))
+    {
+      return new Success(email);
+    }
+    return new Failure("User has no email");
+  }
+  return new Failure("User does not exist");
+}
+....
+
+Usage of this function would look something like
+
+[source,cs]
+....
+var result = GetEmailAddress(username);
+if (result is Result<string,string>.Success) {
+  var email = ((Result<string,string>.Success)result).ResultValue;
+  // Do what you wanna do
+} else {
+  var error = ((Result<string,string>.Failure)result).ErrorValue;
+  // Handle the failure appropriately
+}
+....
+
+As you can see we've achieved an explicit failure path.
+But the code leaves much to be desired.
+Even more so when we need to call more than one function.
+
+[source,cs]
+....
+Result<EmailMessage, string> CreateEmailMessage(string emailaddress) { ... }
+
+// ...
+
+var result = GetEmailAddress(username);
+if (result is Result<string,string>.Success) {
+  var email = ((Result<string,string>.Success)result).ResultValue;
+  var result2 = CreateEmailMessage(email);
+  if (result2 is Result<EmailMessage,string>.Success) {
+    var message = ((Result<EmailMessage,string>.Success)result2).ResultValue;
+    // And so on...
+  } else {
+    var error2 = ((Result<EmailMessage,string>.Failure)result).ErrorValue;
+    // Handle the failure appropriately
+  }
+} else {
+  var error = ((Result<string,string>.Failure)result).ErrorValue;
+  // Handle the failure appropriately
+}
+....
+
+We would like to
+
+- not have to type cast or type check
+- not have a new nesting level for each new function we call
+
+## Implementing a Result type supporting railroad oriented programming
+
+[source,cs]
+....
+abstract class Result<TResult, TError> {
+
+  abstract Result<TNextResult, TError> OnSuccess<TNextResult>(Func<TResult, Result<TNextResult, TError>> onSuccess);
+  abstract TReturn Handle<TReturn>(Func<TResult, TReturn> onSuccess, Func<TError, TReturn> onFailure);
+
+  sealed class Success : Result<TResult, TError> {
+    public readonly TResult ResultValue;
+    public Success(TResult result){
+      Result = result;
+    }
+    public override Result<TNextResult, TError> OnSuccess<TNextResult>(Func<TResult, Result<TNextResult, TError>> onSuccess)
+      => onSuccess(ResultValue);
+    public override TReturn Handle<TReturn>(Func<TResult, TReturn> onSuccess, Func<TError, TReturn> onFailure)
+      => onSuccess(ResultValue);
+  }
+
+  sealed class Failure : Result<TResult, TError> {
+    public readonly TError ErrorValue;
+    public Failure(TError error){
+      ErrorValue = error;
+    }
+    public override Result<TNextResult, TError> OnSuccess<TNextResult>(Func<TResult, Result<TNextResult, TError>> onSuccess)
+      => new Failure(ErrorValue);
+    public override TReturn Handle<TReturn>(Func<TResult, TReturn> onSuccess, Func<TError, TReturn> onFailure)
+      => onFailure(Error);
+  }
+  private Result () { }
+}
+....
+
+
+[source,cs]
+....
+var result = GetEmailAddress(username)
+  .OnSuccess(email => CreateEmailMessage(email));
+  .Handle(
+    message => ...,
+    error => ...
+  );
+....

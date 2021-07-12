@@ -1,0 +1,34 @@
+= Test
+
+[blockdiag]
+....
+blockdiag {
+  Kroki -> generates -> "end";
+  Kroki -> error;
+  generates -> error2;
+  error -> end;
+  error2 -> end;
+
+  Kroki [color = "greenyellow"];
+  generates [color = "greenyellow"];
+  error [color = "pink"];
+  error2 [color = "pink"];
+}
+....
+
+
+....
+Diagram(
+Sequence(NonTerminal('CreateEmailObject'),
+Choice(1, Terminal('error'), Sequence(NonTerminal('ValidateEmailParameters'),
+Choice(1, Terminal('error'), Sequence(NonTerminal('ValidateEmailSettings'),
+Choice(1, Terminal('error'), Sequence(NonTerminal('SendEmail'),
+Choice(1, Terminal('error'), Sequence(NonTerminal('MaybeRetrySendIfFailed'),
+Choice(1, Terminal('error'), Terminal('success')
+)))))))))))
+
+Choice(1, Terminal('error'), Terminal('ValidateEmailSettings'), 'error'),
+Choice(1, Terminal('error'), Terminal('SendEmail'), 'error'),
+Choice(1, Terminal('error'), Terminal('MaybeRetrySendIfFailed'), 'error'),
+Choice(1, Terminal('error'), Terminal('CreateEmail'), 'error'))
+....
