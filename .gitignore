@@ -10,3 +10,5 @@
 /.spago
 /.parcel-cache/
 /dist/
+
+/blog/*.html

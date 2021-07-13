@@ -1,4 +1,5 @@
 = Railroad Oriented Programming in C#
+:source-highlighter: highlight.js
 
 ## The problem: implicit function failure
 

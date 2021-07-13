@@ -9,8 +9,8 @@
     "restore": "spago install && npm install",
     "build": "spago build && echo Ctrl-f5 your browser if non-purescript changes were made!",
     "test": "spago test",
-    "start": "npm run build && parcel index.html",
-    "release": "rm -rf docs && npm run build && parcel build  ./index.html --public-url replacethiswithadot && sed -i 's/replacethiswithadot/./g' docs/index.html",
+    "start": "npm run build && parcel index.html blog/*.html",
+    "release": "rm -rf docs && npm run build && parcel build blog/*.html ./index.html --public-url replacethiswithadot && sed -i 's/replacethiswithadot/./g' docs/index.html",
     "publish": "npm run release && git checkout -- docs/CNAME && git add . && git commit -m publish",
     "clean": "rm -rf .cache .spago .psci_modules node_modules output .parcel-cache"
   },
@@ -23,14 +23,14 @@
   ],
   "author": "Chiel ten Brinke",
   "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/dznl/tabviewer/issues"
-  },
-  "homepage": "https://dznl.github.io/tabviewer/",
   "description": "",
   "devDependencies": {
     "parcel": "^2.0.0-beta.3.1",
     "purescript": "^0.14.1",
     "spago": "^0.20.3"
+  },
+  "dependencies": {
+    "asciidoctor": "^2.2.4",
+    "asciidoctor-kroki": "^0.12.0"
   }
 }
