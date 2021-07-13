@@ -20,6 +20,7 @@ to generate this file without the comments in this block.
   , "prelude"
   , "psci-support"
   , "strings"
+  , "web-html"
   ]
 , packages = ./packages.dhall
 , sources = [ "src/**/*.purs" ]

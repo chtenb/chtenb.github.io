@@ -11,9 +11,9 @@ import Effect.Console as Console
 import Halogen as H
 import Halogen.Aff as HA
 import Halogen.HTML as HH
-import Halogen.HTML.Events as HE
 import Halogen.HTML.Properties as HP
 import Halogen.VDom.Driver (runUI)
+import Web.HTML.HTMLElement (focus, toElement)
 
 foreign import executeJavascriptHacks :: Effect Unit
 
@@ -46,6 +46,9 @@ component =
 initialState :: forall input. input -> State
 initialState _ = { loading: false }
 
+refContent :: H.RefLabel
+refContent = H.RefLabel "content"
+
 render :: forall m. State -> H.ComponentHTML Action () m
 render state = HH.div
   [ classString "main" ]
@@ -55,7 +58,7 @@ render state = HH.div
   where
   renderContent = HH.div
     [ classString "content" ]
-    [ HH.iframe [ HP.src "/blog/rop-cs.html" ] ]
+    [ HH.iframe [ HP.src "/blog/rop-cs.html", HP.ref refContent ] ]
   renderHeader = HH.div
     [ classString "header" ]
     [ renderTitle
@@ -86,4 +89,11 @@ render state = HH.div
 handleAction :: forall output m. MonadAff m => Action -> H.HalogenM State Action () output m Unit
 handleAction action =
   case action of
-    Initialize -> pure unit
+    Initialize -> focusContent
+
+focusContent :: forall output m . MonadEffect m => H.HalogenM State Action () output m Unit
+focusContent = do
+  maybeContentElem <- H.getHTMLElementRef refContent
+  case maybeContentElem of
+    Nothing -> H.liftEffect $ Console.error "Could not find content"
+    Just contentElem -> H.liftEffect $ focus contentElem
