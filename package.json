@@ -8,8 +8,8 @@
     "restore": "spago install && npm install",
     "build": "spago build && echo Ctrl-f5 your browser if non-purescript changes were made!",
     "test": "spago test",
-    "start": "npm run build && parcel index.html blog/*.html",
-    "release": "rm -rf docs && npm run build && parcel build --dist-dir docs/ ./index.html && parcel build --dist-dir docs/blog/ ./blog/*.html && git checkout -- docs/CNAME",
+    "start": "npm run build && parcel serve index.html blog/*.html",
+    "release": "rm -rf docs && npm run build && parcel build --dist-dir docs/ './index.html' './blog/*.html' && git checkout -- docs/CNAME",
     "publish": "npm run release && git checkout -- docs/CNAME && git add . && git commit -m publish",
     "clean": "rm -rf .cache .spago .psci_modules node_modules output .parcel-cache"
   },
@@ -24,7 +24,7 @@
   "license": "ISC",
   "description": "",
   "devDependencies": {
-    "parcel": "^2.0.0-beta.3.1",
+    "parcel": "next",
     "purescript": "^0.14.1",
     "spago": "^0.20.3"
   },
