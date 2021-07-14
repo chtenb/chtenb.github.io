@@ -2,7 +2,7 @@
 
 ## The problem: implicit function failure
 
-Functions are often designed for the *success path*: the output type only consists of the type the function will return in case of a successful execution.
+Functions are often designed for the *success path*: the return type only consists of the type the function will return in case of a successful execution.
 The following function definition likely wouldn't stand out in an average code base.
 
 [source,cs]
@@ -52,7 +52,7 @@ As such, it doesn't get the same amount of attention as the success path and is,
 This is not surprising, since either of the strategies leaves the compiler clueless and unable to help the programmer to write code that properly handles failures.
 
 ### Solution: explicit failure
-The solution is fairly straightforward: make the failure path part of the normal returntype of the function.
+The solution is fairly straightforward: make the failure path part of the normal return type of the function.
 
 [pikchr]
 ....
@@ -74,14 +74,14 @@ arrow from X1.e to X3.w chop
 
 This sounds trivial, so why isn't this done traditionally?
 At least part of that has to do with the fact C-like languages do not make it easy to do this.
-You would need to have a returntype that can be _either_ the success type _or_ the failure type.
+You would need to have a return type that can be _either_ the success type _or_ the failure type.
 In functional programming languages such a construct _does_ exist and is called a https://en.wikipedia.org/wiki/Tagged_union[Discriminated Union].
 But C-like languages, including C#, do not have support for such a type.
 Luckily C# has had added lots of language features over the years that make it possible to emulate discriminated unions in a neat way.
 We will have a look at one way of implementing explicit failure in C#: a `Result` type with two subtypes, one for the success path and one for the failure path.
 
 ### There is still a place for exceptions
-Making the failure path part of the function returntype does not mean that there are no exceptional situations for which the exception throwing mechanism is a good fit.
+Making the failure path part of the function return type does not mean that there are no exceptional situations for which the exception throwing mechanism is a good fit.
 To give an extreme example, almost any function can _in theory_ encounter an `OutOfMemoryException` while doing an allocation.
 Or any function could _in theory_ contain a bug causing a `NullReferenceException` to be thrown.
 But this does not mean that we should write every function with that in mind, and have it be part of the normal failure path.
