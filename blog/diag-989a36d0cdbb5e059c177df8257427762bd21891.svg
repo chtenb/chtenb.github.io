@@ -1,0 +1,17 @@
+<svg xmlns='http://www.w3.org/2000/svg' class="pikchr" width="420" height="176" viewBox="0 0 526.32 220.32">
+<path d="M38,74L110,74A36 36 0 0 0 146 38A36 36 0 0 0 110 2L38,2A36 36 0 0 0 2 38A36 36 0 0 0 38 74Z"  style="fill:rgb(255,255,255);stroke-width:2.16;stroke:rgb(0,0,0);" />
+<text x="74" y="38" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">username</text>
+<polygon points="182,38 170,42 170,33" style="fill:rgb(0,0,0)"/>
+<path d="M146,38L176,38"  style="fill:none;stroke-width:2.16;stroke:rgb(0,0,0);" />
+<path d="M182,74L344,74L344,2L182,2Z"  style="fill:rgb(255,255,255);stroke-width:2.16;stroke:rgb(0,0,0);" />
+<text x="263" y="38" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">GetEmailAddress</text>
+<polygon points="380,38 368,42 368,33" style="fill:rgb(0,0,0)"/>
+<path d="M344,38L374,38"  style="fill:none;stroke-width:2.16;stroke:rgb(0,0,0);" />
+<path d="M416,74L488,74A36 36 0 0 0 524 38A36 36 0 0 0 488 2L416,2A36 36 0 0 0 380 38A36 36 0 0 0 416 74Z"  style="fill:rgb(173,216,230);stroke-width:2.16;stroke:rgb(0,0,0);" />
+<text x="452" y="38" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">email address</text>
+<path d="M416,218L488,218A36 36 0 0 0 524 182A36 36 0 0 0 488 146L416,146A36 36 0 0 0 380 182A36 36 0 0 0 416 218Z"  style="fill:rgb(255,165,0);stroke-width:2.16;stroke:rgb(0,0,0);" />
+<text x="452" y="182" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">user not found</text>
+<polygon points="380,182 368,177 374,171" style="fill:rgb(0,0,0)"/>
+<path d="M263,74L375,178"  style="fill:none;stroke-width:2.16;stroke:rgb(0,0,0);" />
+</svg>
+

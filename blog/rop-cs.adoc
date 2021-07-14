@@ -19,14 +19,22 @@ If the function isn't able to meet this expectation, e.g. because the user doesn
 . A default value is returned, such as a null reference.
 . An exception is thrown.
 
-[blockdiag]
+[pikchr]
 ....
-blockdiag {
-username -> GetEmailAddress -> emailAddress;
-GetEmailAddress -> "?";
-"?" [color = "orange"];
-"emailAddress" [color = "lightblue"];
-}
+scale = 0.8
+fill = white
+linewid *= 0.5
+boxwid *= 1.5
+X0: oval "username"
+arrow
+X1: box "GetEmailAddress"
+arrow
+X2: oval "email address" fill lightblue
+// X3: oval "?" at dist(X1,X2) heading 121 from X1
+down
+move
+X3: oval "?" fill orange
+arrow from X1.s to X3.w chop
 ....
 
 ### Problems with using default values for failure
@@ -50,14 +58,22 @@ This is not surprising, since either of the strategies leaves the compiler cluel
 The solution is fairly straightforward: make the failure path part of the normal returntype of the function.
 Have the returntype resemble that the function can return with a failure object.
 
-[blockdiag]
+[pikchr]
 ....
-blockdiag {
-username -> GetEmailAddress -> emailAddress;
-GetEmailAddress -> "userNotFound";
-"emailAddress" [color = "lightblue"];
-"userNotFound" [color = "orange"];
-}
+scale = 0.8
+fill = white
+linewid *= 0.5
+boxwid *= 1.5
+X0: oval "username"
+arrow
+X1: box "GetEmailAddress"
+arrow
+X2: oval "email address" fill lightblue
+// X3: oval "?" at dist(X1,X2) heading 121 from X1
+down
+move
+X3: oval "user not found" fill orange
+arrow from X1.s to X3.w chop
 ....
 
 This sounds trivial, so why isn't this done traditionally?
