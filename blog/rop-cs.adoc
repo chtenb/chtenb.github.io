@@ -55,7 +55,6 @@ This is not surprising, since either of the strategies leaves the compiler cluel
 
 ### Solution: explicit failure
 The solution is fairly straightforward: make the failure path part of the normal returntype of the function.
-Have the returntype resemble that the function can return with a failure object.
 
 [pikchr]
 ....
@@ -81,8 +80,7 @@ You would need to have a returntype that can be _either_ the success type _or_ t
 In functional programming languages such a construct _does_ exist and is called a https://en.wikipedia.org/wiki/Tagged_union[Discriminated Union].
 But C-like languages, including C#, do not have support for such a type.
 Luckily C# has had added lots of language features over the years that make it possible to emulate discriminated unions in a neat way.
-We will have a look at one way of implementing explicit failure in C#: a `Result` type with two types of possible instances.
-One for the success path, and one for the failure path.
+We will have a look at one way of implementing explicit failure in C#: a `Result` type with two subtypes, one for the success path and one for the failure path.
 
 ### There is still a place for exceptions
 Making the failure path part of the function returntype does not mean that there are no exceptional situations for which the exception throwing mechanism is a good fit.

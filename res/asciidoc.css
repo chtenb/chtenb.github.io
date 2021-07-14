@@ -18,6 +18,8 @@ pre.nowrap,pre.nowrap pre{white-space:pre;word-wrap:normal}
 code,kbd,pre,samp{font-family:Cascadia Mono;font-size:1em;line-height:1.45;}
 pre{white-space:pre-wrap}
 
+svg{font-family:"Open Sans","DejaVu Sans",sans-serif}
+
 article,aside,details,figcaption,figure,footer,header,hgroup,main,nav,section{display:block}
 audio,video{display:inline-block}
 audio:not([controls]){display:none;height:0}
