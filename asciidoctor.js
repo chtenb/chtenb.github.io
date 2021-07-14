@@ -11,6 +11,7 @@ var options = {
   'attributes': {
     'linkcss': true,
     'source-highlighter': 'highlight.js',
+    // 'highlightjs-theme': 'solarized-light',
     'docinfodir': '../res/',
     'docinfo': 'shared',
     'stylesheet': '../res/asciidoc.css',

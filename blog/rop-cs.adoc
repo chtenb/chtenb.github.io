@@ -22,8 +22,6 @@ If the function isn't able to meet this expectation, e.g. because the user doesn
 [pikchr]
 ....
 scale = 0.8
-linewidth = 1.0cm
-lineheight = 1.0cm
 boxwid = 3.5cm
 
 X0: oval "username"
@@ -33,7 +31,7 @@ arrow
 X2: oval "email address" fill lightblue
 down
 arrow from X1.s down 1cm
-X3: oval "?" fill orange
+X3: oval "?" fill red
 ....
 
 ### Problems with using default values for failure
@@ -59,19 +57,19 @@ The solution is fairly straightforward: make the failure path part of the normal
 [pikchr]
 ....
 scale = 0.8
-fill = white
-linewid *= 0.5
-boxwid *= 1.5
+boxwid = 3.5cm
+
 X0: oval "username"
 arrow
 X1: box "GetEmailAddress"
-arrow
-X2: oval "email address" fill lightblue
-// X3: oval "?" at dist(X1,X2) heading 121 from X1
-down
-move
-X3: oval "user not found" fill orange
-arrow from X1.s to X3.w chop
+
+X2: oval "email address" fill lightblue \
+with .w at 2cm heading 60 from X1.e
+X3: oval "user not found" fill orange \
+with .w at 2cm heading 120 from X1.e
+
+arrow from X1.e to X2.w chop
+arrow from X1.e to X3.w chop
 ....
 
 This sounds trivial, so why isn't this done traditionally?
