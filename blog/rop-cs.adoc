@@ -22,19 +22,18 @@ If the function isn't able to meet this expectation, e.g. because the user doesn
 [pikchr]
 ....
 scale = 0.8
-fill = white
-linewid *= 0.5
-boxwid *= 1.5
+linewidth = 1.0cm
+lineheight = 1.0cm
+boxwid = 3.5cm
+
 X0: oval "username"
 arrow
 X1: box "GetEmailAddress"
 arrow
 X2: oval "email address" fill lightblue
-// X3: oval "?" at dist(X1,X2) heading 121 from X1
 down
-move
+arrow from X1.s down 1cm
 X3: oval "?" fill orange
-arrow from X1.s to X3.w chop
 ....
 
 ### Problems with using default values for failure

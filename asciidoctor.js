@@ -14,7 +14,8 @@ var options = {
     'docinfodir': '../res/',
     'docinfo': 'shared',
     'stylesheet': '../res/asciidoc.css',
-    'kroki-fetch-diagram': true
+    'kroki-default-options': 'inline',
+    'allow-uri-read': true
   }
 }
 asciidoctor.convertFile('blog/rop-cs.adoc', options)
