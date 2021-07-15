@@ -13,7 +13,7 @@ import Halogen.Aff as HA
 import Halogen.HTML as HH
 import Halogen.HTML.Properties as HP
 import Halogen.VDom.Driver (runUI)
-import LocationString (getQueryParam)
+import LocationString (getQueryParam, setQueryString)
 import Web.HTML.HTMLElement (focus, toElement)
 
 foreign import executeJavascriptHacks :: Effect Unit
@@ -22,9 +22,11 @@ data Action = Initialize
 
 type State =
   { loading :: Boolean
-  , pageUrl :: String
+  , page :: String
   }
 
+getPageUrl :: String -> String
+getPageUrl page = "/blog/" <> page <> ".html"
 
 main :: Effect Unit
 main = do
@@ -46,7 +48,7 @@ component =
     }
 
 initialState :: forall input. input -> State
-initialState _ = { loading: false, pageUrl: "/blog/rop-cs.html" }
+initialState _ = { loading: false, page: "rop-cs" }
 
 refContent :: H.RefLabel
 refContent = H.RefLabel "content"
@@ -60,7 +62,7 @@ render state = HH.div
   where
   renderContent = HH.div
     [ classString "content" ]
-    [ HH.iframe [ HP.src state.pageUrl, HP.ref refContent ] ]
+    [ HH.iframe [ HP.src $ getPageUrl state.page, HP.ref refContent ] ]
   renderHeader = HH.div
     [ classString "header" ]
     [ renderTitle
@@ -95,8 +97,10 @@ handleAction action =
       focusContent
       maybePage <- H.liftEffect $ getQueryParam "page"
       case maybePage of
-        Nothing -> pure unit
-        Just page -> H.modify_ _ { pageUrl = "/blog/" <> page <> ".html" }
+        Nothing -> do
+          state <- H.get
+          H.liftEffect $ setQueryString $ "page=" <> state.page
+        Just page -> H.modify_ _ { page = page }
 
 focusContent :: forall output m . MonadEffect m => H.HalogenM State Action () output m Unit
 focusContent = do
