@@ -31,7 +31,7 @@ arrow
 X2: oval "email address" fill lightblue
 down
 arrow from X1.s down 1cm
-X3: oval "?" fill red
+X3: oval "?" fill crimson
 ....
 
 ### Problems with using default values for failure
@@ -99,7 +99,7 @@ Again, note that the edges of the code that constitutes an "operation" should ha
 
 Tldr, exceptions should not be dealt with on a function level but rather on an "operation" level, and they are really *exceptional*.
 
-## Implementing a Result type supporting the failure path
+## A Result type supporting the failure path
 While C# does not directory support Discriminated Unions, it does support subclassing.
 Since a class can have multiple subclasses, and any object is always just one of them, we can use this phenomenon to implement the notion of having two returntypes, one for success result, and one for the failure result.
 
@@ -201,7 +201,7 @@ We would like to
 - not have to type cast or type check
 - not have a new nesting level for each new function we call
 
-## Implementing a Result type supporting railroad oriented programming
+## A Result type supporting Railroad Oriented Programming
 
 [source,cs]
 ....

@@ -5,7 +5,6 @@
 :root {
   --title-width: 200px;
   --controls-max-width: 560px;
-  --tablature-font-size: 13px;
   --app-height: 100vh;
 }
 
@@ -20,9 +19,6 @@
   }
   .largeViewport {
     display: none;
-  }
-  :root {
-    --tablature-font-size: 10px;
   }
 }
 

@@ -24,7 +24,10 @@
 }
 
 :root {
-  --codefont: 'Local Cascadia Mono',monospace;
-  --prosefont: 'Local Open Sans', sans-serif;
-  --headerfont: 'Local Open Sans Light', sans-serif;
+  --code-font: 'Local Cascadia Mono',monospace;
+  --prose-font: 'Local Open Sans', sans-serif;
+  --header-font: 'Local Open Sans Light', sans-serif;
+
+  --code-fontsize: 1rem;
+  --prose-fontsize: 1rem;
 }
