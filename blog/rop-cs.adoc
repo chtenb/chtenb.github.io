@@ -22,6 +22,8 @@ If the function isn't able to meet this expectation, e.g. because the user doesn
 [pikchr]
 ....
 scale = 0.8
+linewid = .5cm
+lineht = .5cm
 boxwid = 3.5cm
 
 X0: oval "username"
@@ -30,7 +32,7 @@ X1: box "GetEmailAddress"
 arrow
 X2: oval "email address" fill lightblue
 down
-arrow from X1.s down 1cm
+arrow from X1.s down
 X3: oval "?" fill crimson
 ....
 
@@ -57,6 +59,8 @@ The solution is fairly straightforward: make the failure path part of the normal
 [pikchr]
 ....
 scale = 0.8
+linewid = .5cm
+lineht = .5cm
 boxwid = 3.5cm
 
 X0: oval "username"
@@ -64,9 +68,9 @@ arrow
 X1: box "GetEmailAddress"
 
 X2: oval "email address" fill lightblue \
-with .w at 2cm heading 60 from X1.e
+with .w at 1cm heading 40 from X1.e
 X3: oval "user not found" fill orange \
-with .w at 2cm heading 120 from X1.e
+with .w at 1cm heading 140 from X1.e
 
 arrow from X1.e to X2.w chop
 arrow from X1.e to X3.w chop
