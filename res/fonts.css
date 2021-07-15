@@ -1,8 +1,30 @@
 @font-face {
   font-family: Local Cascadia Mono;
-  src: url("CascadiaMono.woff2");
+  src: url('CascadiaMono.woff2');
 }
 @font-face {
   font-family: Local Cascadia Mono Italic;
-  src: url("CascadiaMonoItalic.woff2");
+  src: url('CascadiaMonoItalic.woff2');
+}
+@font-face {
+  font-family: Local Open Sans;
+  src: url('OpenSans-Regular.woff2');
+}
+@font-face {
+  font-family: Local Open Sans Italic;
+  src: url('OpenSans-Italic.woff2');
+}
+@font-face {
+  font-family: Local Open Sans Light;
+  src: url('OpenSans-Light.woff2');
+}
+@font-face {
+  font-family: Local Open Sans Light Italic;
+  src: url('OpenSans-LightItalic.woff2');
+}
+
+:root {
+  --codefont: 'Local Cascadia Mono',monospace;
+  --prosefont: 'Local Open Sans', sans-serif;
+  --headerfont: 'Local Open Sans Light', sans-serif;
 }
