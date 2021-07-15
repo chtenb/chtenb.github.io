@@ -1,0 +1,11 @@
+= The missing core datatype in C#
+
+## The problem: void is not a type
+
+[source,cs]
+....
+string GetEmailAddress(string username)
+{
+  // ...
+}
+....

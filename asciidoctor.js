@@ -1,5 +1,6 @@
 const Asciidoctor = require('asciidoctor')
 const kroki = require('asciidoctor-kroki')
+const glob = require('glob')
 
 var asciidoctor = Asciidoctor()
 
@@ -19,4 +20,13 @@ var options = {
     'allow-uri-read': true
   }
 }
-asciidoctor.convertFile('blog/rop-cs.adoc', options)
+
+glob('blog/*.adoc', function (err, files) {
+  if (err) {
+    console.log(err)
+  } else {
+    files.forEach(function (file) {
+      asciidoctor.convertFile(file, options)
+    });
+  }
+});
