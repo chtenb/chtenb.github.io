@@ -1,5 +1,5 @@
 * {
-  scrollbar-color: var(--button-hover-bg) var(--tab-bg);
+  scrollbar-color: var(--button-hover-bg) var(--bg);
 }
 
 /* Minimalistic Webkit scrollbars for browsers not supporting scollbar-color (Chrome, Safari) */
@@ -12,10 +12,10 @@
   width: 0;
 }
 ::-webkit-scrollbar-corner {
-  background-color: var(--tab-bg);
+  background-color: var(--bg);
 }
 ::-webkit-scrollbar-track-piece {
-  background-color: var(--tab-bg);
+  background-color: var(--bg);
 }
 ::-webkit-scrollbar-thumb {
   background-color: var(--button-hover-bg);

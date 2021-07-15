@@ -72,7 +72,7 @@ render state = HH.div
   renderTitle = HH.div
     [ classString "title largeViewport"]
     [ HH.a
-      [ HP.href ""
+      [ HP.href "https://github.com/chtenb/chtenb.github.io"
       , HP.target "_blank"
       ]
       [ HH.h1_ [ HH.text "Devblog" ] ]
@@ -83,11 +83,21 @@ render state = HH.div
   renderControls = HH.div 
     [ classString "controls" ]
     [ HH.a
-      [ HP.href ""
+      [ HP.href "https://github.com/chtenb/chtenb.github.io"
       , HP.target "_blank"
       , HP.tabIndex (-1)
       ]
-      [ HH.button [ HP.title "Open the about page in a new browser tab" ] [ fontAwesome "fa-info", optionalText " About" ] ]
+      [ HH.button
+        [ HP.title "Open the source code of this website in a new browser tab" ]
+        [ fontAwesome "fa-code", optionalText " Website Code" ] ]
+    , HH.a
+      [ HP.href "https://github.com/chtenb/chtenb.github.io/discussions"
+      , HP.target "_blank"
+      , HP.tabIndex (-1)
+      ]
+      [ HH.button
+        [ HP.title "Open the discussion page in a new browser tab" ]
+        [ fontAwesome "fa-comments", optionalText " Discuss" ] ]
     ]
 
 handleAction :: forall output m. MonadAff m => Action -> H.HalogenM State Action () output m Unit

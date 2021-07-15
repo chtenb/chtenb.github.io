@@ -3,7 +3,7 @@
 @import 'fonts.css';
 
 :root {
-  --title-width: 360px;
+  --title-width: 200px;
   --controls-max-width: 560px;
   --tablature-font-size: 13px;
   --app-height: 100vh;
@@ -14,7 +14,7 @@
 }
 
 /* max-width must be larger that sum of --title-width and --controls-max-width */
-@media only screen and (max-width: 950px) {
+@media only screen and (max-width: 700px) {
   .smallViewport {
     display: inline;
   }
@@ -114,7 +114,7 @@ body {
   border: 0;
   margin: 0;
   padding: 0;
-  background-color:var(--tab-bg);
+  background-color:var(--bg);
 }
 .content iframe {
   margin: auto;
@@ -123,8 +123,4 @@ body {
   padding: 0;
   width: 100%;
   height: 100%;
-
-  font-family: Cascadia Tablature;
-  font-size: var(--tablature-font-size);
-  color:var(--fg);
 }
