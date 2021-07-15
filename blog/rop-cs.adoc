@@ -105,9 +105,9 @@ Since a class can have multiple subclasses, and any object is always just one of
 
 [source,cs]
 ....
-abstract class Result {
-  class Success : Result { }
-  class Failure : Result { }
+public abstract class Result {
+  public class Success : Result { }
+  public class Failure : Result { }
   // Private constructor so we are certain that Success and Failure are the only subclasses
   private Result () { }
 }
@@ -118,14 +118,14 @@ We can fix that.
 
 [source,cs]
 ....
-abstract class Result<TResult, TError> {
-  sealed class Success : Result<TResult, TError> {
+public abstract class Result<TResult, TError> {
+  public sealed class Success : Result<TResult, TError> {
     public readonly TResult ResultValue;
     public Success(TResult result){
       ResultValue = result;
     }
   }
-  sealed class Failure : Result<TResult, TError> {
+  public sealed class Failure : Result<TResult, TError> {
     public readonly TError ErrorValue;
     public Failure(TError error){
       ErrorValue = error;
@@ -198,43 +198,55 @@ if (result is Result<string,string>.Success) {
 
 We would like to
 
-- not have to type cast or type check
-- not have a new nesting level for each new function we call
+- not have to unwrap the result type by doing a type check + cast
+- not have a new nesting level for each subsequent function we call
 
 ## A Result type supporting Railroad Oriented Programming
 
+To resolve the complaints about our previous implementation, we'll define an `OnSuccess` function and a `Handle` function.
+They will do the unwrapping for us and form a https://en.wikipedia.org/wiki/Fluent_interface[Fluent Interface] and thereby removing the nesting.
+
 [source,cs]
 ....
-abstract class Result<TResult, TError> {
+public abstract class Result<TResult, TError> {
 
-  abstract Result<TNextResult, TError> OnSuccess<TNextResult>(Func<TResult, Result<TNextResult, TError>> onSuccess);
-  abstract TReturn Handle<TReturn>(Func<TResult, TReturn> onSuccess, Func<TError, TReturn> onFailure);
+  public abstract Result<TNextResult, TError> OnSuccess<TNextResult>(
+    Func<TResult, Result<TNextResult, TError>> onSuccess);
+  public abstract TReturn Handle<TReturn>(
+    Func<TResult, TReturn> onSuccess, Func<TError, TReturn> onFailure);
 
-  sealed class Success : Result<TResult, TError> {
+  public sealed class Success : Result<TResult, TError> {
+
     public readonly TResult ResultValue;
     public Success(TResult result){
       Result = result;
     }
-    public override Result<TNextResult, TError> OnSuccess<TNextResult>(Func<TResult, Result<TNextResult, TError>> onSuccess)
-      => onSuccess(ResultValue);
-    public override TReturn Handle<TReturn>(Func<TResult, TReturn> onSuccess, Func<TError, TReturn> onFailure)
-      => onSuccess(ResultValue);
+
+    public override Result<TNextResult, TError> OnSuccess<TNextResult>(
+      Func<TResult, Result<TNextResult, TError>> onSuccess) => onSuccess(ResultValue);
+    public override TReturn Handle<TReturn>(
+      Func<TResult, TReturn> onSuccess, Func<TError, TReturn> onFailure) => onSuccess(ResultValue);
   }
 
-  sealed class Failure : Result<TResult, TError> {
+  public sealed class Failure : Result<TResult, TError> {
+
     public readonly TError ErrorValue;
     public Failure(TError error){
       ErrorValue = error;
     }
-    public override Result<TNextResult, TError> OnSuccess<TNextResult>(Func<TResult, Result<TNextResult, TError>> onSuccess)
-      => new Failure(ErrorValue);
-    public override TReturn Handle<TReturn>(Func<TResult, TReturn> onSuccess, Func<TError, TReturn> onFailure)
-      => onFailure(Error);
+
+    public override Result<TNextResult, TError> OnSuccess<TNextResult>(
+      Func<TResult, Result<TNextResult, TError>> onSuccess) => new Failure(ErrorValue);
+    public override TReturn Handle<TReturn>(
+      Func<TResult, TReturn> onSuccess, Func<TError, TReturn> onFailure) => onFailure(Error);
   }
   private Result () { }
 }
 ....
 
+Apart from the daunting function signatures, the actual function bodies are trivial.
+Yet they suddenly allow us to write very concise code.
+Compare the following with what we had in the previous section.
 
 [source,cs]
 ....
