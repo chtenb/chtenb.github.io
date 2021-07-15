@@ -110,8 +110,8 @@ Since a class can have multiple subclasses, and any object is always just one of
 [source,cs]
 ....
 public abstract class Result {
-  public class Success : Result { }
-  public class Failure : Result { }
+  public sealed class Success : Result { }
+  public sealed class Failure : Result { }
   // Private constructor so we are certain that Success and Failure are the only subclasses
   private Result () { }
 }

@@ -53,7 +53,7 @@ component =
     }
 
 initialState :: forall input. input -> State
-initialState _ = { loading: false, page: "rop-cs" }
+initialState _ = { loading: false, page: "unit-cs" }
 
 refContent :: H.RefLabel
 refContent = H.RefLabel "content-iframe"

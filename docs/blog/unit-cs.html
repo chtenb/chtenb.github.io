@@ -1,4 +1,51 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="Asciidoctor 2.0.15"><title>The missing core datatype in C#</title><link rel="stylesheet" href="/blog/rop-cs.1dc85963.css"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/styles/solarized-light.min.css"><base target="_parent"></head><body class="article"> <div id="header"> <h1>The missing core datatype in C#</h1> </div> <div id="content"> <div class="sect1"> <h2 id="_the_problem_void_is_not_a_type">The problem: void is not a type</h2> <div class="sectionbody"> <div class="listingblock"> <div class="content"> <pre class="highlight highlightjs"><code class="hljs language-cs" data-lang="cs">string GetEmailAddress(string username)
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="Asciidoctor 2.0.15"><title>The missing builtin type in C#: unit</title><link rel="stylesheet" href="/blog/rop-cs.84cf14b8.css"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/styles/solarized-light.min.css"><base target="_parent"></head><body class="article"> <div id="header"> <h1>The missing builtin type in C#: unit</h1> </div> <div id="content"> <div class="sect1"> <h2 id="_the_problem_void_is_not_a_type">The problem: void is not a type</h2> <div class="sectionbody"> <div class="paragraph"> <p>The following (very contrived) code snippet will not compile, even though it looks fine at a first glance.</p> </div> <div class="listingblock"> <div class="content"> <pre class="highlight highlightjs"><code class="hljs language-cs" data-lang="cs">void Foo(Action&lt;int&gt; doSomething)
 {
-  // ...
-}</code></pre> </div> </div> </div> </div> </div> <div id="footer"> <div id="footer-text"> Last updated 2021-07-15 10:51:04 +0200 </div> </div> <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/highlight.min.js"></script> <script>hljs.initHighlighting.called||(hljs.initHighlighting.called=!0,[].slice.call(document.querySelectorAll("pre.highlight > code")).forEach((function(l){hljs.highlightBlock(l)})));</script> </body></html>
+  var xs = new int[] { 1, 2, 3, 4 };
+  xs.Select(doSomething);
+}</code></pre> </div> </div> <div class="paragraph"> <p>The reason it doesn&#8217;t compile is that <code>doSomething</code> has return type <code>void</code> while <code>xs.Select</code> expects an argument of type <code>Func&lt;int, TResult&gt;</code>, where <code>TResult</code> is an unconstrained type parameter. This is the full signature of <code>Select</code>:</p> </div> <div class="listingblock"> <div class="content"> <pre class="highlight highlightjs"><code class="hljs language-cs" data-lang="cs">public static IEnumerable&lt;TResult&gt; Select&lt;TSource, TResult&gt;(this IEnumerable&lt;TSource&gt; source, Func&lt;TSource, TResult&gt; selector);</code></pre> </div> </div> <div class="paragraph"> <p>So <code>TResult</code> can really be anything&#8230;&#8203; except void, because that is not a type.</p> </div> <div class="paragraph"> <p>Now it is not impossible to make the above code compile. We could write an overload for <code>Select</code> accepting an <code>Action&lt;TSource&gt;</code>.</p> </div> <div class="listingblock"> <div class="content"> <pre class="highlight highlightjs"><code class="hljs language-cs" data-lang="cs">public static void Select&lt;TSource&gt;(this IEnumerable&lt;TSource&gt; source, Action&lt;TSource&gt; selector)
+{
+  foreach (var x in source)
+    selector(x);
+}</code></pre> </div> </div> <div class="paragraph"> <p>However, this means that we have to duplicate code. And if we are in a context where we write a lot of functions accepting other functions we might have to duplicate a lot of code.</p> </div> </div> </div> <div class="sect1"> <h2 id="_a_solution_the_unit_type">A solution: the unit type</h2> <div class="sectionbody"> <div class="paragraph"> <p>The <a href="https://en.wikipedia.org/wiki/Unit_type">unit type</a> is nothing but a placeholder type for <code>void</code>.</p> </div> <div class="listingblock"> <div class="content"> <pre class="highlight highlightjs"><code class="hljs language-cs" data-lang="cs">public struct Unit : IEquatable&lt;Unit&gt;
+{
+  public static readonly Unit unit;
+
+  public override bool Equals(object obj)
+  {
+      return obj is Unit;
+  }
+
+  public override int GetHashCode()
+  {
+      return 0;
+  }
+
+  public static bool operator ==(Unit left, Unit right)
+  {
+      return left.Equals(right);
+  }
+
+  public static bool operator !=(Unit left, Unit right)
+  {
+      return !(left == right);
+  }
+
+  public bool Equals(Unit other)
+  {
+      return true;
+  }
+}</code></pre> </div> </div> <div class="paragraph"> <p>If we now have a function that returns <code>void</code> we can have it return <code>Unit</code> instead, so that it can be used as a <code>Func</code> delegate. Or, if we already have an <code>Action</code> delegate we can use the following extension method to convert it.</p> </div> <div class="listingblock"> <div class="content"> <pre class="highlight highlightjs"><code class="hljs language-cs" data-lang="cs">public static class ExtensionMethods
+{
+  public static Func&lt;TResult, Unit&gt; AsFunc&lt;TResult&gt;(this Action&lt;TResult&gt; action)
+  {
+    return result =&gt;
+    {
+      action(result);
+      return Unit.unit;
+    };
+  }
+}</code></pre> </div> </div> <div class="paragraph"> <p>Now we can write the original snippet like this without having to introduce a special <code>Select</code> overload for <code>Action</code>.</p> </div> <div class="listingblock"> <div class="content"> <pre class="highlight highlightjs"><code class="hljs language-cs" data-lang="cs">void Foo(Action&lt;int&gt; doSomething)
+{
+  var xs = new int[] { 1, 2, 3, 4 };
+  xs.Select(doSomething.AsFunc());
+}</code></pre> </div> </div> </div> </div> </div> <div id="footer"> <div id="footer-text"> Last updated 2021-07-15 23:49:00 +0200 </div> </div> <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/highlight.min.js"></script> <script>hljs.initHighlighting.called||(hljs.initHighlighting.called=!0,[].slice.call(document.querySelectorAll("pre.highlight > code")).forEach((function(l){hljs.highlightBlock(l)})));</script> </body></html>

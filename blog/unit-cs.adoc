@@ -1,11 +1,105 @@
-= The missing core datatype in C#
+= The missing builtin type in C#: unit
 
 ## The problem: void is not a type
 
+The following (very contrived) code snippet will not compile, even though it looks fine at a first glance.
+
 [source,cs]
 ....
-string GetEmailAddress(string username)
+void Foo(Action<int> doSomething)
 {
-  // ...
+  var xs = new int[] { 1, 2, 3, 4 };
+  xs.Select(doSomething);
+}
+....
+
+The reason it doesn't compile is that `doSomething` has return type `void` while `xs.Select` expects an argument of type `Func<int, TResult>`, where `TResult` is an unconstrained type parameter.
+This is the full signature of `Select`:
+
+[source,cs]
+....
+public static IEnumerable<TResult> Select<TSource, TResult>(this IEnumerable<TSource> source, Func<TSource, TResult> selector);
+....
+
+So `TResult` can really be anything... except void, because that is not a type.
+
+Now it is not impossible to make the above code compile.
+We could write an overload for `Select` accepting an `Action<TSource>`.
+
+[source,cs]
+....
+public static void Select<TSource>(this IEnumerable<TSource> source, Action<TSource> selector)
+{
+  foreach (var x in source)
+    selector(x);
+}
+....
+
+However, this means that we have to duplicate code.
+And if we are in a context where we write a lot of functions accepting other functions we might have to duplicate a lot of code.
+
+## A solution: the unit type
+
+The https://en.wikipedia.org/wiki/Unit_type[unit type] is nothing but a placeholder type for `void`.
+
+[source,cs]
+....
+public struct Unit : IEquatable<Unit>
+{
+  public static readonly Unit unit;
+
+  public override bool Equals(object obj)
+  {
+      return obj is Unit;
+  }
+
+  public override int GetHashCode()
+  {
+      return 0;
+  }
+
+  public static bool operator ==(Unit left, Unit right)
+  {
+      return left.Equals(right);
+  }
+
+  public static bool operator !=(Unit left, Unit right)
+  {
+      return !(left == right);
+  }
+
+  public bool Equals(Unit other)
+  {
+      return true;
+  }
+}
+....
+
+If we now have a function that returns `void` we can have it return `Unit` instead, so that it can be used as a `Func` delegate.
+Or, if we already have an `Action` delegate we can use the following extension method to convert it.
+
+[source,cs]
+....
+public static class ExtensionMethods
+{
+  public static Func<TResult, Unit> AsFunc<TResult>(this Action<TResult> action)
+  {
+    return result =>
+    {
+      action(result);
+      return Unit.unit;
+    };
+  }
+}
+....
+
+Now we can write the original snippet like this without having to introduce a special `Select` overload for `Action`.
+
+[source,cs]
+....
+void Foo(Action<int> doSomething)
+{
+  var xs = new int[] { 1, 2, 3, 4 };
+  xs.Select(doSomething.AsFunc());
 }
 ....

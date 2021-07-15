@@ -867,17 +867,17 @@ p a>code:hover {
 
 #header>h1:first-child+#toc {
   margin-top: 8px;
-  border-top: 1px solid #dddddf
+  border-top: 1px solid var(--button-hover-bg);
 }
 
 #header>h1:only-child,
 body.toc2 #header>h1:nth-last-child(2) {
-  border-bottom: 1px solid #dddddf;
+  border-bottom: 1px solid var(--button-hover-bg);
   padding-bottom: 8px
 }
 
 #header .details {
-  border-bottom: 1px solid #dddddf;
+  border-bottom: 1px solid var(--button-hover-bg);
   line-height: 1.45;
   padding-top: .25em;
   padding-bottom: .25em;
@@ -1110,7 +1110,7 @@ body.toc2 #header>h1:nth-last-child(2) {
 }
 
 .sect1+.sect1 {
-  border-top: 1px solid #e7e7e9
+  border-top: 1px solid var(--button-hover-bg)
 }
 
 #content h1>a.anchor,
