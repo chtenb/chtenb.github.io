@@ -1,5 +1,6 @@
 @import 'colorscheme.css';
 @import 'scrollbars.css';
+@import 'fonts.css';
 
 /* Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
 @import "https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700";
@@ -15,7 +16,7 @@ pre{color:rgba(0,0,0,.9);}
 pre code,pre pre{color:inherit;font-size:inherit;line-height:inherit}
 pre>code{display:block}
 pre.nowrap,pre.nowrap pre{white-space:pre;word-wrap:normal}
-code,kbd,pre,samp{font-family:Cascadia Mono;font-size:1em;line-height:1.45;}
+code,kbd,pre,samp{font-family:Local Cascadia Mono;font-size:1em;line-height:1.45;}
 pre{white-space:pre-wrap}
 
 svg{font-family:"Open Sans","DejaVu Sans",sans-serif}
