@@ -102,7 +102,7 @@ render state = HH.div
       ]
       [ HH.button
         [ HP.title "Open the discussion page in a new browser tab" ]
-        [ fontAwesome "fa-comments", optionalText " Discussion" ] ]
+        [ fontAwesome "fa-comments", optionalText " Discussions" ] ]
     ]
 
 handleAction :: forall output m. MonadAff m => Action -> H.HalogenM State Action () output m Unit
