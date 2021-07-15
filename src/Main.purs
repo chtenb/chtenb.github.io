@@ -1,6 +1,5 @@
 module Main where
 
-import HalogenUtils
 import Prelude
 
 import Data.Maybe (Maybe(..))
@@ -11,14 +10,20 @@ import Effect.Console as Console
 import Halogen as H
 import Halogen.Aff as HA
 import Halogen.HTML as HH
+import Halogen.HTML.Events as HE
 import Halogen.HTML.Properties as HP
 import Halogen.VDom.Driver (runUI)
+import HalogenUtils (classString, fontAwesome, optionalText)
 import LocationString (getQueryParam, setQueryString)
-import Web.HTML.HTMLElement (focus, toElement)
+import Web.HTML as WH
+import Web.HTML.HTMLDocument as HTMLDocument
+import Web.HTML.HTMLElement as HTMLElement
+import Web.HTML.HTMLIFrameElement as HTMLIFrameElement
+import Web.HTML.Window (document)
 
 foreign import executeJavascriptHacks :: Effect Unit
 
-data Action = Initialize
+data Action = Initialize | PostLoad
 
 type State =
   { loading :: Boolean
@@ -51,7 +56,7 @@ initialState :: forall input. input -> State
 initialState _ = { loading: false, page: "rop-cs" }
 
 refContent :: H.RefLabel
-refContent = H.RefLabel "content"
+refContent = H.RefLabel "content-iframe"
 
 render :: forall m. State -> H.ComponentHTML Action () m
 render state = HH.div
@@ -62,7 +67,7 @@ render state = HH.div
   where
   renderContent = HH.div
     [ classString "content" ]
-    [ HH.iframe [ HP.src $ getPageUrl state.page, HP.ref refContent ] ]
+    [ HH.iframe [ HP.src $ getPageUrl state.page, HP.ref refContent, HE.onLoad (\_ -> PostLoad) ] ]
   renderHeader = HH.div
     [ classString "header" ]
     [ renderTitle
@@ -97,7 +102,7 @@ render state = HH.div
       ]
       [ HH.button
         [ HP.title "Open the discussion page in a new browser tab" ]
-        [ fontAwesome "fa-comments", optionalText " Discuss" ] ]
+        [ fontAwesome "fa-comments", optionalText " Discussion" ] ]
     ]
 
 handleAction :: forall output m. MonadAff m => Action -> H.HalogenM State Action () output m Unit
@@ -111,10 +116,48 @@ handleAction action =
           state <- H.get
           H.liftEffect $ setQueryString $ "page=" <> state.page
         Just page -> H.modify_ _ { page = page }
+    PostLoad -> syncDocumentTitle
 
 focusContent :: forall output m . MonadEffect m => H.HalogenM State Action () output m Unit
 focusContent = do
   maybeContentElem <- H.getHTMLElementRef refContent
   case maybeContentElem of
     Nothing -> H.liftEffect $ Console.error "Could not find content"
-    Just contentElem -> H.liftEffect $ focus contentElem
+    Just contentElem -> H.liftEffect $ HTMLElement.focus contentElem
+
+
+setDocumentTitle :: String -> Effect Unit
+setDocumentTitle title = do
+    window <- WH.window
+    document <- document window
+    HTMLDocument.setTitle title document
+
+getContentIFrame :: forall output m. MonadEffect m => H.HalogenM State Action () output m (Maybe WH.HTMLIFrameElement)
+getContentIFrame = do
+  maybeHtmlElement <- H.getHTMLElementRef refContent
+  pure $ maybeHtmlElement >>= HTMLIFrameElement.fromHTMLElement
+
+getContentDocument :: forall output m. MonadEffect m => H.HalogenM State Action () output m (Maybe WH.HTMLDocument)
+getContentDocument = do
+  maybeIFrameElement <- getContentIFrame
+  case maybeIFrameElement of
+    Nothing -> pure Nothing
+    Just iframe -> H.liftEffect $ do
+      maybeDocument <- HTMLIFrameElement.contentDocument iframe
+      pure $ maybeDocument >>= HTMLDocument.fromDocument
+
+getContentTitle :: forall output m. MonadEffect m => H.HalogenM State Action () output m (Maybe String)
+getContentTitle = do
+  maybeContentDocument <- getContentDocument
+  case maybeContentDocument of
+    Nothing -> pure Nothing
+    Just doc -> H.liftEffect $ do
+      title <- HTMLDocument.title doc
+      pure $ Just title
+
+syncDocumentTitle :: forall output m. MonadEffect m => H.HalogenM State Action () output m Unit
+syncDocumentTitle = do
+  title <- getContentTitle
+  H.liftEffect $ case title of
+    Nothing -> Console.error("Could not retrieve iframe document title")
+    Just s -> setDocumentTitle s
