@@ -56,12 +56,13 @@ async Task<T2> Map<T2>(Task task, Func<T2> f) { await task; return f(); }
 In this case the function definitions are fairly simple and we only need four of them, but the general problem is bigger.
 For each additional type involved that has a void case, the amount of necessary overloads doubles.
 And every time we want to write a function like `Map` we encounter this issue and have to write all the overloads.
-And don't forget that the `Action` and `Task` void cases also had to be written too to work around this issue.
+And don't forget that the `Action` and `Task` void cases also had to be written to work around this issue.
 
 ## A poor man's solution: the unit type
 
 The https://en.wikipedia.org/wiki/Unit_type[unit type] is nothing but a type with only one value.
-Many functional programming languages do not support void functions, but do have a builtin unit type, which is used whenever a function doesn't return any data.
+Many functional programming languages do not actually support void functions like C# does.
+Instead they have a builtin unit type, which is used whenever a function doesn't return any actual data.
 We can create our own C# version of a `Unit` and use it instead of `void`.
 
 [source,cs]
