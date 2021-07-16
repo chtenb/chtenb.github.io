@@ -1,87 +1,98 @@
-= The missing builtin type in C#: unit
+= The missing C# built-in type: void
 
 ## The problem: void is not a type
 
-The following (very contrived) code snippet will not compile, even though it looks fine at a first glance.
+Suppose you wanted to write a `Map` function for tasks.
+It merely serves as a simple example right now, so we'll not bother ourselves with the why.
+The definition is very simple.
 
 [source,cs]
 ....
-void Foo(Action<int> doSomething)
+async Task<T2> Map<T1, T2>(Task<T1> task, Func<T1, T2> f) => f(await task);
+....
+
+You can then use it as follows.
+
+[source,cs]
+....
+Task<int> DoubleIntAsync(Task<int> task)
 {
-  var xs = new int[] { 1, 2, 3, 4 };
-  xs.Select(doSomething);
+  return Map(task, i => i * i);
 }
 ....
 
-The reason it doesn't compile is that `doSomething` has return type `void` while `xs.Select` expects an argument of type `Func<int, TResult>`, where `TResult` is an unconstrained type parameter.
-This is the full signature of `Select`:
+There is a problem however.
+We've written our `Map` function to be able to deal with `Task<>` and `Func<>`.
+But tasks and functions can also have void values.
+However, since the type system doesn't allows use to simply use `Task<void>` and `Func<void>` these exist special void variants of the `Task<>` and `Func<>` types, namely `Task` and `Action`.
+And that disallows us from using our `Map` for the void variants of these types.
+In other words, the following functions won't compile.
 
 [source,cs]
 ....
-public static IEnumerable<TResult> Select<TSource, TResult>(this IEnumerable<TSource> source, Func<TSource, TResult> selector);
-....
-
-So `TResult` can really be anything... except void, because that is not a type.
-
-Now it is not impossible to make the above code compile.
-We could write an overload for `Select` accepting an `Action<TSource>`.
-
-[source,cs]
-....
-public static void Select<TSource>(this IEnumerable<TSource> source, Action<TSource> selector)
+Task PrintIntAsync(Task<int> task)
 {
-  foreach (var x in source)
-    selector(x);
+  return Map(task, Console.WriteLine);
+}
+Task LogTaskFinished(Task task)
+{
+  return Map(task, () => Console.WriteLine("task finished"));
+}
+Task<string> ReturnTaskFinished(Task task)
+{
+  return Map(task, () => "task finished");
 }
 ....
 
-However, this means that we have to duplicate code.
-And if we are in a context where we write a lot of functions accepting other functions we might have to duplicate a lot of code.
+We would have to write `Map` overloads to support these void variants.
 
-## A solution: the unit type
+[source,cs]
+....
+async Task Map<T1>(Task<T1> task, Action<T1> f) => f(await task);
+async Task Map(Task task, Action f) { await task; f(); }
+async Task<T2> Map<T2>(Task task, Func<T2> f) { await task; return f(); }
+....
 
-The https://en.wikipedia.org/wiki/Unit_type[unit type] is nothing but a placeholder type for `void`.
+In this case the function definitions are fairly simple and we only need four of them, but the general problem is bigger.
+For each additional type with a void variant, the amount of necessary overloads doubles.
+And every time we want to write a function like `Map` we encounter this issue.
+
+## A poor man's solution: the unit type
+
+The https://en.wikipedia.org/wiki/Unit_type[unit type] is nothing but a type with only one value.
+Many functional programming languages do not support void functions, but do have a builtin unit type, which is used whenever a function doesn't return any data.
+We can create our own C# version of a `Unit` and use it instead of `void`.
 
 [source,cs]
 ....
 public struct Unit : IEquatable<Unit>
 {
   public static readonly Unit unit;
-
-  public override bool Equals(object obj)
-  {
-      return obj is Unit;
-  }
-
-  public override int GetHashCode()
-  {
-      return 0;
-  }
-
-  public static bool operator ==(Unit left, Unit right)
-  {
-      return left.Equals(right);
-  }
-
-  public static bool operator !=(Unit left, Unit right)
-  {
-      return !(left == right);
-  }
-
-  public bool Equals(Unit other)
-  {
-      return true;
-  }
+  public override bool Equals(object obj) => obj is Unit;
+  public override int GetHashCode() => 0;
+  public static bool operator ==(Unit left, Unit right) => left.Equals(right);
+  public static bool operator !=(Unit left, Unit right) => !(left == right);
+  public bool Equals(Unit other) => true;
 }
 ....
 
 If we now have a function that returns `void` we can have it return `Unit` instead, so that it can be used as a `Func` delegate.
-Or, if we already have an `Action` delegate we can use the following extension method to convert it.
+Similarly, if we need a `Task` without a value, we can simply use `Task<Unit>` instead.
+
+But our code doesn't live in isolation.
+We have to deal with existing code and an existing ecosystem.
+Luckily C# supports extension methods, which allow use to deal with this and convert these void variants to their unit counterparts.
 
 [source,cs]
 ....
 public static class ExtensionMethods
 {
+  public static async Task<Unit> AsTask(this Task task)
+  {
+    await task;
+    return Unit.unit;
+  }
+
   public static Func<TResult, Unit> AsFunc<TResult>(this Action<TResult> action)
   {
     return result =>
@@ -90,16 +101,42 @@ public static class ExtensionMethods
       return Unit.unit;
     };
   }
+
+  public static Func<Unit, Unit> AsFunc(this Action action)
+  {
+    return _ =>
+    {
+      action();
+      return Unit.unit;
+    };
+  }
 }
 ....
 
-Now we can write the original snippet like this without having to introduce a special `Select` overload for `Action`.
+Now we can rewrite the original snippets like this.
 
 [source,cs]
 ....
-void Foo(Action<int> doSomething)
+Task<int> DoubleIntAsync(Task<int> task)
 {
-  var xs = new int[] { 1, 2, 3, 4 };
-  xs.Select(doSomething.AsFunc());
+  return Map(task, i => i * i);
+}
+
+Task<Unit> PrintIntAsync(Task<int> task)
+{
+  // C# does not allow us to call the extension method on the method group directly
+  Action<int> a = Console.WriteLine; // First convert the method group to the delegate
+  return Map(task, a.AsFunc()); // Now we can call the extension method on the delegate
+}
+
+Task<Unit> LogTaskFinished(Task task)
+{
+  Action a = () => Console.WriteLine("task finished");
+  return Map(task.AsTask(), a.AsFunc());
+}
+
+Task<string> ReturnTaskFinished(Task task)
+{
+  return Map(task.AsTask(), _ => "task finished");
 }
 ....
