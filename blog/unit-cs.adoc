@@ -34,13 +34,13 @@ Task PrintIntAsync(Task<int> task)
 {
   return Map(task, Console.WriteLine);
 }
-Task LogTaskFinished(Task task)
-{
-  return Map(task, () => Console.WriteLine("task finished"));
-}
 Task<string> ReturnTaskFinished(Task task)
 {
   return Map(task, () => "task finished");
+}
+Task LogTaskFinished(Task task)
+{
+  return Map(task, () => Console.WriteLine("task finished"));
 }
 ....
 
@@ -56,6 +56,7 @@ async Task<T2> Map<T2>(Task task, Func<T2> f) { await task; return f(); }
 In this case the function definitions are fairly simple and we only need four of them, but the general problem is bigger.
 For each additional type with a void variant, the amount of necessary overloads doubles.
 And every time we want to write a function like `Map` we encounter this issue.
+And don't forget that the `Action` and `Task` void variants had to be written too to work around this issue.
 
 ## A poor man's solution: the unit type
 
@@ -76,18 +77,18 @@ public struct Unit : IEquatable<Unit>
 }
 ....
 
-If we now have a function that returns `void` we can have it return `Unit` instead, so that it can be used as a `Func` delegate.
-Similarly, if we need a `Task` without a value, we can simply use `Task<Unit>` instead.
+If we now have a function that returns `void` we can have it return `Unit` instead, so that it can be used as a `Func<Unit>` delegate.
+Similarly, if we need a `Task` without a value, we can simply use `Task<Unit>`.
 
 But our code doesn't live in isolation.
-We have to deal with existing code and an existing ecosystem.
-Luckily C# supports extension methods, which allow use to deal with this and convert these void variants to their unit counterparts.
+We have to deal with existing code and an existing ecosystem, both of which expose a lot of void oriented functions.
+Luckily C# supports extension methods, which allow use to deal with this in an acceptable way and convert void variants to their unit counterparts.
 
 [source,cs]
 ....
 public static class ExtensionMethods
 {
-  public static async Task<Unit> AsTask(this Task task)
+  public static async Task<Unit> AsUnitTask(this Task task)
   {
     await task;
     return Unit.unit;
@@ -129,14 +130,22 @@ Task<Unit> PrintIntAsync(Task<int> task)
   return Map(task, a.AsFunc()); // Now we can call the extension method on the delegate
 }
 
+Task<string> ReturnTaskFinished(Task task)
+{
+  return Map(task.AsUnitTask(), _ => "task finished");
+}
+
 Task<Unit> LogTaskFinished(Task task)
 {
   Action a = () => Console.WriteLine("task finished");
-  return Map(task.AsTask(), a.AsFunc());
-}
-
-Task<string> ReturnTaskFinished(Task task)
-{
-  return Map(task.AsTask(), _ => "task finished");
+  return Map(task.AsUnitTask(), a.AsFunc());
 }
 ....
+
+It may seem that we've merely moved the burden from writing `Map` overloads to writing extension methods for conversion.
+But that is not the case.
+These conversion methods have to be written once per void variant, while the overloads have to be written for each function that uses them like `Map`.
+And as demonstrated earlier, the number of overloads explodes with the number of void variant types involved in a function or type definition.
+
+Yes, it would have been a lot better if `void` were a valid type.
+But having a separate `Unit` type handy for when you need it is the next best thing.

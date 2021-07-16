@@ -5,16 +5,16 @@
 {
   return Map(task, Console.WriteLine);
 }
-Task LogTaskFinished(Task task)
-{
-  return Map(task, () =&gt; Console.WriteLine("task finished"));
-}
 Task&lt;string&gt; ReturnTaskFinished(Task task)
 {
   return Map(task, () =&gt; "task finished");
+}
+Task LogTaskFinished(Task task)
+{
+  return Map(task, () =&gt; Console.WriteLine("task finished"));
 }</code></pre> </div> </div> <div class="paragraph"> <p>We would have to write <code>Map</code> overloads to support these void variants.</p> </div> <div class="listingblock"> <div class="content"> <pre class="highlight highlightjs"><code class="hljs language-cs" data-lang="cs">async Task Map&lt;T1&gt;(Task&lt;T1&gt; task, Action&lt;T1&gt; f) =&gt; f(await task);
 async Task Map(Task task, Action f) { await task; f(); }
-async Task&lt;T2&gt; Map&lt;T2&gt;(Task task, Func&lt;T2&gt; f) { await task; return f(); }</code></pre> </div> </div> <div class="paragraph"> <p>In this case the function definitions are fairly simple and we only need four of them, but the general problem is bigger. For each additional type with a void variant, the amount of necessary overloads doubles. And every time we want to write a function like <code>Map</code> we encounter this issue.</p> </div> </div> </div> <div class="sect1"> <h2 id="_a_poor_mans_solution_the_unit_type">A poor man&#8217;s solution: the unit type</h2> <div class="sectionbody"> <div class="paragraph"> <p>The <a href="https://en.wikipedia.org/wiki/Unit_type">unit type</a> is nothing but a type with only one value. Many functional programming languages do not support void functions, but do have a builtin unit type, which is used whenever a function doesn&#8217;t return any data. We can create our own C# version of a <code>Unit</code> and use it instead of <code>void</code>.</p> </div> <div class="listingblock"> <div class="content"> <pre class="highlight highlightjs"><code class="hljs language-cs" data-lang="cs">public struct Unit : IEquatable&lt;Unit&gt;
+async Task&lt;T2&gt; Map&lt;T2&gt;(Task task, Func&lt;T2&gt; f) { await task; return f(); }</code></pre> </div> </div> <div class="paragraph"> <p>In this case the function definitions are fairly simple and we only need four of them, but the general problem is bigger. For each additional type with a void variant, the amount of necessary overloads doubles. And every time we want to write a function like <code>Map</code> we encounter this issue. And don&#8217;t forget that the <code>Action</code> and <code>Task</code> void variants had to be written too to work around this issue.</p> </div> </div> </div> <div class="sect1"> <h2 id="_a_poor_mans_solution_the_unit_type">A poor man&#8217;s solution: the unit type</h2> <div class="sectionbody"> <div class="paragraph"> <p>The <a href="https://en.wikipedia.org/wiki/Unit_type">unit type</a> is nothing but a type with only one value. Many functional programming languages do not support void functions, but do have a builtin unit type, which is used whenever a function doesn&#8217;t return any data. We can create our own C# version of a <code>Unit</code> and use it instead of <code>void</code>.</p> </div> <div class="listingblock"> <div class="content"> <pre class="highlight highlightjs"><code class="hljs language-cs" data-lang="cs">public struct Unit : IEquatable&lt;Unit&gt;
 {
   public static readonly Unit unit;
   public override bool Equals(object obj) =&gt; obj is Unit;
@@ -22,9 +22,9 @@ async Task&lt;T2&gt; Map&lt;T2&gt;(Task task, Func&lt;T2&gt; f) { await task; re
   public static bool operator ==(Unit left, Unit right) =&gt; left.Equals(right);
   public static bool operator !=(Unit left, Unit right) =&gt; !(left == right);
   public bool Equals(Unit other) =&gt; true;
-}</code></pre> </div> </div> <div class="paragraph"> <p>If we now have a function that returns <code>void</code> we can have it return <code>Unit</code> instead, so that it can be used as a <code>Func</code> delegate. Similarly, if we need a <code>Task</code> without a value, we can simply use <code>Task&lt;Unit&gt;</code> instead.</p> </div> <div class="paragraph"> <p>But our code doesn&#8217;t live in isolation. We have to deal with existing code and an existing ecosystem. Luckily C# supports extension methods, which allow use to deal with this and convert these void variants to their unit counterparts.</p> </div> <div class="listingblock"> <div class="content"> <pre class="highlight highlightjs"><code class="hljs language-cs" data-lang="cs">public static class ExtensionMethods
+}</code></pre> </div> </div> <div class="paragraph"> <p>If we now have a function that returns <code>void</code> we can have it return <code>Unit</code> instead, so that it can be used as a <code>Func&lt;Unit&gt;</code> delegate. Similarly, if we need a <code>Task</code> without a value, we can simply use <code>Task&lt;Unit&gt;</code>.</p> </div> <div class="paragraph"> <p>But our code doesn&#8217;t live in isolation. We have to deal with existing code and an existing ecosystem, both of which expose a lot of void oriented functions. Luckily C# supports extension methods, which allow use to deal with this in an acceptable way and convert void variants to their unit counterparts.</p> </div> <div class="listingblock"> <div class="content"> <pre class="highlight highlightjs"><code class="hljs language-cs" data-lang="cs">public static class ExtensionMethods
 {
-  public static async Task&lt;Unit&gt; AsTask(this Task task)
+  public static async Task&lt;Unit&gt; AsUnitTask(this Task task)
   {
     await task;
     return Unit.unit;
@@ -59,13 +59,13 @@ Task&lt;Unit&gt; PrintIntAsync(Task&lt;int&gt; task)
   return Map(task, a.AsFunc()); // Now we can call the extension method on the delegate
 }
 
+Task&lt;string&gt; ReturnTaskFinished(Task task)
+{
+  return Map(task.AsUnitTask(), _ =&gt; "task finished");
+}
+
 Task&lt;Unit&gt; LogTaskFinished(Task task)
 {
   Action a = () =&gt; Console.WriteLine("task finished");
-  return Map(task.AsTask(), a.AsFunc());
-}
-
-Task&lt;string&gt; ReturnTaskFinished(Task task)
-{
-  return Map(task.AsTask(), _ =&gt; "task finished");
-}</code></pre> </div> </div> </div> </div> </div> <div id="footer"> <div id="footer-text"> Last updated 2021-07-16 22:14:50 +0200 </div> </div> <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/highlight.min.js"></script> <script>hljs.initHighlighting.called||(hljs.initHighlighting.called=!0,[].slice.call(document.querySelectorAll("pre.highlight > code")).forEach((function(l){hljs.highlightBlock(l)})));</script> </body></html>
+  return Map(task.AsUnitTask(), a.AsFunc());
+}</code></pre> </div> </div> <div class="paragraph"> <p>It may seem that we&#8217;ve merely moved the burden from writing <code>Map</code> overloads to writing extension methods for conversion. But that is not the case. These conversion methods have to be written once per void variant, while the overloads have to be written for each function that uses them like <code>Map</code>. And as demonstrated earlier, the number of overloads explodes with the number of void variant types involved in a function or type definition.</p> </div> <div class="paragraph"> <p>Yes, it would have been a lot better if <code>void</code> were a valid type. But having a separate <code>Unit</code> type handy for when you need it is the next best thing.</p> </div> </div> </div> </div> <div id="footer"> <div id="footer-text"> Last updated 2021-07-16 22:33:08 +0200 </div> </div> <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/highlight.min.js"></script> <script>hljs.initHighlighting.called||(hljs.initHighlighting.called=!0,[].slice.call(document.querySelectorAll("pre.highlight > code")).forEach((function(l){hljs.highlightBlock(l)})));</script> </body></html>
