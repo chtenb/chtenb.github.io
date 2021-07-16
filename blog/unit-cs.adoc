@@ -23,9 +23,9 @@ Task<int> DoubleIntAsync(Task<int> task)
 
 There is a problem however.
 We've written our `Map` function to be able to deal with `Task<>` and `Func<>`.
-But tasks and functions can also have void values.
-However, since the type system doesn't allows use to simply use `Task<void>` and `Func<void>` these exist special void variants of the `Task<>` and `Func<>` types, namely `Task` and `Action`.
-And that disallows us from using our `Map` for the void variants of these types.
+But tasks and functions can of course also have void values.
+And since the type system doesn't allow us to simply use `Task<void>` and `Func<void>` there exist special void case of the `Task<>` and `Func<>` types, namely `Task` and `Action`.
+And that disallows us from using our `Map` for the void case of these types.
 In other words, the following functions won't compile.
 
 [source,cs]
@@ -44,7 +44,7 @@ Task LogTaskFinished(Task task)
 }
 ....
 
-We would have to write `Map` overloads to support these void variants.
+We would have to write `Map` overloads to support these void cases.
 
 [source,cs]
 ....
@@ -54,9 +54,9 @@ async Task<T2> Map<T2>(Task task, Func<T2> f) { await task; return f(); }
 ....
 
 In this case the function definitions are fairly simple and we only need four of them, but the general problem is bigger.
-For each additional type with a void variant, the amount of necessary overloads doubles.
-And every time we want to write a function like `Map` we encounter this issue.
-And don't forget that the `Action` and `Task` void variants had to be written too to work around this issue.
+For each additional type involved that has a void case, the amount of necessary overloads doubles.
+And every time we want to write a function like `Map` we encounter this issue and have to write all the overloads.
+And don't forget that the `Action` and `Task` void cases also had to be written too to work around this issue.
 
 ## A poor man's solution: the unit type
 
@@ -82,7 +82,7 @@ Similarly, if we need a `Task` without a value, we can simply use `Task<Unit>`.
 
 But our code doesn't live in isolation.
 We have to deal with existing code and an existing ecosystem, both of which expose a lot of void oriented functions.
-Luckily C# supports extension methods, which allow use to deal with this in an acceptable way and convert void variants to their unit counterparts.
+Luckily C# supports extension methods, which allow use to deal with this in an acceptable way and convert void cases to their unit counterparts.
 
 [source,cs]
 ....
@@ -114,7 +114,7 @@ public static class ExtensionMethods
 }
 ....
 
-Now we can rewrite the original snippets like this.
+Now we can rewrite the original snippets as follows.
 
 [source,cs]
 ....
@@ -142,10 +142,11 @@ Task<Unit> LogTaskFinished(Task task)
 }
 ....
 
-It may seem that we've merely moved the burden from writing `Map` overloads to writing extension methods for conversion.
+It may seem that we've merely moved the burden from writing `Map` overloads to writing extension methods.
 But that is not the case.
-These conversion methods have to be written once per void variant, while the overloads have to be written for each function that uses them like `Map`.
-And as demonstrated earlier, the number of overloads explodes with the number of void variant types involved in a function or type definition.
+These conversion methods have to be written once per void case, while the overloads had to be written for each function that uses types with void cases generically, like `Map`.
+And as demonstrated earlier, the number of overloads explodes with the number of types with a void case involved.
 
 Yes, it would have been a lot better if `void` were a valid type.
 But having a separate `Unit` type handy for when you need it is the next best thing.
+And when you are writing a generic class, don't introduce another void case.
