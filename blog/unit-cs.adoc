@@ -78,11 +78,11 @@ public struct Unit : IEquatable<Unit>
 }
 ....
 
-If we now have a function that returns `void` we can have it return `Unit` instead, so that it can be used as a `Func<Unit>` delegate.
+If we now have a function that is `void` we can have it return `Unit` instead, so that it can be used as a `Func<Unit>` delegate.
 Similarly, if we need a `Task` without a value, we can simply use `Task<Unit>`.
 
 But our code doesn't live in isolation.
-We have to deal with existing code and an existing ecosystem, both of which expose a lot of void oriented functions.
+We have to deal with existing code and an existing ecosystem, both of which expose a lot of void oriented types and functions.
 Luckily C# supports extension methods, which allow use to deal with this in an acceptable way and convert void cases to their unit counterparts.
 
 [source,cs]
@@ -145,7 +145,7 @@ Task<Unit> LogTaskFinished(Task task)
 
 It may seem that we've merely moved the burden from writing `Map` overloads to writing extension methods.
 But that is not the case.
-These conversion methods have to be written once per void case, while the overloads had to be written for each function that uses types with void cases generically, like `Map`.
+These conversion methods have to be written once per void case type, while the overloads had to be written for _each function_ that uses types with void cases generically, like `Map`.
 And as demonstrated earlier, the number of overloads explodes with the number of types with a void case involved.
 
 Yes, it would have been a lot better if `void` were a valid type.
