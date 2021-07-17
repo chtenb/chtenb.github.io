@@ -25,13 +25,12 @@
   "license": "ISC",
   "description": "",
   "devDependencies": {
+    "asciidoctor": "^2.2.4",
+    "asciidoctor-highlight.js": "^0.3.0",
+    "asciidoctor-kroki": "^0.13.0",
     "parcel": "next",
     "purescript": "^0.14.1",
-    "spago": "^0.20.3"
-  },
-  "dependencies": {
-    "asciidoctor": "^2.2.4",
-    "asciidoctor-kroki": "^0.13.0",
-    "rrdiagram-js": "^1.0.7"
+    "spago": "^0.20.3",
+    "highlight.js": "latest"
   }
 }

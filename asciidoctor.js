@@ -1,18 +1,19 @@
 const Asciidoctor = require('asciidoctor')
 const kroki = require('asciidoctor-kroki')
+const highlightJsExt = require('asciidoctor-highlight.js')
 const glob = require('glob')
 
 var asciidoctor = Asciidoctor()
 
 kroki.register(asciidoctor.Extensions)
+highlightJsExt.register(asciidoctor.Extensions)
 
 var options = {
   'safe': 'unsafe',
   'standalone': true,
   'attributes': {
     'linkcss': true,
-    'source-highlighter': 'highlight.js',
-    'highlightjs-theme': 'solarized-light',
+    'source-highlighter': 'highlightjs-ext',
     'docinfodir': '../res/',
     'docinfo': 'shared',
     'stylesheet': '../res/asciidoc.css',
