@@ -53,7 +53,7 @@ component =
     }
 
 initialState :: forall input. input -> State
-initialState _ = { loading: false, page: "unit-cs" }
+initialState _ = { loading: false, page: "toc" }
 
 refContent :: H.RefLabel
 refContent = H.RefLabel "content-iframe"
@@ -77,8 +77,8 @@ render state = HH.div
   renderTitle = HH.div
     [ classString "title largeViewport"]
     [ HH.a
-      [ HP.href "https://github.com/chtenb/chtenb.github.io"
-      , HP.target "_blank"
+      [ HP.href "/"
+      , HP.target "_parent"
       ]
       [ HH.h1_ [ HH.text "Devblog" ] ]
     ]
@@ -112,9 +112,7 @@ handleAction action =
       focusContent
       maybePage <- H.liftEffect $ getQueryParam "page"
       case maybePage of
-        Nothing -> do
-          state <- H.get
-          H.liftEffect $ setQueryString $ "page=" <> state.page
+        Nothing -> pure unit
         Just page -> H.modify_ _ { page = page }
     PostLoad -> syncDocumentTitle
 

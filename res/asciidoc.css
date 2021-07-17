@@ -1078,12 +1078,11 @@ body.toc2 #header>h1:nth-last-child(2) {
 
 #footer {
   max-width: none;
-  background: rgba(0, 0, 0, .8);
   padding: 1.25em
 }
 
 #footer-text {
-  color: rgba(255, 255, 255, .8);
+  color: var(--fg);
   line-height: 1.44
 }
 
