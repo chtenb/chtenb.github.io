@@ -1321,12 +1321,12 @@ table.tableblock #preamble>.sectionbody>[class="paragraph"]:first-of-type p {
   }
 }
 
-.literalblock pre,
+/* .literalblock pre,
 .listingblock>.content>pre:not(.highlight),
 .listingblock>.content>pre[class="highlight"],
 .listingblock>.content>pre[class^="highlight "] {
   background: var(--button-hover-bg)
-}
+} */
 
 .literalblock.output pre {
   color: var(--button-hover-bg);

@@ -33,10 +33,12 @@ Task PrintIntAsync(Task<int> task)
 {
   return Map(task, Console.WriteLine);
 }
+
 Task<string> ReturnTaskFinished(Task task)
 {
   return Map(task, () => "task finished");
 }
+
 Task LogTaskFinished(Task task)
 {
   return Map(task, () => Console.WriteLine("task finished"));
