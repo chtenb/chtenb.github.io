@@ -3,7 +3,7 @@
 @import 'fonts.css';
 
 :root {
-  --title-width: 200px;
+  --title-width: 130px;
   --controls-max-width: 560px;
   --app-height: 100vh;
 }

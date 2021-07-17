@@ -75,7 +75,7 @@ render state = HH.div
     , renderLoadingIcon
     ]
   renderTitle = HH.div
-    [ classString "title largeViewport"]
+    [ classString "title"]
     [ HH.a
       [ HP.href "/"
       , HP.target "_parent"
