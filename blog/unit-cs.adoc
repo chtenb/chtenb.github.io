@@ -3,7 +3,6 @@
 ## The problem: void is not a type
 
 Suppose you wanted to write a `Map` function for tasks.
-It merely serves as a simple example right now, so we'll not bother ourselves with the why.
 The definition is very simple.
 
 [source,cs]
