@@ -54,7 +54,7 @@ async Task<T2> Map<T2>(Task task, Func<T2> f) { await task; return f(); }
 
 In this case the function definitions are fairly simple and we only need four of them, but the general problem is bigger.
 For each additional type involved that has a void case, the amount of necessary overloads doubles.
-And every time we want to write a function like `Map` we encounter this issue and have to write all the overloads.
+And every time we want to write a function that deals with generic types in a generic way (like `Map`) we encounter this issue and have to write all the overloads.
 And don't forget that the `Action` and `Task` void cases also had to be written to work around this issue.
 
 ## A poor man's solution: the unit type
