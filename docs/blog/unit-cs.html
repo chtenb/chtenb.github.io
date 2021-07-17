@@ -1,71 +1,73 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="Asciidoctor 2.0.15"><title>The missing C# built-in type: void</title><link rel="stylesheet" href="/blog/rop-cs.56bc7e81.css"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/styles/solarized-light.min.css"><base target="_parent"></head><body class="article"> <div id="header"> <h1>The missing C# built-in type: void</h1> </div> <div id="content"> <div class="sect1"> <h2 id="_the_problem_void_is_not_a_type">The problem: void is not a type</h2> <div class="sectionbody"> <div class="paragraph"> <p>Suppose you wanted to write a <code>Map</code> function for tasks. The definition is very simple.</p> </div> <div class="listingblock"> <div class="content"> <pre class="highlight highlightjs"><code class="hljs language-cs" data-lang="cs">async Task&lt;T2&gt; Map&lt;T1, T2&gt;(Task&lt;T1&gt; task, Func&lt;T1, T2&gt; f) =&gt; f(await task);</code></pre> </div> </div> <div class="paragraph"> <p>You can then use it as follows.</p> </div> <div class="listingblock"> <div class="content"> <pre class="highlight highlightjs"><code class="hljs language-cs" data-lang="cs">Task&lt;int&gt; DoubleIntAsync(Task&lt;int&gt; task)
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="Asciidoctor 2.0.15"><title>The missing C# built-in type: void</title><link rel="stylesheet" href="/blog/rop-cs.6720997f.css"><base target="_parent"></head><body class="article"> <div id="header"> <h1>The missing C# built-in type: void</h1> </div> <div id="content"> <div class="sect1"> <h2 id="_the_problem_void_is_not_a_type">The problem: void is not a type</h2> <div class="sectionbody"> <div class="paragraph"> <p>Suppose you wanted to write a <code>Map</code> function for tasks. The definition is very simple.</p> </div> <div class="listingblock"> <div class="content"> <pre class="highlight"><code class="language-cs" data-lang="cs"><span class="hljs-function"><span class="hljs-keyword">async</span> <span class="hljs-title">Task</span>&lt;<span class="hljs-title">T2</span>&gt; <span class="hljs-title">Map</span>&lt;<span class="hljs-title">T1</span>, <span class="hljs-title">T2</span>&gt;(<span class="hljs-params">Task&lt;T1&gt; task, Func&lt;T1, T2&gt; f</span>)</span> =&gt; f(<span class="hljs-keyword">await</span> task);</code></pre> </div> </div> <div class="paragraph"> <p>You can then use it as follows.</p> </div> <div class="listingblock"> <div class="content"> <pre class="highlight"><code class="language-cs" data-lang="cs"><span class="hljs-function">Task&lt;<span class="hljs-built_in">int</span>&gt; <span class="hljs-title">DoubleIntAsync</span>(<span class="hljs-params">Task&lt;<span class="hljs-built_in">int</span>&gt; task</span>)</span>
 {
-  return Map(task, i =&gt; i * i);
-}</code></pre> </div> </div> <div class="paragraph"> <p>There is a problem however. We&#8217;ve written our <code>Map</code> function to be able to deal with <code>Task&lt;&gt;</code> and <code>Func&lt;&gt;</code>. But tasks and functions can of course also have void values. And since the type system doesn&#8217;t allow us to simply use <code>Task&lt;void&gt;</code> and <code>Func&lt;void&gt;</code> there exist special void cases of the <code>Task&lt;&gt;</code> and <code>Func&lt;&gt;</code> types, namely <code>Task</code> and <code>Action</code>. And that disallows us from using our <code>Map</code> for the void case of these types. In other words, the following functions won&#8217;t compile.</p> </div> <div class="listingblock"> <div class="content"> <pre class="highlight highlightjs"><code class="hljs language-cs" data-lang="cs">Task PrintIntAsync(Task&lt;int&gt; task)
+  <span class="hljs-keyword">return</span> Map(task, i =&gt; i * i);
+}</code></pre> </div> </div> <div class="paragraph"> <p>There is a problem however. We&#8217;ve written our <code>Map</code> function to be able to deal with <code>Task&lt;&gt;</code> and <code>Func&lt;&gt;</code>. But tasks and functions can of course also have void values. And since the type system doesn&#8217;t allow us to simply use <code>Task&lt;void&gt;</code> and <code>Func&lt;void&gt;</code> there exist special void cases of the <code>Task&lt;&gt;</code> and <code>Func&lt;&gt;</code> types, namely <code>Task</code> and <code>Action</code>. And that disallows us from using our <code>Map</code> for the void case of these types. In other words, the following functions won&#8217;t compile.</p> </div> <div class="listingblock"> <div class="content"> <pre class="highlight"><code class="language-cs" data-lang="cs"><span class="hljs-function">Task <span class="hljs-title">PrintIntAsync</span>(<span class="hljs-params">Task&lt;<span class="hljs-built_in">int</span>&gt; task</span>)</span>
 {
-  return Map(task, Console.WriteLine);
+  <span class="hljs-keyword">return</span> Map(task, Console.WriteLine);
 }
-Task&lt;string&gt; ReturnTaskFinished(Task task)
+
+<span class="hljs-function">Task&lt;<span class="hljs-built_in">string</span>&gt; <span class="hljs-title">ReturnTaskFinished</span>(<span class="hljs-params">Task task</span>)</span>
 {
-  return Map(task, () =&gt; "task finished");
+  <span class="hljs-keyword">return</span> Map(task, () =&gt; <span class="hljs-string">&quot;task finished&quot;</span>);
 }
-Task LogTaskFinished(Task task)
+
+<span class="hljs-function">Task <span class="hljs-title">LogTaskFinished</span>(<span class="hljs-params">Task task</span>)</span>
 {
-  return Map(task, () =&gt; Console.WriteLine("task finished"));
-}</code></pre> </div> </div> <div class="paragraph"> <p>We would have to write <code>Map</code> overloads to support these void cases.</p> </div> <div class="listingblock"> <div class="content"> <pre class="highlight highlightjs"><code class="hljs language-cs" data-lang="cs">async Task Map&lt;T1&gt;(Task&lt;T1&gt; task, Action&lt;T1&gt; f) =&gt; f(await task);
-async Task Map(Task task, Action f) { await task; f(); }
-async Task&lt;T2&gt; Map&lt;T2&gt;(Task task, Func&lt;T2&gt; f) { await task; return f(); }</code></pre> </div> </div> <div class="paragraph"> <p>In this case the function definitions are fairly simple and we only need four of them, but the general problem is bigger. For each additional type involved that has a void case, the amount of necessary overloads doubles. And every time we want to write a function that deals with generic types in a generic way (like <code>Map</code>) we encounter this issue and have to write all the overloads. And don&#8217;t forget that the <code>Action</code> and <code>Task</code> void cases also had to be written to work around this issue.</p> </div> </div> </div> <div class="sect1"> <h2 id="_a_poor_mans_solution_the_unit_type">A poor man&#8217;s solution: the unit type</h2> <div class="sectionbody"> <div class="paragraph"> <p>The <a href="https://en.wikipedia.org/wiki/Unit_type">unit type</a> is nothing but a type with only one value. Many functional programming languages do not actually support void functions like C# does. Instead they have a builtin unit type, which is used whenever a function doesn&#8217;t return any actual data. We can create our own C# version of a <code>Unit</code> and use it instead of <code>void</code>.</p> </div> <div class="listingblock"> <div class="content"> <pre class="highlight highlightjs"><code class="hljs language-cs" data-lang="cs">public struct Unit : IEquatable&lt;Unit&gt;
+  <span class="hljs-keyword">return</span> Map(task, () =&gt; Console.WriteLine(<span class="hljs-string">&quot;task finished&quot;</span>));
+}</code></pre> </div> </div> <div class="paragraph"> <p>We would have to write <code>Map</code> overloads to support these void cases.</p> </div> <div class="listingblock"> <div class="content"> <pre class="highlight"><code class="language-cs" data-lang="cs"><span class="hljs-function"><span class="hljs-keyword">async</span> Task <span class="hljs-title">Map</span>&lt;<span class="hljs-title">T1</span>&gt;(<span class="hljs-params">Task&lt;T1&gt; task, Action&lt;T1&gt; f</span>)</span> =&gt; f(<span class="hljs-keyword">await</span> task);
+<span class="hljs-function"><span class="hljs-keyword">async</span> Task <span class="hljs-title">Map</span>(<span class="hljs-params">Task task, Action f</span>)</span> { <span class="hljs-keyword">await</span> task; f(); }
+<span class="hljs-function"><span class="hljs-keyword">async</span> <span class="hljs-title">Task</span>&lt;<span class="hljs-title">T2</span>&gt; <span class="hljs-title">Map</span>&lt;<span class="hljs-title">T2</span>&gt;(<span class="hljs-params">Task task, Func&lt;T2&gt; f</span>)</span> { <span class="hljs-keyword">await</span> task; <span class="hljs-keyword">return</span> f(); }</code></pre> </div> </div> <div class="paragraph"> <p>In this case the function definitions are fairly simple and we only need four of them, but the general problem is bigger. For each additional type involved that has a void case, the amount of necessary overloads doubles. And every time we want to write a function that deals with generic types in a generic way (like <code>Map</code>) we encounter this issue and have to write all the overloads. And don&#8217;t forget that the <code>Action</code> and <code>Task</code> void cases also had to be written to work around this issue.</p> </div> </div> </div> <div class="sect1"> <h2 id="_a_poor_mans_solution_the_unit_type">A poor man&#8217;s solution: the unit type</h2> <div class="sectionbody"> <div class="paragraph"> <p>The <a href="https://en.wikipedia.org/wiki/Unit_type">unit type</a> is nothing but a type with only one value. Many functional programming languages do not actually support void functions like C# does. Instead they have a builtin unit type, which is used whenever a function doesn&#8217;t return any actual data. We can create our own C# version of a <code>Unit</code> and use it instead of <code>void</code>.</p> </div> <div class="listingblock"> <div class="content"> <pre class="highlight"><code class="language-cs" data-lang="cs"><span class="hljs-keyword">public</span> <span class="hljs-keyword">struct</span> Unit : IEquatable&lt;Unit&gt;
 {
-  public static readonly Unit unit;
-  public override bool Equals(object obj) =&gt; obj is Unit;
-  public override int GetHashCode() =&gt; 0;
-  public static bool operator ==(Unit left, Unit right) =&gt; left.Equals(right);
-  public static bool operator !=(Unit left, Unit right) =&gt; !(left == right);
-  public bool Equals(Unit other) =&gt; true;
-}</code></pre> </div> </div> <div class="paragraph"> <p>If we now have a function that is <code>void</code> we can have it return <code>Unit</code> instead, so that it can be used as a <code>Func&lt;Unit&gt;</code> delegate. Similarly, if we need a <code>Task</code> without a value, we can simply use <code>Task&lt;Unit&gt;</code>.</p> </div> <div class="paragraph"> <p>But our code doesn&#8217;t live in isolation. We have to deal with existing code and an existing ecosystem, both of which expose a lot of void oriented types and functions. Luckily C# supports extension methods, which allow use to deal with this in an acceptable way and convert void cases to their unit counterparts.</p> </div> <div class="listingblock"> <div class="content"> <pre class="highlight highlightjs"><code class="hljs language-cs" data-lang="cs">public static class ExtensionMethods
+  <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">readonly</span> Unit <span class="hljs-built_in">unit</span>;
+  <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">override</span> <span class="hljs-built_in">bool</span> <span class="hljs-title">Equals</span>(<span class="hljs-params"><span class="hljs-built_in">object</span> obj</span>)</span> =&gt; obj <span class="hljs-keyword">is</span> Unit;
+  <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">override</span> <span class="hljs-built_in">int</span> <span class="hljs-title">GetHashCode</span>(<span class="hljs-params"></span>)</span> =&gt; <span class="hljs-number">0</span>;
+  <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-built_in">bool</span> <span class="hljs-keyword">operator</span> ==(Unit left, Unit right) =&gt; left.Equals(right);
+  <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-built_in">bool</span> <span class="hljs-keyword">operator</span> !=(Unit left, Unit right) =&gt; !(left == right);
+  <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-built_in">bool</span> <span class="hljs-title">Equals</span>(<span class="hljs-params">Unit other</span>)</span> =&gt; <span class="hljs-literal">true</span>;
+}</code></pre> </div> </div> <div class="paragraph"> <p>If we now have a function that is <code>void</code> we can have it return <code>Unit</code> instead, so that it can be used as a <code>Func&lt;Unit&gt;</code> delegate. Similarly, if we need a <code>Task</code> without a value, we can simply use <code>Task&lt;Unit&gt;</code>.</p> </div> <div class="paragraph"> <p>But our code doesn&#8217;t live in isolation. We have to deal with existing code and an existing ecosystem, both of which expose a lot of void oriented types and functions. Luckily C# supports extension methods, which allow use to deal with this in an acceptable way and convert void cases to their unit counterparts.</p> </div> <div class="listingblock"> <div class="content"> <pre class="highlight"><code class="language-cs" data-lang="cs"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">class</span> <span class="hljs-title">ExtensionMethods</span>
 {
-  public static async Task&lt;Unit&gt; AsUnitTask(this Task task)
+  <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">async</span> Task&lt;Unit&gt; <span class="hljs-title">AsUnitTask</span>(<span class="hljs-params"><span class="hljs-keyword">this</span> Task task</span>)</span>
   {
-    await task;
-    return Unit.unit;
+    <span class="hljs-keyword">await</span> task;
+    <span class="hljs-keyword">return</span> Unit.<span class="hljs-built_in">unit</span>;
   }
 
-  public static Func&lt;TResult, Unit&gt; AsFunc&lt;TResult&gt;(this Action&lt;TResult&gt; action)
+  <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-title">Func</span>&lt;<span class="hljs-title">TResult</span>, <span class="hljs-title">Unit</span>&gt; <span class="hljs-title">AsFunc</span>&lt;<span class="hljs-title">TResult</span>&gt;(<span class="hljs-params"><span class="hljs-keyword">this</span> Action&lt;TResult&gt; action</span>)</span>
   {
-    return result =&gt;
+    <span class="hljs-keyword">return</span> result =&gt;
     {
       action(result);
-      return Unit.unit;
+      <span class="hljs-keyword">return</span> Unit.<span class="hljs-built_in">unit</span>;
     };
   }
 
-  public static Func&lt;Unit, Unit&gt; AsFunc(this Action action)
+  <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> Func&lt;Unit, Unit&gt; <span class="hljs-title">AsFunc</span>(<span class="hljs-params"><span class="hljs-keyword">this</span> Action action</span>)</span>
   {
-    return _ =&gt;
+    <span class="hljs-keyword">return</span> _ =&gt;
     {
       action();
-      return Unit.unit;
+      <span class="hljs-keyword">return</span> Unit.<span class="hljs-built_in">unit</span>;
     };
   }
-}</code></pre> </div> </div> <div class="paragraph"> <p>Now we can rewrite the original snippets as follows.</p> </div> <div class="listingblock"> <div class="content"> <pre class="highlight highlightjs"><code class="hljs language-cs" data-lang="cs">Task&lt;int&gt; DoubleIntAsync(Task&lt;int&gt; task)
+}</code></pre> </div> </div> <div class="paragraph"> <p>Now we can rewrite the original snippets as follows.</p> </div> <div class="listingblock"> <div class="content"> <pre class="highlight"><code class="language-cs" data-lang="cs"><span class="hljs-function">Task&lt;<span class="hljs-built_in">int</span>&gt; <span class="hljs-title">DoubleIntAsync</span>(<span class="hljs-params">Task&lt;<span class="hljs-built_in">int</span>&gt; task</span>)</span>
 {
-  return Map(task, i =&gt; i * i);
+  <span class="hljs-keyword">return</span> Map(task, i =&gt; i * i);
 }
 
-Task&lt;Unit&gt; PrintIntAsync(Task&lt;int&gt; task)
+<span class="hljs-function">Task&lt;Unit&gt; <span class="hljs-title">PrintIntAsync</span>(<span class="hljs-params">Task&lt;<span class="hljs-built_in">int</span>&gt; task</span>)</span>
 {
-  // C# does not allow us to call the extension method on the method group directly
-  Action&lt;int&gt; a = Console.WriteLine; // First convert the method group to the delegate
-  return Map(task, a.AsFunc()); // Now we can call the extension method on the delegate
+  <span class="hljs-comment">// C# does not allow us to call the extension method on the method group directly</span>
+  Action&lt;<span class="hljs-built_in">int</span>&gt; a = Console.WriteLine; <span class="hljs-comment">// First convert the method group to the delegate</span>
+  <span class="hljs-keyword">return</span> Map(task, a.AsFunc()); <span class="hljs-comment">// Now we can call the extension method on the delegate</span>
 }
 
-Task&lt;string&gt; ReturnTaskFinished(Task task)
+<span class="hljs-function">Task&lt;<span class="hljs-built_in">string</span>&gt; <span class="hljs-title">ReturnTaskFinished</span>(<span class="hljs-params">Task task</span>)</span>
 {
-  return Map(task.AsUnitTask(), _ =&gt; "task finished");
+  <span class="hljs-keyword">return</span> Map(task.AsUnitTask(), _ =&gt; <span class="hljs-string">&quot;task finished&quot;</span>);
 }
 
-Task&lt;Unit&gt; LogTaskFinished(Task task)
+<span class="hljs-function">Task&lt;Unit&gt; <span class="hljs-title">LogTaskFinished</span>(<span class="hljs-params">Task task</span>)</span>
 {
-  Action a = () =&gt; Console.WriteLine("task finished");
-  return Map(task.AsUnitTask(), a.AsFunc());
-}</code></pre> </div> </div> <div class="paragraph"> <p>It may seem that we&#8217;ve merely moved the burden from writing <code>Map</code> overloads to writing extension methods. But that is not the case. These conversion methods have to be written once per void case type, while the overloads had to be written for <em>each function</em> that uses types with void cases generically, like <code>Map</code>. And as demonstrated earlier, the number of overloads explodes with the number of types with a void case involved.</p> </div> <div class="paragraph"> <p>Yes, it would have been a lot better if <code>void</code> were a valid type. But having a separate <code>Unit</code> type handy for when you need it is the next best thing. And when you are writing a generic class, don&#8217;t introduce another void case.</p> </div> </div> </div> </div> <div id="footer"> <div id="footer-text"> Last updated 2021-07-17 12:18:07 +0200 </div> </div> <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/highlight.min.js"></script> <script>hljs.initHighlighting.called||(hljs.initHighlighting.called=!0,[].slice.call(document.querySelectorAll("pre.highlight > code")).forEach((function(l){hljs.highlightBlock(l)})));</script> </body></html>
+  Action a = () =&gt; Console.WriteLine(<span class="hljs-string">&quot;task finished&quot;</span>);
+  <span class="hljs-keyword">return</span> Map(task.AsUnitTask(), a.AsFunc());
+}</code></pre> </div> </div> <div class="paragraph"> <p>It may seem that we&#8217;ve merely moved the burden from writing <code>Map</code> overloads to writing extension methods. But that is not the case. These conversion methods have to be written once per void case type, while the overloads had to be written for <em>each function</em> that uses types with void cases generically, like <code>Map</code>. And as demonstrated earlier, the number of overloads explodes with the number of types with a void case involved.</p> </div> <div class="paragraph"> <p>Yes, it would have been a lot better if <code>void</code> were a valid type. But having a separate <code>Unit</code> type handy for when you need it is the next best thing. And when you are writing a generic class, don&#8217;t introduce another void case.</p> </div> </div> </div> </div> <div id="footer"> <div id="footer-text"> Last updated 2021-07-17 22:37:35 +0200 </div> </div> </body></html>
