@@ -24,7 +24,7 @@ Task<int> DoubleIntAsync(Task<int> task)
 There is a problem however.
 We've written our `Map` function to be able to deal with `Task<>` and `Func<>`.
 But tasks and functions can of course also have void values.
-And since the type system doesn't allow us to simply use `Task<void>` and `Func<void>` there exist special void case of the `Task<>` and `Func<>` types, namely `Task` and `Action`.
+And since the type system doesn't allow us to simply use `Task<void>` and `Func<void>` there exist special void cases of the `Task<>` and `Func<>` types, namely `Task` and `Action`.
 And that disallows us from using our `Map` for the void case of these types.
 In other words, the following functions won't compile.
 

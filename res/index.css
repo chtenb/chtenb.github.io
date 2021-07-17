@@ -42,7 +42,7 @@ body {
   padding: 0;
   height: var(--app-height);
 
-  font-family: Cascadia Mono;
+  font-family: Local Cascadia Mono;
 }
 
 .header {
@@ -68,7 +68,7 @@ body {
   margin: auto auto;
 
   color:var(--fg);
-  font-family: Cascadia Mono;
+  font-family: Local Cascadia Mono;
   font-size: 24px;
 }
 
@@ -84,7 +84,7 @@ body {
   padding: 10px 25px;
 
   background-color: var(--button-bg);
-  font-family: Cascadia Tablature;
+  font-family: Local Cascadia Mono;
   font-size: 13px;
   color:var(--fg);
   cursor: pointer;
