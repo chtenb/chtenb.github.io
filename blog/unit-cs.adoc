@@ -24,7 +24,7 @@ There is a problem however.
 We've written our `Map` function to be able to deal with `Task<>` and `Func<>`.
 But tasks and functions can of course also have void values.
 And since the type system doesn't allow us to simply use `Task<void>` and `Func<void>` there exist special void cases of the `Task<>` and `Func<>` types, namely `Task` and `Action`.
-And that disallows us from using our `Map` for the void case of these types.
+And that disallows us from using our `Map` for the void cases of these types.
 In other words, the following functions won't compile.
 
 [source,cs]
@@ -76,6 +76,7 @@ public struct Unit : IEquatable<Unit>
   public static bool operator ==(Unit left, Unit right) => left.Equals(right);
   public static bool operator !=(Unit left, Unit right) => !(left == right);
   public bool Equals(Unit other) => true;
+  public override string ToString() => "()";
 }
 ....
 
@@ -88,12 +89,14 @@ Luckily C# supports extension methods, which allow use to deal with this in an a
 
 [source,cs]
 ....
+using static Unit;
+
 public static class ExtensionMethods
 {
   public static async Task<Unit> AsUnitTask(this Task task)
   {
     await task;
-    return Unit.unit;
+    return unit;
   }
 
   public static Func<TResult, Unit> AsFunc<TResult>(this Action<TResult> action)
@@ -101,7 +104,7 @@ public static class ExtensionMethods
     return result =>
     {
       action(result);
-      return Unit.unit;
+      return unit;
     };
   }
 
@@ -110,7 +113,7 @@ public static class ExtensionMethods
     return _ =>
     {
       action();
-      return Unit.unit;
+      return unit;
     };
   }
 }
