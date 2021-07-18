@@ -11,3 +11,11 @@ exports.executeJavascriptHacks = function () {
     return Math.max(document.documentElement.clientHeight, window.innerHeight || 0) - 1;
   }
 };
+
+exports.executeSiteAnalytics = function () {
+  window.dataLayer = window.dataLayer || [];
+  function gtag() { dataLayer.push(arguments); }
+  gtag('js', new Date());
+
+  gtag('config', 'G-ZNEGXK8M3D');
+}

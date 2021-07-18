@@ -14,7 +14,7 @@ import Halogen.HTML.Events as HE
 import Halogen.HTML.Properties as HP
 import Halogen.VDom.Driver (runUI)
 import HalogenUtils (classString, fontAwesome, optionalText)
-import LocationString (getQueryParam, setQueryString)
+import LocationString (getQueryParam)
 import Web.HTML as WH
 import Web.HTML.HTMLDocument as HTMLDocument
 import Web.HTML.HTMLElement as HTMLElement
@@ -22,6 +22,7 @@ import Web.HTML.HTMLIFrameElement as HTMLIFrameElement
 import Web.HTML.Window (document)
 
 foreign import executeJavascriptHacks :: Effect Unit
+foreign import executeSiteAnalytics :: Effect Unit
 
 data Action = Initialize | PostLoad
 
@@ -114,7 +115,9 @@ handleAction action =
       case maybePage of
         Nothing -> pure unit
         Just page -> H.modify_ _ { page = page }
-    PostLoad -> syncDocumentTitle
+    PostLoad -> do
+      syncDocumentTitle
+      H.liftEffect executeSiteAnalytics
 
 focusContent :: forall output m . MonadEffect m => H.HalogenM State Action () output m Unit
 focusContent = do
