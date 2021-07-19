@@ -81,7 +81,7 @@ render state = HH.div
       [ HP.href "/"
       , HP.target "_parent"
       ]
-      [ HH.h1_ [ HH.text "Devblog" ] ]
+      [ HH.h1_ [ HH.text "devblog" ] ]
     ]
   renderLoadingIcon = HH.div 
     [ classString "loadingIcon lds-ellipsis" ]
@@ -95,7 +95,7 @@ render state = HH.div
       ]
       [ HH.button
         [ HP.title "Open the source code of this website in a new browser tab" ]
-        [ fontAwesome "fa-code", optionalText " Website Code" ] ]
+        [ fontAwesome "fa-code", optionalText " website code" ] ]
     , HH.a
       [ HP.href "https://github.com/chtenb/chtenb.github.io/discussions"
       , HP.target "_blank"
@@ -103,7 +103,7 @@ render state = HH.div
       ]
       [ HH.button
         [ HP.title "Open the discussion page in a new browser tab" ]
-        [ fontAwesome "fa-comments", optionalText " Discussions" ] ]
+        [ fontAwesome "fa-comments", optionalText " discussions" ] ]
     ]
 
 handleAction :: forall output m. MonadAff m => Action -> H.HalogenM State Action () output m Unit
