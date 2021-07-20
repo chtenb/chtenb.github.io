@@ -284,84 +284,51 @@ var result = GetEmailAddress(username)
 
 [pikchr]
 ....
-scale = 0.8
-linerad = 10px
-linewid = .3
-lineht = .2
-circlerad = .025
+define onSuccess {
+  S0: arrow color lightblue
+  box $1 fit
+  SW: arrow right linerad then down then right color orange
+  S1: arrow from SW.start right until even with SW.end color lightblue
+  move from S0.start down lineht
+  F: arrow right until even with SW.end color orange
+  move up lineht; right
+}
 
-SW: arrow right then down then right color orange
-S: arrow from SW.start right until even with SW.end color lightblue
-move from S.start down lineht
-F: arrow right until even with SW.end color orange
+define onFailure {
+  move down lineht; right
+  S0: arrow color orange
+  box $1 fit
+  SW: arrow right linerad then up then right color lightblue
+  S1: arrow from SW.start right until even with SW.end color orange
+  move from S0.start up lineht
+  F: arrow right until even with SW.end color lightblue
+}
 
-circle with east at S.start color lightblue
-circle with west at S.end color lightblue
-circle with east at F.start color orange
-circle with west at F.end color orange
-....
+define handle {
+  S: arrow right color lightblue
+  move from S.start down lineht
+  F: arrow right color orange
+  box $1 fit with west at 1/2 between S.end and F.end
+  arrow right
+}
 
-[pikchr]
-....
-scale = 0.8
-linerad = 5px
-linewid = .5
-lineht = .2
-circlerad = .025
-
-S: arrow right then down then right
-move from S.start down lineht*2
-F: arrow right then up then right
-
-circle with east at S.start color lightblue
-circle with east at F.start color orange
-circle with west at S.end
-....
-
-[pikchr]
-....
-scale = 0.8
-linerad = 10px
+scale = .8
+linerad = .1
 linewid = .2
 lineht = .2
 
-S: arrow right linerad then down then right color lightblue
-move from S.start down lineht*2+arrowwid*2
-F: arrow right linerad then up then right color orange
+X:[
+onSuccess("OnSuccess")
+move right
+onFailure("OnFailure")
+move right
+handle("Handle")
+]
 
-box "Handle" fit with west at 1/2 between S.end and F.end
-arrow right
-....
-
-
-[pikchr]
-....
-scale = 0.8
-linerad = 10px
-linewid = .2
-lineht = .2
-
-S0: arrow color lightblue
-box "OnSuccess" fit
-SW: arrow right linerad then down then right color orange
-S1: arrow from SW.start right until even with SW.end color lightblue
-move from S0.start down lineht
-F: arrow right until even with SW.end color orange
-....
-
-[pikchr]
-....
-scale = 0.8
-linerad = 10px
-linewid = .2
-lineht = .2
-
-S0: arrow color orange
-box "OnFailure" fit
-SW: arrow right linerad then up then right color lightblue
-S1: arrow from SW.start right until even with SW.end color orange
-move from S0.start up lineht
-F: arrow right until even with SW.end color lightblue
+move at X.e; right
+onSuccess("OnSuccess")
+onFailure("OnFailure")
+handle("Handle")
 ....
 
 
