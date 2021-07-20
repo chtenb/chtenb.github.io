@@ -22,12 +22,22 @@ var options = {
   }
 }
 
-glob('blog/*.adoc', function (err, files) {
-  if (err) {
-    console.log(err)
-  } else {
-    files.forEach(function (file) {
-      asciidoctor.convertFile(file, options)
-    });
-  }
-});
+if (process.argv[2]) {
+
+  options['to_file'] = false
+  var html = asciidoctor.convertFile(process.argv[2], options)
+  console.log(html)
+
+} else {
+
+  glob('blog/*.adoc', function (err, files) {
+    if (err) {
+      console.log(err)
+    } else {
+      files.forEach(function (file) {
+        asciidoctor.convertFile(file, options)
+      });
+    }
+  });
+
+}

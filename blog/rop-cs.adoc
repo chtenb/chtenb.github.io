@@ -7,32 +7,50 @@ The following function definition likely wouldn't stand out in an average code b
 
 [source,cs]
 ....
-string GetEmailAddress(string username)
+User GetUser(string username)
 {
   // ...
 }
+
+string GetEmailAddress(User user)
+{
+  // ...
+}
+
+void SendEmail(string address, string msg)
+{
+  // ...
+}
+
+void NotifyUserOfX(string username){
+  var user = GetUser(username);
+  var emailAddress = GetEmailAddress(user);
+  var msg = "X";
+  SendEmail(emailAddress, msg);
+}
 ....
 
-This function is supposed to return an email address for a user with the username that is passed into the function.
-If the function isn't able to meet this expectation, e.g. because the user doesn't exist, or it has no email address defined, usually one of the following things happens.
+This function is supposed to return a User object for the user with the username that is passed into the function.
+If the function isn't able to meet this expectation, e.g. because the user doesn't exist, usually one of the following things happens.
 
 . A default value is returned, such as a null reference.
 . An exception is thrown.
 
+
 [pikchr]
 ....
 scale = 0.8
-linewid = .5cm
-lineht = .5cm
+linewid = .8cm
+lineht = .8cm
 boxwid = 3.5cm
 
 X0: oval "username"
 arrow
-X1: box "GetEmailAddress"
-arrow
-X2: oval "email address" fill lightblue
+X1: box "GetUser"
+arrow 
+X2: oval "User" fill lightblue
 down
-arrow from X1.s down
+arrow dashed from X1.s down
 X3: oval "?" fill crimson
 ....
 
@@ -49,7 +67,7 @@ X3: oval "?" fill crimson
   * Most functions are not part of a well-defined API.
 
 ### The problem of implicit failure in general
-While the above paragraphs point out some problems with the respective failure-handling strategies, perhaps the biggest of all problems is this: the *failure path* of `GetEmailAddress` is *implicitly defined*.
+While the above paragraphs point out some problems with the respective failure-handling strategies, perhaps the biggest of all problems is this: the *failure path* of `GetUser` is *implicitly defined*.
 As such, it doesn't get the same amount of attention as the success path and is, frankly, too often completely overlooked.
 This is not surprising, since either of the strategies leaves the compiler clueless and unable to help the programmer to write code that properly handles failures.
 
@@ -65,9 +83,9 @@ boxwid = 3.5cm
 
 X0: oval "username"
 arrow
-X1: box "GetEmailAddress"
+X1: box "GetUser"
 
-X2: oval "email address" fill lightblue \
+X2: oval "User" fill lightblue \
 with .w at 1cm heading 40 from X1.e
 X3: oval "user not found" fill orange \
 with .w at 1cm heading 140 from X1.e
@@ -261,3 +279,93 @@ var result = GetEmailAddress(username)
     error => ...
   );
 ....
+
+## Pictures
+
+[pikchr]
+....
+scale = 0.8
+linerad = 10px
+linewid = .3
+lineht = .2
+circlerad = .025
+
+SW: arrow right then down then right color orange
+S: arrow from SW.start right until even with SW.end color lightblue
+move from S.start down lineht
+F: arrow right until even with SW.end color orange
+
+circle with east at S.start color lightblue
+circle with west at S.end color lightblue
+circle with east at F.start color orange
+circle with west at F.end color orange
+....
+
+[pikchr]
+....
+scale = 0.8
+linerad = 5px
+linewid = .5
+lineht = .2
+circlerad = .025
+
+S: arrow right then down then right
+move from S.start down lineht*2
+F: arrow right then up then right
+
+circle with east at S.start color lightblue
+circle with east at F.start color orange
+circle with west at S.end
+....
+
+[pikchr]
+....
+scale = 0.8
+linerad = 10px
+linewid = .2
+lineht = .2
+
+S: arrow right linerad then down then right color lightblue
+move from S.start down lineht*2+arrowwid*2
+F: arrow right linerad then up then right color orange
+
+box "Handle" fit with west at 1/2 between S.end and F.end
+arrow right
+....
+
+
+[pikchr]
+....
+scale = 0.8
+linerad = 10px
+linewid = .2
+lineht = .2
+
+S0: arrow color lightblue
+box "OnSuccess" fit
+SW: arrow right linerad then down then right color orange
+S1: arrow from SW.start right until even with SW.end color lightblue
+move from S0.start down lineht
+F: arrow right until even with SW.end color orange
+....
+
+[pikchr]
+....
+scale = 0.8
+linerad = 10px
+linewid = .2
+lineht = .2
+
+S0: arrow color orange
+box "OnFailure" fit
+SW: arrow right linerad then up then right color lightblue
+S1: arrow from SW.start right until even with SW.end color orange
+move from S0.start up lineht
+F: arrow right until even with SW.end color lightblue
+....
+
+
+## sadf
+## sadf
+## sadf
+## sadf
