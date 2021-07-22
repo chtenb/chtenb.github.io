@@ -126,17 +126,17 @@ We can fix that.
 
 [source,cs]
 ....
-public abstract class Result<TResult, TError> {
-  public sealed class Success : Result<TResult, TError> {
-    public readonly TResult ResultValue;
-    public Success(TResult result){
-      ResultValue = result;
+public abstract class Result<TSuccess, TFailure> {
+  public sealed class Success : Result<TSuccess, TFailure> {
+    public readonly TSuccess SuccessValue;
+    public Success(TSuccess result){
+      SuccessValue = result;
     }
   }
-  public sealed class Failure : Result<TResult, TError> {
-    public readonly TError ErrorValue;
-    public Failure(TError error){
-      ErrorValue = error;
+  public sealed class Failure : Result<TSuccess, TFailure> {
+    public readonly TFailure FailureValue;
+    public Failure(TFailure error){
+      FailureValue = error;
     }
   }
   // Private constructor so we are certain that Success and Failure are the only subclasses
@@ -213,37 +213,32 @@ Moreover, the OnSuccess function will "shortcircuit" the failure path, such that
 
 [source,cs]
 ....
-public abstract class Result<TResult, TError> {
+public abstract class Result<TS, TF> {
+  public abstract Result<TNextR, TF> OnSuccess<TNextR>(Func<TS, Result<TNextR, TF>> onSuccess);
+  public abstract TReturn Handle<TReturn>(Func<TS, TReturn> onSuccess, Func<TF, TReturn> onFailure);
 
-  public abstract Result<TNextResult, TError> OnSuccess<TNextResult>(
-    Func<TResult, Result<TNextResult, TError>> onSuccess);
-  public abstract TReturn Handle<TReturn>(
-    Func<TResult, TReturn> onSuccess, Func<TError, TReturn> onFailure);
+  public sealed class Success : Result<TS, TF> {
+    public TS SuccessValue { get; }
 
-  public sealed class Success : Result<TResult, TError> {
+    public Success(TS result) => SuccessValue = result;
 
-    public readonly TResult ResultValue;
-    public Success(TResult result) {
-      ResultValue = result;
-    }
+    public override Result<TNextR, TF> OnSuccess<TNextR>(Func<TS, Result<TNextR, TF>> onSuccess)
+        => onSuccess(SuccessValue);
 
-    public override Result<TNextResult, TError> OnSuccess<TNextResult>(
-      Func<TResult, Result<TNextResult, TError>> onSuccess) => onSuccess(ResultValue);
-    public override TReturn Handle<TReturn>(
-      Func<TResult, TReturn> onSuccess, Func<TError, TReturn> onFailure) => onSuccess(ResultValue);
+    public override TReturn Handle<TReturn>(Func<TS, TReturn> onSuccess, Func<TF, TReturn> onFailure)
+        => onSuccess(SuccessValue);
   }
 
-  public sealed class Failure : Result<TResult, TError> {
+  public sealed class Failure : Result<TS, TF> {
+    public TF FailureValue { get; }
 
-    public readonly TError ErrorValue;
-    public Failure(TError error) {
-      ErrorValue = error;
-    }
+    public Failure(TF error) => FailureValue = error;
 
-    public override Result<TNextResult, TError> OnSuccess<TNextResult>(
-      Func<TResult, Result<TNextResult, TError>> onSuccess) => new Result<TNextResult, TError>.Failure(ErrorValue);
-    public override TReturn Handle<TReturn>(
-      Func<TResult, TReturn> onSuccess, Func<TError, TReturn> onFailure) => onFailure(ErrorValue);
+    public override Result<TNextR, TF> OnSuccess<TNextR>(Func<TS, Result<TNextR, TF>> onSuccess)
+        => Result.Fail(FailureValue);
+
+    public override TReturn Handle<TReturn>(Func<TS, TReturn> onSuccess, Func<TF, TReturn> onFailure)
+        => onFailure(FailureValue);
   }
 
   private Result() { }
