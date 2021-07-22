@@ -1,0 +1,32 @@
+scale = .8
+linerad = .1
+linewid = .2
+lineht = .2
+
+define onSuccess {
+  S0: arrow color lightblue
+  B: box $1 fit
+  SF: arrow right linerad then down then right color orange behind B
+  S1: arrow from SF.start right until even with SF.end color lightblue behind B
+  move from S0.start down lineht
+  F: arrow right until even with SF.end color orange
+  move up lineht; right
+}
+
+define onFailure {
+  move down lineht; right
+  S0: arrow color orange
+  B: box $1 fit
+  FS: arrow right linerad then up then right color lightblue behind B
+  S1: arrow from FS.start right until even with FS.end color orange behind B
+  move from S0.start up lineht
+  F: arrow right until even with FS.end color lightblue
+}
+
+define handle {
+  S: arrow right color lightblue
+  move from S.start down lineht
+  F: arrow right color orange
+  box $1 fit with west at 1/2 between S.end and F.end
+  arrow right
+}
