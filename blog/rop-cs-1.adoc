@@ -1,4 +1,4 @@
-= Railroad Oriented Programming in C#
+= Railroad Oriented Programming in C#: Part 1
 
 ## The problem: implicit function failure
 
@@ -299,6 +299,7 @@ include::rop.pikchr[]
 onSuccess("GetUser")
 onSuccess("GetEmailAddress")
 handle("Handle")
+oval "message" fit
 ....
 
 ### Another Example
@@ -318,7 +319,7 @@ And suppose that we have the following functions at our disposal.
 Result<User, string> GetUser(string username);
 Result<string, string> GetEmailAddress(User user);
 Result<EmailMessage, string> CreateEmailMessage(string emailAddress, string msg);
-Result<Unit, Exception> SendEmail(EmailMessage email);
+Result<Unit, string> SendEmail(EmailMessage email);
 ....
 
 Then we could implement the function as follows.
@@ -333,8 +334,8 @@ string MailMessageToUser(string username, string msg) {
     .OnSuccess(SendEmail)
     .Handle(
       _ => "Email sent",
-      ex => {
-        Log(ex);
+      error => {
+        Log(error);
         return "Email not sent";
       }
     );
@@ -352,6 +353,7 @@ onSuccess("GetEmailAddress")
 onSuccess("CreateEmailMessage")
 onSuccess("SendEmail")
 handle("Handle")
+oval "message" fit
 ....
 
 ### The OnFailure method
@@ -374,10 +376,10 @@ string MailMessageToUser(string username, string msg) {
     .OnSuccess(GetEmailAddress)
     .OnSuccess(email => CreateEmailMessage(email, msg))
     .OnSuccess(SendEmail)
-    .OnFailure(ex => Log(ex.Message))
+    .OnFailure(Log)
     .Handle(
       _ => "Email sent",
-      ex => "Email not sent"
+      _ => "Email not sent"
     );
 }
 ....
@@ -390,107 +392,68 @@ onSuccess("GetUser")
 onSuccess("GetEmailAddress")
 onSuccess("CreateEmailMessage")
 onSuccess("SendEmail")
-onFailure("LogFailure")
+onFailureF("LogFailure")
 handle("Handle")
+oval "message" fit
 ....
 
 ### Sub tracks
 
-## Creating Result Instances
-
-https://tyrrrz.me/blog/return-type-inference[Return type inference]
-
-
 [source,cs]
 ....
-  public abstract class Result<TResult, TError> {
-    public abstract Result<TNextResult, TError> OnSuccess<TNextResult>(Func<TResult, Result<TNextResult, TError>> onSuccess);
-    public abstract Result<TResult, TNextError> OnFailure<TNextError>(Func<TError, Result<TResult, TNextError>> onFailure);
-    public abstract TReturn Handle<TReturn>(Func<TResult, TReturn> onSuccess, Func<TError, TReturn> onFailure);
-
-    public bool IsSuccess() => this is Success;
-    public bool IsFailure() => this is Failure;
-
-    public void HandleVoid(Action<TResult> onSuccess, Action<TError> onFailure) {
-      _ = onSuccess ?? throw new ArgumentNullException(nameof(onSuccess));
-      _ = onFailure ?? throw new ArgumentNullException(nameof(onFailure));
-      _ = Handle(onSuccess.AsFunc(), onFailure.AsFunc());
-    }
-
-    public sealed class Success : Result<TResult, TError> {
-      public TResult ResultValue { get; }
-
-      internal Success(TResult result) => ResultValue = result;
-
-      public override Result<TNextResult, TError> OnSuccess<TNextResult>(Func<TResult, Result<TNextResult, TError>> onSuccess)
-          => onSuccess(ResultValue);
-
-      public override Result<TResult, TNextError> OnFailure<TNextError>(Func<TError, Result<TResult, TNextError>> onFailure)
-          => Result.Succeed(ResultValue);
-
-      public override TReturn Handle<TReturn>(Func<TResult, TReturn> onSuccess, Func<TError, TReturn> onFailure)
-          => onSuccess(ResultValue);
-    }
-
-    public sealed class Failure : Result<TResult, TError> {
-      public TError ErrorValue { get; }
-
-      internal Failure(TError error) => ErrorValue = error;
-
-      public override Result<TNextResult, TError> OnSuccess<TNextResult>(Func<TResult, Result<TNextResult, TError>> onSuccess)
-          => Result.Fail(ErrorValue);
-
-      public override Result<TResult, TNextError> OnFailure<TNextError>(Func<TError, Result<TResult, TNextError>> onFailure)
-          => onFailure(ErrorValue);
-
-      public override TReturn Handle<TReturn>(Func<TResult, TReturn> onSuccess, Func<TError, TReturn> onFailure)
-          => onFailure(ErrorValue);
-    }
-
-    public static implicit operator Result<TResult, TError>(Result.GenericSuccess<TResult> ok) => new Success(ok.Value);
-
-    public static implicit operator Result<TResult, TError>(Result.GenericFailure<TError> error) => new Failure(error.Value);
-
-    private Result() { }
-  }
-
-  /// <summary>
-  /// This factory method class makes it possible to create result objects without having to specify the full result type explicitly.
-  /// If the generic types cannot be inferred they can also be explicitly passed.
-  /// </summary>
-  public static class Result {
-    public static GenericSuccess<TResult> Succeed<TResult>(TResult result)
-        => new(result);
-
-    public static GenericFailure<TError> Fail<TError>(TError error)
-        => new(error);
-
-    public static Result<TResult, TError> Succeed<TResult, TError>(TResult result)
-        => Succeed(result);
-
-    public static Result<TResult, TError> Fail<TResult, TError>(TError error)
-        => Fail(error);
-
-    public static GenericSuccess<Unit> Succeed()
-        => Succeed(Unit.unit);
-
-    public static GenericFailure<Unit> Fail()
-        => Fail(Unit.unit);
-
-    public readonly struct GenericFailure<T> {
-      public T Value { get; }
-
-      public GenericFailure(T value) {
-        Value = value;
-      }
-    }
-
-    public readonly struct GenericSuccess<T> {
-      public T Value { get; }
-
-      public GenericSuccess(T value) {
-        Value = value;
-      }
-    }
-  }
+/// <returns>Message to be printed on the screen</returns>
+string MailMessageToUser(string username, string msg) {
+  MailServerConfig server1 = new();
+  MailServerConfig server2 = new();
+  return GetUser(username)
+    .OnSuccess(GetEmailAddress)
+    .OnSuccess(emailAddress => CreateEmailMessage(emailAddress, msg))
+    .OnSuccess(email => SendEmail(email, server1)
+      .OnFailure(ex => ex switch {
+        ServerNotFoundException =>
+          SendEmail(email, server2).OnFailure(ex => new Result<Unit, string>.Failure(ex.Message)),
+        _ => new Result<Unit, string>.Failure(ex.Message)
+      })
+    )
+    .OnFailure(Log)
+    .Handle(
+      _ => "Email sent",
+      _ => "Email not sent"
+    );
+}
 ....
+
+[pikchr]
+....
+include::rop.pikchr[]
+
+linewid = .1
+
+onSuccess("GetUser")
+onSuccess("GetEmailAddress")
+onSuccess("CreateEmailMessage")
+
+S0: arrow color lightblue
+B1: box "SendEmail" fit
+arrow right linewid*3 color orange behind B1
+B2: box "SendEmail2" fit
+E: line right linewid*3 color lightblue behind B2
+
+line from B1.e right linerad then down then right color orange behind B1
+
+move from S0.start down lineht
+line right until even with E.end color orange
+
+line from B1.e right linerad then down then right color orange behind B1
+line from B2.e right linerad then down then right color orange behind B2
+
+line from B1.e right linerad then up then right until even with B2.e then right linerad*2 then down then right color lightblue
+
+onFailureF("LogFailure")
+handle("Handle")
+oval "message" fit
+....
+
+## Conclusion
+
+We still need to deal with the awkward construction of Result instances, and we'll do that in the next part.
