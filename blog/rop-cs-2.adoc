@@ -236,8 +236,12 @@ The railway of the example code would look like
 ....
 include::rop.pikchr[]
 
-onSuccess("GetUser","User")
-onSuccess("GetEmailAddress","string")
+X:[
+  startResult("GetUser","User","string")
+  onSuccess("GetEmailAddress","string")
+]
+
+move from X.w down then right
 onSuccess("CreateEmailMessage","EmailMessage")
 onSuccess("SendEmail","Unit")
 handle("Handle","string")
@@ -278,13 +282,16 @@ string MailMessageToUser(string username, string msg) {
 ....
 include::rop.pikchr[]
 
-onSuccess("GetUser")
-onSuccess("GetEmailAddress")
-onSuccess("CreateEmailMessage")
-onSuccess("SendEmail")
+X:[
+  startResult("GetUser","User","string")
+  onSuccess("GetEmailAddress","string")
+  onSuccess("CreateEmailMessage","EmailMessage")
+]
+
+move from X.w down then right
+onSuccess("SendEmail","Unit")
 onFailureF("LogFailure")
-handle("Handle")
-oval "message" fit
+handle("Handle","string")
 ....
 
 We still need to deal with the awkward construction of Result instances, and we'll do that in the next part.

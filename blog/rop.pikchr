@@ -4,7 +4,7 @@ linewid = .2
 lineht = .22
 
 define startResult {
-  S0: arrow color lightblue
+  S0: arrow
   B: box $1 fit
   SF: line right linerad then down then right until even with lineht e of B.e color orange behind B
   FR: oval $3 fit
