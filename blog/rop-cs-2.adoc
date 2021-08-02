@@ -1,8 +1,8 @@
 = Railroad Oriented Programming in C#: Part 2
 
-link:/?page=rop-cs-1[Previous part]
+// link:/?page=rop-cs-1[Previous part]
 
-link:/?page=rop-cs-3[Next part]
+// link:/?page=rop-cs-3[Next part]
 
 ## A Result type supporting the failure path
 While C# does not directory support Discriminated Unions, it does support subclassing.
@@ -102,7 +102,7 @@ We would like to
 - not have to handle all failures individually
 - not have to specify the whole type when creating a Result instance: `new Result<User, string>.Success()`
 
-## A Fluent Result type
+### A Fluent Result type
 
 To resolve the complaints about our previous implementation, we'll define an `OnSuccess` function and a `Handle` function.
 They will do the unwrapping for us and form a https://en.wikipedia.org/wiki/Fluent_interface[Fluent Interface] and thereby removing the nesting.
@@ -289,8 +289,5 @@ onFailureF("LogFailure")
 handle("Handle")
 oval "message" fit
 ....
-
-
-## Conclusion
 
 We still need to deal with the awkward construction of Result instances, and we'll do that in the next part.

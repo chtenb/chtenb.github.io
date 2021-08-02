@@ -1,6 +1,6 @@
 = Railroad Oriented Programming in C#: Part 3
 
-link:/?page=rop-cs-2[Previous part]
+// link:/?page=rop-cs-2[Previous part]
 
 ## Creating Result Instances
 
