@@ -20,18 +20,23 @@ These cases are really exceptions which are *unexpected*.
 There is often no proper way to handle them other than to cancel the whole "operation", log the error and present the user with an appropriate error, indicating that something went completely sideways.
 So how should we deal with that in our code?
 
-. In a complex application there is no way of telling whether you have caught all exceptions you want to catch.
-. You probably don't want to crash your application or present your user an exception with a callstack.
-. In that case you should split up your application into https://en.wikipedia.org/wiki/Fail-fast[fail-fast] modules. 
- - A piece of code is a valid fail-fast module if its abortion does not harm the health of the rest of the application.
- - An fail-fast module may contain other fail-fast modules.
-. Place a try-catch-all construction at the top of each fail-fast module, such that it is guaranteed that each exception will not propagate beyond the fail-fast module in which it occurs. Make sure the exception is properly handled and logged.
-. Never place a try-catch construction at a point in your program where it incorrectly may prevent an fail-fast module to be aborted.
-. The more fail-fast modules you have and the smaller they are, the more stable your application is expected to be.
+In a complex application there is no way of telling whether you have caught all exceptions you want to catch.
+You probably don't want to crash your application or present your user an exception with a callstack.
+In that case you should split up your application into transactional operations, or _transactions_ for short.
 
-. So, now we've achieved that an uncaught exception only affects its containing fail-fast module. However, we still don't know if we've missed any exceptions that should _not_ cause the fail-fast module to be aborted.
+- A piece of code is a valid transaction if its abortion would not harm the health of the rest of the application.
+- An transaction may contain other subtransactions.
+
+Exceptions can then be handled properly and safely in the following structured way.
+
+. Place a try-catch-all construction at the top of each transaction, such that it is guaranteed that each exception will not propagate beyond the transaction in which it occurs. Make sure the exception is properly handled and logged. If the exception cannot be properly handled in a particular transaction it should be rethrown and propagated to the parent transaction.
+. Never place a try-catch construction at a point in your program where it incorrectly may prevent an transaction to be aborted.
+. The more transactions you have and the smaller they are, the more stable your application is expected to be.
+
+All right. We've achieved that any uncaught exception only affects its containing transaction. However, we still don't know if we've missed any exceptions that should _not_ cause the transaction to be aborted.
+
 . Study any 3rd party APIs well for exceptions that could have been missed.
-. Don't throw exceptions yourself if it shouldn't abort the fail-fast module. Instead make the corresponding failure part of the normal code path link:/?page=rop-cs-1[using a `Result` type].
+. Don't throw exceptions yourself if it shouldn't abort the transaction. Instead make the corresponding failure part of the normal code path link:/?page=rop-cs-1[using a `Result` type].
 
-For example, in a web application each request should at least be a separate fail-fast module because a failure to handle a request should not bring the web application down or influence other requests in any other way.
-Some programs (perhaps a CLI) may consist of a single fail-fast module.
+For example, in a web application each request should at least be a separate transaction because a failure to handle a request should not bring the web application down or influence other requests in any way.
+Some programs (perhaps a CLI) may consist of a single transaction.

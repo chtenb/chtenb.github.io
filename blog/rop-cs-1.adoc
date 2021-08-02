@@ -41,7 +41,7 @@ X3: oval "?" fill crimson fit
 
 ### Problems with using default values for failure
 - For *value types* the default value is a valid member of the value space of the type. So there would be no way to distinguish between a success return value and a failure return value in this case.
-- For *reference types* the default value (`null`) is not a valid member of the value space. The compiler however treats it as it _were_ a valid member, leading to null-reference bugs. Since the addition of nonnullable reference types in C# 8.0 this set of problems has been diminished a great deal, but a non-negligible pool of pitfalls remains.
+- For *reference types* the default value (`null`) is not a valid member of the value space of a class in the sense that you can't call the class methods on it. The compiler however treats it as it _were_ a valid member, leading to null-reference bugs. Since the addition of nonnullable reference types in C# 8.0 this set of problems has been diminished a great deal, but a non-negligible pool of pitfalls remains.
 - There is no way to return any data along with the failure, such as an error message or some object indicating the reason or nature of the failure.
 - There is no way to distinguish between different kinds of failures.
 
@@ -89,7 +89,7 @@ In the next part of this article series we will have a look at one way of implem
 ### Exception throwing vs the `Failure` type
 When writing a function, a good way for deciding whether to propagate a failure by throwing an exception is by asking the following question.
 
-_Should the failure cause the entire fail-fast module to be aborted in any reasonably conceivable context in which the function might be called_?
+_Should the failure always cause the entire transaction to be aborted in any reasonably conceivable context in which the function might be called_?
 
 If the answer is yes, then it is probably appropriate to handle the failure by throwing an exception.
 If the answer is no, then it is probably appropriate to handle the failure by incorporating it in the function return type.
