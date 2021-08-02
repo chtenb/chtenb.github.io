@@ -1,0 +1,224 @@
+= Railroad Oriented Programming in C#: Part 3
+
+link:/?page=rop-cs-2[Previous part]
+
+## Creating Result Instances
+
+[source,cs]
+....
+Result<User, string> GetUser(string username) {
+  var user = Datastore.FindUser(username);
+  if (user == null)
+    return new Result<User, string>.Failure("User has no email");
+  return new Result<User, string>.Success(user);
+}
+....
+
+[source,cs]
+....
+Result<User, string> GetUser(string username) {
+  var user = Datastore.FindUser(username);
+  if (user == null)
+    return new Result.Fail("User has no email");
+  return new Result.Succeed(user);
+}
+....
+
+https://tyrrrz.me/blog/return-type-inference[Return type inference]
+
+
+[source,cs]
+....
+public abstract class Result<TR, TE> {
+
+  // ...
+
+  public static implicit operator Result<TR, TE>(Result.GenericSuccess<TR> ok) => new Success(ok.Value);
+  public static implicit operator Result<TR, TE>(Result.GenericFailure<TE> error) => new Failure(error.Value);
+}
+
+public static class Result {
+  public static GenericSuccess<TR> Succeed<TR>(TR result) => new(result);
+  public static GenericFailure<TE> Fail<TE>(TE error) => new(error);
+  public static Result<TR, TE> Succeed<TR, TE>(TR result) => Succeed(result);
+  public static Result<TR, TE> Fail<TR, TE>(TE error) => Fail(error);
+  public static GenericSuccess<Unit> Succeed() => Succeed(Unit.unit);
+  public static GenericFailure<Unit> Fail() => Fail(Unit.unit);
+
+  public readonly struct GenericFailure<T> {
+    public T Value { get; }
+
+    public GenericFailure(T value) {
+      Value = value;
+    }
+  }
+
+  public readonly struct GenericSuccess<T> {
+    public T Value { get; }
+
+    public GenericSuccess(T value) {
+      Value = value;
+    }
+  }
+}
+....
+
+### Sub tracks
+
+[source,cs]
+....
+/// <returns>Message to be printed on the screen</returns>
+string MailMessageToUser(string username, string msg, MailServer server1, MailServer server2) {
+  return GetUser(username)
+    .OnSuccess(GetEmailAddress)
+    .OnSuccess(emailAddress => CreateEmailMessage(emailAddress, msg))
+    .OnSuccess(email => SendEmail(email, server1)
+      .OnFailure(ex => ex switch {
+        ServerNotFoundException => SendEmail(email, server2).OnFailure<string>(ex => Result.Fail(ex.Message)),
+        _ => Result.Fail(ex.Message)
+      })
+    )
+    .Handle(
+      _ => "Email sent",
+      error => {
+        LogError(error);
+        return "Email not sent";
+      }
+    );
+}
+....
+
+[pikchr]
+....
+include::rop.pikchr[]
+
+linewid = .1
+
+onSuccess("GetUser")
+onSuccess("GetEmailAddress")
+onSuccess("CreateEmailMessage")
+
+S0: arrow color lightblue
+B1: box "SendEmail" fit
+arrow right linewid*3 color orange behind B1
+B2: box "SendEmail2" fit
+E: line right linewid*3 color lightblue behind B2
+
+line from B1.e right linerad then down then right color orange behind B1
+
+move from S0.start down lineht
+line right until even with E.end color orange
+
+line from B1.e right linerad then down then right color orange behind B1
+line from B2.e right linerad then down then right color orange behind B2
+
+line behind B1 from B1.e right linerad then up then right until even with B2.e then right linerad*2 then down then right color lightblue
+
+handle("Handle")
+oval "message" fit
+....
+
+
+### The Code so far
+
+[source,cs]
+....
+  public abstract class Result<TR, TE> {
+    public abstract Result<TNextR, TE> OnSuccess<TNextR>(Func<TR, Result<TNextR, TE>> onSuccess);
+    public abstract Result<TR, TNextE> OnFailure<TNextE>(Func<TE, Result<TR, TNextE>> onFailure);
+    /// <summary>
+    /// Prefer <see cref="OnSuccess"> and <see cref="OnFailure"> over this method for returning Result types.
+    /// </summary>
+    public abstract TReturn Handle<TReturn>(Func<TR, TReturn> onSuccess, Func<TE, TReturn> onFailure);
+
+    public bool IsSuccess() => this is Success;
+    public bool IsFailure() => this is Failure;
+
+    #region Void overloads (Because void is not an actual type in .NET)
+
+    public void HandleVoid(Action<TR> onSuccess, Action<TE> onFailure) {
+      _ = onSuccess ?? throw new ArgumentNullException(nameof(onSuccess));
+      _ = onFailure ?? throw new ArgumentNullException(nameof(onFailure));
+
+      _ = Handle(onSuccess.AsFunc(), onFailure.AsFunc());
+    }
+
+    #endregion
+
+    public sealed class Success : Result<TR, TE> {
+      public TR ResultValue { get; }
+
+      public Success(TR result) => ResultValue = result;
+
+      public override Result<TNextR, TE> OnSuccess<TNextR>(Func<TR, Result<TNextR, TE>> onSuccess)
+          => onSuccess(ResultValue);
+
+      public override Result<TR, TNextE> OnFailure<TNextE>(Func<TE, Result<TR, TNextE>> onFailure)
+          => Result.Succeed(ResultValue);
+
+      public override TReturn Handle<TReturn>(Func<TR, TReturn> onSuccess, Func<TE, TReturn> onFailure)
+          => onSuccess(ResultValue);
+    }
+
+    public sealed class Failure : Result<TR, TE> {
+      public TE ErrorValue { get; }
+
+      public Failure(TE error) => ErrorValue = error;
+
+      public override Result<TNextR, TE> OnSuccess<TNextR>(Func<TR, Result<TNextR, TE>> onSuccess)
+          => Result.Fail(ErrorValue);
+
+      public override Result<TR, TNextE> OnFailure<TNextE>(Func<TE, Result<TR, TNextE>> onFailure)
+          => onFailure(ErrorValue);
+
+      public override TReturn Handle<TReturn>(Func<TR, TReturn> onSuccess, Func<TE, TReturn> onFailure)
+          => onFailure(ErrorValue);
+    }
+
+    public static implicit operator Result<TR, TE>(Result.GenericSuccess<TR> ok) => new Success(ok.Value);
+
+    public static implicit operator Result<TR, TE>(Result.GenericFailure<TE> error) => new Failure(error.Value);
+
+    private Result() { }
+  }
+
+  /// <summary>
+  /// This factory method class makes it possible to create result objects without having to specify the full result type explicitly.
+  /// If the generic types cannot be inferred they can also be explicitly passed.
+  /// </summary>
+  public static class Result {
+    public static GenericSuccess<TR> Succeed<TR>(TR result)
+        => new(result);
+
+    public static GenericFailure<TE> Fail<TE>(TE error)
+        => new(error);
+
+    public static Result<TR, TE> Succeed<TR, TE>(TR result)
+        => Succeed(result);
+
+    public static Result<TR, TE> Fail<TR, TE>(TE error)
+        => Fail(error);
+
+    public static GenericSuccess<Unit> Succeed()
+        => Succeed(Unit.unit);
+
+    public static GenericFailure<Unit> Fail()
+        => Fail(Unit.unit);
+
+    public readonly struct GenericFailure<T> {
+      public T Value { get; }
+
+      public GenericFailure(T value) {
+        Value = value;
+      }
+    }
+
+    public readonly struct GenericSuccess<T> {
+      public T Value { get; }
+
+      public GenericSuccess(T value) {
+        Value = value;
+      }
+    }
+  }
+....
