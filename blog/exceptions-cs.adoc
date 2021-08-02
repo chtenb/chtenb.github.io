@@ -1,0 +1,37 @@
+= On exception throwing and catching in C#
+
+## Problems with throwing exceptions for failure
+- Exceptions are not part of the function signature. As such a caller of a function does not know which exceptions to catch unless he reads all the code that is possibly hit by the function, assuming that he even has access to it.
+- In well-defined and well-maintained APIs the list of possible exceptions a function can throw is stated in the documentation. But the compiler is not aware of this. So:
+  * The user of the API can easily overlook exceptions and get away without compiler warnings.
+  * If the API changes over time and adds more exceptions, the user will not be notified of this by the compiler.
+  * Most functions are not part of a well-defined API. And even seemingly well-defined/documented APIs are not always documented exhaustively, especially as they change over time.
+- Throwing is slow and using throw/catch for control flow just kills performance.
+- When using a debugger, the debugger halts on most exceptions. Specifying which exceptions to halt on is a lot of work if you throw a lot of exceptions for control flow.
+- Frequent try/catch blocks are verbose, make the actual intention of the code much less clear and are bound to lead to making mistakes of forgetting to catch all the right things in all the right places.
+
+## Exceptions are a part of life
+Making a failure path part of the function return type is neat, but it does not mean that there are no exceptional situations for which the exception throwing mechanism is a good fit.
+To give an extreme example, almost any function can _in theory_ encounter an `OutOfMemoryException` while doing an allocation.
+Or any function could _in theory_ trigger a bug somewhere causing a `NullReferenceException` to be thrown.
+Exceptions are a fact of life, and we should be prepared to deal with them.
+It would make no sense to have the returntype of each function indicate that it could return with a null reference failure in the way we suggested above.
+These cases are really exceptions which are *unexpected*.
+There is often no proper way to handle them other than to cancel the whole "operation", log the error and present the user with an appropriate error, indicating that something went completely sideways.
+So how should we deal with that in our code?
+
+. In a complex application there is no way of telling whether you have caught all exceptions you want to catch.
+. You probably don't want to crash your application or present your user an exception with a callstack.
+. In that case you should split up your application into https://en.wikipedia.org/wiki/Fail-fast[fail-fast] modules. 
+ - A piece of code is a valid fail-fast module if its abortion does not harm the health of the rest of the application.
+ - An fail-fast module may contain other fail-fast modules.
+. Place a try-catch-all construction at the top of each fail-fast module, such that it is guaranteed that each exception will not propagate beyond the fail-fast module in which it occurs. Make sure the exception is properly handled and logged.
+. Never place a try-catch construction at a point in your program where it incorrectly may prevent an fail-fast module to be aborted.
+. The more fail-fast modules you have and the smaller they are, the more stable your application is expected to be.
+
+. So, now we've achieved that an uncaught exception only affects its containing fail-fast module. However, we still don't know if we've missed any exceptions that should _not_ cause the fail-fast module to be aborted.
+. Study any 3rd party APIs well for exceptions that could have been missed.
+. Don't throw exceptions yourself if it shouldn't abort the fail-fast module. Instead make the corresponding failure part of the normal code path link:/?page=rop-cs-1[using a `Result` type].
+
+For example, in a web application each request should at least be a separate fail-fast module because a failure to handle a request should not bring the web application down or influence other requests in any other way.
+Some programs (perhaps a CLI) may consist of a single fail-fast module.

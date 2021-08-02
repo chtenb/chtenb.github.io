@@ -1,15 +1,30 @@
 scale = .8
 linerad = .1
 linewid = .2
-lineht = .2
+lineht = .22
+
+define startResult {
+  S0: arrow color lightblue
+  B: box $1 fit
+  SF: line right linerad then down then right until even with lineht e of B.e color orange behind B
+  FR: oval $3 fit
+  F: line right lineht/2 color orange behind FR
+
+  S1: line from SF.start right color lightblue behind B
+  SR: oval $2 fit
+  S2: line right lineht/2 color lightblue behind SR
+}
 
 define onSuccess {
   S0: arrow color lightblue
   B: box $1 fit
-  SF: line right linerad then down then right color orange behind B
+  SF: line right linerad then down then right until even with lineht e of B.e color orange behind B
   S1: line from SF.start right until even with SF.end color lightblue behind B
+  SR: oval $2 fit
+  S2: line right lineht/2 color lightblue behind SR
+
   move from S0.start down lineht
-  F: line right until even with SF.end color orange
+  F0: line right until even with S2.end color orange
   move up lineht; right
 }
 
@@ -46,5 +61,7 @@ define handle {
   move from S.start down lineht
   F: arrow right color orange
   box $1 fit with west at 1/2 between S.end and F.end
+  line right
+  oval $2 fit
   arrow right
 }

@@ -172,9 +172,9 @@ And the `OnSuccess` and `Handle` methods form trackpieces.
 ....
 include::rop.pikchr[]
 
-onSuccess("OnSuccess")
+onSuccess("OnSuccess", "SuccessValue")
 move right
-handle("Handle")
+handle("Handle", "EndValue")
 ....
 
 The railway of the example code would look like
@@ -183,10 +183,9 @@ The railway of the example code would look like
 ....
 include::rop.pikchr[]
 
-onSuccess("GetUser")
-onSuccess("GetEmailAddress")
-handle("Handle")
-oval "message" fit
+startResult("GetUser","User","string")
+onSuccess("GetEmailAddress","string")
+handle("Handle","string")
 ....
 
 ### Another Example
@@ -238,12 +237,11 @@ The railway of the example code would look like
 ....
 include::rop.pikchr[]
 
-onSuccess("GetUser")
-onSuccess("GetEmailAddress")
-onSuccess("CreateEmailMessage")
-onSuccess("SendEmail")
-handle("Handle")
-oval "message" fit
+onSuccess("GetUser","User")
+onSuccess("GetEmailAddress","string")
+onSuccess("CreateEmailMessage","EmailMessage")
+onSuccess("SendEmail","Unit")
+handle("Handle","string")
 ....
 
 ### The OnFailure method
