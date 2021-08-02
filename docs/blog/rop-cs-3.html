@@ -1,0 +1,157 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="Asciidoctor 2.0.15"><title>Railroad Oriented Programming in C#: Part 3</title><link rel="stylesheet" href="/blog/unit-cs.6720997f.css"><base target="_parent"><script type="text/javascript" src="https://livejs.com/live.js"></script></head><body class="article"> <div id="header"> <h1>Railroad Oriented Programming in C#: Part 3</h1> </div> <div id="content"> <div class="sect1"> <h2 id="_creating_result_instances">Creating Result Instances</h2> <div class="sectionbody"> <div class="listingblock"> <div class="content"> <pre class="highlight"><code class="language-cs" data-lang="cs"><span class="hljs-function">Result&lt;User, <span class="hljs-built_in">string</span>&gt; <span class="hljs-title">GetUser</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> username</span>)</span> {
+  <span class="hljs-keyword">var</span> user = Datastore.FindUser(username);
+  <span class="hljs-keyword">if</span> (user == <span class="hljs-literal">null</span>)
+    <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> Result&lt;User, <span class="hljs-built_in">string</span>&gt;.Failure(<span class="hljs-string">&quot;User has no email&quot;</span>);
+  <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> Result&lt;User, <span class="hljs-built_in">string</span>&gt;.Success(user);
+}</code></pre> </div> </div> <div class="listingblock"> <div class="content"> <pre class="highlight"><code class="language-cs" data-lang="cs"><span class="hljs-function">Result&lt;User, <span class="hljs-built_in">string</span>&gt; <span class="hljs-title">GetUser</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> username</span>)</span> {
+  <span class="hljs-keyword">var</span> user = Datastore.FindUser(username);
+  <span class="hljs-keyword">if</span> (user == <span class="hljs-literal">null</span>)
+    <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> Result.Fail(<span class="hljs-string">&quot;User has no email&quot;</span>);
+  <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> Result.Succeed(user);
+}</code></pre> </div> </div> <div class="paragraph"> <p><a href="https://tyrrrz.me/blog/return-type-inference">Return type inference</a></p> </div> <div class="listingblock"> <div class="content"> <pre class="highlight"><code class="language-cs" data-lang="cs"><span class="hljs-keyword">public</span> <span class="hljs-keyword">abstract</span> <span class="hljs-keyword">class</span> <span class="hljs-title">Result</span>&lt;<span class="hljs-title">TR</span>, <span class="hljs-title">TE</span>&gt; {
+
+  <span class="hljs-comment">// ...</span>
+
+  <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">implicit</span> <span class="hljs-keyword">operator</span> <span class="hljs-title">Result</span>&lt;<span class="hljs-title">TR</span>, <span class="hljs-title">TE</span>&gt;(<span class="hljs-params">Result.GenericSuccess&lt;TR&gt; ok</span>)</span> =&gt; <span class="hljs-keyword">new</span> Success(ok.Value);
+  <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">implicit</span> <span class="hljs-keyword">operator</span> <span class="hljs-title">Result</span>&lt;<span class="hljs-title">TR</span>, <span class="hljs-title">TE</span>&gt;(<span class="hljs-params">Result.GenericFailure&lt;TE&gt; error</span>)</span> =&gt; <span class="hljs-keyword">new</span> Failure(error.Value);
+}
+
+<span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">class</span> <span class="hljs-title">Result</span> {
+  <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-title">GenericSuccess</span>&lt;<span class="hljs-title">TR</span>&gt; <span class="hljs-title">Succeed</span>&lt;<span class="hljs-title">TR</span>&gt;(<span class="hljs-params">TR result</span>)</span> =&gt; <span class="hljs-keyword">new</span>(result);
+  <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-title">GenericFailure</span>&lt;<span class="hljs-title">TE</span>&gt; <span class="hljs-title">Fail</span>&lt;<span class="hljs-title">TE</span>&gt;(<span class="hljs-params">TE error</span>)</span> =&gt; <span class="hljs-keyword">new</span>(error);
+  <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-title">Result</span>&lt;<span class="hljs-title">TR</span>, <span class="hljs-title">TE</span>&gt; <span class="hljs-title">Succeed</span>&lt;<span class="hljs-title">TR</span>, <span class="hljs-title">TE</span>&gt;(<span class="hljs-params">TR result</span>)</span> =&gt; Succeed(result);
+  <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-title">Result</span>&lt;<span class="hljs-title">TR</span>, <span class="hljs-title">TE</span>&gt; <span class="hljs-title">Fail</span>&lt;<span class="hljs-title">TR</span>, <span class="hljs-title">TE</span>&gt;(<span class="hljs-params">TE error</span>)</span> =&gt; Fail(error);
+  <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> GenericSuccess&lt;Unit&gt; <span class="hljs-title">Succeed</span>(<span class="hljs-params"></span>)</span> =&gt; Succeed(Unit.<span class="hljs-built_in">unit</span>);
+  <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> GenericFailure&lt;Unit&gt; <span class="hljs-title">Fail</span>(<span class="hljs-params"></span>)</span> =&gt; Fail(Unit.<span class="hljs-built_in">unit</span>);
+
+  <span class="hljs-keyword">public</span> <span class="hljs-keyword">readonly</span> <span class="hljs-keyword">struct</span> GenericFailure&lt;T&gt; {
+    <span class="hljs-keyword">public</span> T Value { <span class="hljs-keyword">get</span>; }
+
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">GenericFailure</span>(<span class="hljs-params">T <span class="hljs-keyword">value</span></span>)</span> {
+      Value = <span class="hljs-keyword">value</span>;
+    }
+  }
+
+  <span class="hljs-keyword">public</span> <span class="hljs-keyword">readonly</span> <span class="hljs-keyword">struct</span> GenericSuccess&lt;T&gt; {
+    <span class="hljs-keyword">public</span> T Value { <span class="hljs-keyword">get</span>; }
+
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">GenericSuccess</span>(<span class="hljs-params">T <span class="hljs-keyword">value</span></span>)</span> {
+      Value = <span class="hljs-keyword">value</span>;
+    }
+  }
+}</code></pre> </div> </div> <div class="sect2"> <h3 id="_sub_tracks">Sub tracks</h3> <div class="listingblock"> <div class="content"> <pre class="highlight"><code class="language-cs" data-lang="cs"><span class="hljs-comment"><span class="hljs-doctag">///</span> <span class="hljs-doctag">&lt;returns&gt;</span>Message to be printed on the screen<span class="hljs-doctag">&lt;/returns&gt;</span></span>
+<span class="hljs-function"><span class="hljs-built_in">string</span> <span class="hljs-title">MailMessageToUser</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> username, <span class="hljs-built_in">string</span> msg, MailServer server1, MailServer server2</span>)</span> {
+  <span class="hljs-keyword">return</span> GetUser(username)
+    .OnSuccess(GetEmailAddress)
+    .OnSuccess(emailAddress =&gt; CreateEmailMessage(emailAddress, msg))
+    .OnSuccess(email =&gt; SendEmail(email, server1)
+      .OnFailure(ex =&gt; ex <span class="hljs-keyword">switch</span> {
+        ServerNotFoundException =&gt; SendEmail(email, server2).OnFailure&lt;<span class="hljs-built_in">string</span>&gt;(ex =&gt; Result.Fail(ex.Message)),
+        _ =&gt; Result.Fail(ex.Message)
+      })
+    )
+    .Handle(
+      _ =&gt; <span class="hljs-string">&quot;Email sent&quot;</span>,
+      error =&gt; {
+        LogError(error);
+        <span class="hljs-keyword">return</span> <span class="hljs-string">&quot;Email not sent&quot;</span>;
+      }
+    );
+}</code></pre> </div> </div> <div class="imageblock kroki"> <div class="content"> <svg xmlns="http://www.w3.org/2000/svg" class="pikchr" width="849" height="52" viewbox="0 0 1062.2 66.24"> <path d="M96,30 L 103,30 Q 111,30 111,45 L 111,45 Q 111,59 118,59 L 125,59" style="fill:none;stroke-width:2.16;stroke:orange"></path> <path d="M96,30L125,30" style="fill:none;stroke-width:2.16;stroke:#add8e6"></path> <path d="M296,30 L 303,30 Q 310,30 310,45 L 310,45 Q 310,59 317,59 L 325,59" style="fill:none;stroke-width:2.16;stroke:orange"></path> <path d="M296,30L325,30" style="fill:none;stroke-width:2.16;stroke:#add8e6"></path> <path d="M530,30 L 537,30 Q 544,30 544,45 L 544,45 Q 544,59 552,59 L 559,59" style="fill:none;stroke-width:2.16;stroke:orange"></path> <path d="M530,30L559,30" style="fill:none;stroke-width:2.16;stroke:#add8e6"></path> <polygon points="718,30 707,35 707,26" style="fill:orange"></polygon> <path d="M675,30L713,30" style="fill:none;stroke-width:2.16;stroke:orange"></path> <path d="M831,30L874,30" style="fill:none;stroke-width:2.16;stroke:#add8e6"></path> <path d="M675,30 L 682,30 Q 690,30 690,45 L 690,45 Q 690,59 697,59 L 704,59" style="fill:none;stroke-width:2.16;stroke:orange"></path> <path d="M675,30 L 682,30 Q 690,30 690,45 L 690,45 Q 690,59 697,59 L 704,59" style="fill:none;stroke-width:2.16;stroke:orange"></path> <path d="M831,30 L 838,30 Q 845,30 845,45 L 845,45 Q 845,59 852,59 L 860,59" style="fill:none;stroke-width:2.16;stroke:orange"></path> <path d="M675,30 L 682,30 Q 690,30 690,16 L 690,16 Q 690,2 704,2 L 816,2 Q 831,2 845,2 L 845,2 Q 860,2 860,16 L 860,16 Q 860,30 867,30 L 874,30" style="fill:none;stroke-width:2.16;stroke:#add8e6"></path> <polygon points="16,30 5,35 5,26" style="fill:#add8e6"></polygon> <path d="M2,30L10,30" style="fill:none;stroke-width:2.16;stroke:#add8e6"></path> <path d="M16,46L96,46L96,15L16,15Z" style="fill:none;stroke-width:2.16;stroke:#000"></path> <text x="56" y="30" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">GetUser</text> <path d="M2,59L125,59" style="fill:none;stroke-width:2.16;stroke:orange"></path> <polygon points="139,30 128,35 128,26" style="fill:#add8e6"></polygon> <path d="M125,30L134,30" style="fill:none;stroke-width:2.16;stroke:#add8e6"></path> <path d="M139,46L296,46L296,15L139,15Z" style="fill:none;stroke-width:2.16;stroke:#000"></path> <text x="218" y="30" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">GetEmailAddress</text> <path d="M125,59L325,59" style="fill:none;stroke-width:2.16;stroke:orange"></path> <polygon points="339,30 328,35 328,26" style="fill:#add8e6"></polygon> <path d="M325,30L333,30" style="fill:none;stroke-width:2.16;stroke:#add8e6"></path> <path d="M339,46L530,46L530,15L339,15Z" style="fill:none;stroke-width:2.16;stroke:#000"></path> <text x="435" y="30" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">CreateEmailMessage</text> <path d="M325,59L559,59" style="fill:none;stroke-width:2.16;stroke:orange"></path> <polygon points="573,30 562,35 562,26" style="fill:#add8e6"></polygon> <path d="M559,30L567,30" style="fill:none;stroke-width:2.16;stroke:#add8e6"></path> <path d="M573,46L675,46L675,15L573,15Z" style="fill:none;stroke-width:2.16;stroke:#000"></path> <text x="624" y="30" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">SendEmail</text> <path d="M718,46L831,46L831,15L718,15Z" style="fill:none;stroke-width:2.16;stroke:#000"></path> <text x="775" y="30" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">SendEmail2</text> <path d="M559,59L874,59" style="fill:none;stroke-width:2.16;stroke:orange"></path> <polygon points="888,30 877,35 877,26" style="fill:#add8e6"></polygon> <path d="M874,30L883,30" style="fill:none;stroke-width:2.16;stroke:#add8e6"></path> <polygon points="888,59 877,64 877,55" style="fill:orange"></polygon> <path d="M874,59L883,59" style="fill:none;stroke-width:2.16;stroke:orange"></path> <path d="M888,60L961,60L961,30L888,30Z" style="fill:none;stroke-width:2.16;stroke:#000"></path> <text x="925" y="45" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">Handle</text> <polygon points="975,45 964,49 964,41" style="fill:#000"></polygon> <path d="M961,45L969,45" style="fill:none;stroke-width:2.16;stroke:#000"></path> <path d="M990,60L1044,60A15 15 0 0 0 1060 45A15 15 0 0 0 1044 30L990,30A15 15 0 0 0 975 45A15 15 0 0 0 990 60Z" style="fill:none;stroke-width:2.16;stroke:#000"></path> <text x="1017" y="45" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">message</text> </svg> </div> </div> </div> <div class="sect2"> <h3 id="_the_code_so_far">The Code so far</h3> <div class="listingblock"> <div class="content"> <pre class="highlight"><code class="language-cs" data-lang="cs">  <span class="hljs-keyword">public</span> <span class="hljs-keyword">abstract</span> <span class="hljs-keyword">class</span> <span class="hljs-title">Result</span>&lt;<span class="hljs-title">TR</span>, <span class="hljs-title">TE</span>&gt; {
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">abstract</span> <span class="hljs-title">Result</span>&lt;<span class="hljs-title">TNextR</span>, <span class="hljs-title">TE</span>&gt; <span class="hljs-title">OnSuccess</span>&lt;<span class="hljs-title">TNextR</span>&gt;(<span class="hljs-params">Func&lt;TR, Result&lt;TNextR, TE&gt;&gt; onSuccess</span>)</span>;
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">abstract</span> <span class="hljs-title">Result</span>&lt;<span class="hljs-title">TR</span>, <span class="hljs-title">TNextE</span>&gt; <span class="hljs-title">OnFailure</span>&lt;<span class="hljs-title">TNextE</span>&gt;(<span class="hljs-params">Func&lt;TE, Result&lt;TR, TNextE&gt;&gt; onFailure</span>)</span>;
+    <span class="hljs-comment"><span class="hljs-doctag">///</span> <span class="hljs-doctag">&lt;summary&gt;</span></span>
+    <span class="hljs-comment"><span class="hljs-doctag">///</span> Prefer <span class="hljs-doctag">&lt;see cref=&quot;OnSuccess&quot;&gt;</span> and <span class="hljs-doctag">&lt;see cref=&quot;OnFailure&quot;&gt;</span> over this method for returning Result types.</span>
+    <span class="hljs-comment"><span class="hljs-doctag">///</span> <span class="hljs-doctag">&lt;/summary&gt;</span></span>
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">abstract</span> TReturn <span class="hljs-title">Handle</span>&lt;<span class="hljs-title">TReturn</span>&gt;(<span class="hljs-params">Func&lt;TR, TReturn&gt; onSuccess, Func&lt;TE, TReturn&gt; onFailure</span>)</span>;
+
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-built_in">bool</span> <span class="hljs-title">IsSuccess</span>(<span class="hljs-params"></span>)</span> =&gt; <span class="hljs-keyword">this</span> <span class="hljs-keyword">is</span> Success;
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-built_in">bool</span> <span class="hljs-title">IsFailure</span>(<span class="hljs-params"></span>)</span> =&gt; <span class="hljs-keyword">this</span> <span class="hljs-keyword">is</span> Failure;
+
+    <span class="hljs-meta">#<span class="hljs-meta-keyword">region</span> Void overloads (Because void is not an actual type in .NET)</span>
+
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">HandleVoid</span>(<span class="hljs-params">Action&lt;TR&gt; onSuccess, Action&lt;TE&gt; onFailure</span>)</span> {
+      _ = onSuccess ?? <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> ArgumentNullException(<span class="hljs-keyword">nameof</span>(onSuccess));
+      _ = onFailure ?? <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> ArgumentNullException(<span class="hljs-keyword">nameof</span>(onFailure));
+
+      _ = Handle(onSuccess.AsFunc(), onFailure.AsFunc());
+    }
+
+    <span class="hljs-meta">#<span class="hljs-meta-keyword">endregion</span></span>
+
+    <span class="hljs-keyword">public</span> <span class="hljs-keyword">sealed</span> <span class="hljs-keyword">class</span> <span class="hljs-title">Success</span> : <span class="hljs-title">Result</span>&lt;<span class="hljs-title">TR</span>, <span class="hljs-title">TE</span>&gt; {
+      <span class="hljs-keyword">public</span> TR ResultValue { <span class="hljs-keyword">get</span>; }
+
+      <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">Success</span>(<span class="hljs-params">TR result</span>)</span> =&gt; ResultValue = result;
+
+      <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">override</span> <span class="hljs-title">Result</span>&lt;<span class="hljs-title">TNextR</span>, <span class="hljs-title">TE</span>&gt; <span class="hljs-title">OnSuccess</span>&lt;<span class="hljs-title">TNextR</span>&gt;(<span class="hljs-params">Func&lt;TR, Result&lt;TNextR, TE&gt;&gt; onSuccess</span>)</span>
+          =&gt; onSuccess(ResultValue);
+
+      <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">override</span> <span class="hljs-title">Result</span>&lt;<span class="hljs-title">TR</span>, <span class="hljs-title">TNextE</span>&gt; <span class="hljs-title">OnFailure</span>&lt;<span class="hljs-title">TNextE</span>&gt;(<span class="hljs-params">Func&lt;TE, Result&lt;TR, TNextE&gt;&gt; onFailure</span>)</span>
+          =&gt; Result.Succeed(ResultValue);
+
+      <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">override</span> TReturn <span class="hljs-title">Handle</span>&lt;<span class="hljs-title">TReturn</span>&gt;(<span class="hljs-params">Func&lt;TR, TReturn&gt; onSuccess, Func&lt;TE, TReturn&gt; onFailure</span>)</span>
+          =&gt; onSuccess(ResultValue);
+    }
+
+    <span class="hljs-keyword">public</span> <span class="hljs-keyword">sealed</span> <span class="hljs-keyword">class</span> <span class="hljs-title">Failure</span> : <span class="hljs-title">Result</span>&lt;<span class="hljs-title">TR</span>, <span class="hljs-title">TE</span>&gt; {
+      <span class="hljs-keyword">public</span> TE ErrorValue { <span class="hljs-keyword">get</span>; }
+
+      <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">Failure</span>(<span class="hljs-params">TE error</span>)</span> =&gt; ErrorValue = error;
+
+      <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">override</span> <span class="hljs-title">Result</span>&lt;<span class="hljs-title">TNextR</span>, <span class="hljs-title">TE</span>&gt; <span class="hljs-title">OnSuccess</span>&lt;<span class="hljs-title">TNextR</span>&gt;(<span class="hljs-params">Func&lt;TR, Result&lt;TNextR, TE&gt;&gt; onSuccess</span>)</span>
+          =&gt; Result.Fail(ErrorValue);
+
+      <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">override</span> <span class="hljs-title">Result</span>&lt;<span class="hljs-title">TR</span>, <span class="hljs-title">TNextE</span>&gt; <span class="hljs-title">OnFailure</span>&lt;<span class="hljs-title">TNextE</span>&gt;(<span class="hljs-params">Func&lt;TE, Result&lt;TR, TNextE&gt;&gt; onFailure</span>)</span>
+          =&gt; onFailure(ErrorValue);
+
+      <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">override</span> TReturn <span class="hljs-title">Handle</span>&lt;<span class="hljs-title">TReturn</span>&gt;(<span class="hljs-params">Func&lt;TR, TReturn&gt; onSuccess, Func&lt;TE, TReturn&gt; onFailure</span>)</span>
+          =&gt; onFailure(ErrorValue);
+    }
+
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">implicit</span> <span class="hljs-keyword">operator</span> <span class="hljs-title">Result</span>&lt;<span class="hljs-title">TR</span>, <span class="hljs-title">TE</span>&gt;(<span class="hljs-params">Result.GenericSuccess&lt;TR&gt; ok</span>)</span> =&gt; <span class="hljs-keyword">new</span> Success(ok.Value);
+
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">implicit</span> <span class="hljs-keyword">operator</span> <span class="hljs-title">Result</span>&lt;<span class="hljs-title">TR</span>, <span class="hljs-title">TE</span>&gt;(<span class="hljs-params">Result.GenericFailure&lt;TE&gt; error</span>)</span> =&gt; <span class="hljs-keyword">new</span> Failure(error.Value);
+
+    <span class="hljs-function"><span class="hljs-keyword">private</span> <span class="hljs-title">Result</span>(<span class="hljs-params"></span>)</span> { }
+  }
+
+  <span class="hljs-comment"><span class="hljs-doctag">///</span> <span class="hljs-doctag">&lt;summary&gt;</span></span>
+  <span class="hljs-comment"><span class="hljs-doctag">///</span> This factory method class makes it possible to create result objects without having to specify the full result type explicitly.</span>
+  <span class="hljs-comment"><span class="hljs-doctag">///</span> If the generic types cannot be inferred they can also be explicitly passed.</span>
+  <span class="hljs-comment"><span class="hljs-doctag">///</span> <span class="hljs-doctag">&lt;/summary&gt;</span></span>
+  <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">class</span> <span class="hljs-title">Result</span> {
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-title">GenericSuccess</span>&lt;<span class="hljs-title">TR</span>&gt; <span class="hljs-title">Succeed</span>&lt;<span class="hljs-title">TR</span>&gt;(<span class="hljs-params">TR result</span>)</span>
+        =&gt; <span class="hljs-keyword">new</span>(result);
+
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-title">GenericFailure</span>&lt;<span class="hljs-title">TE</span>&gt; <span class="hljs-title">Fail</span>&lt;<span class="hljs-title">TE</span>&gt;(<span class="hljs-params">TE error</span>)</span>
+        =&gt; <span class="hljs-keyword">new</span>(error);
+
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-title">Result</span>&lt;<span class="hljs-title">TR</span>, <span class="hljs-title">TE</span>&gt; <span class="hljs-title">Succeed</span>&lt;<span class="hljs-title">TR</span>, <span class="hljs-title">TE</span>&gt;(<span class="hljs-params">TR result</span>)</span>
+        =&gt; Succeed(result);
+
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-title">Result</span>&lt;<span class="hljs-title">TR</span>, <span class="hljs-title">TE</span>&gt; <span class="hljs-title">Fail</span>&lt;<span class="hljs-title">TR</span>, <span class="hljs-title">TE</span>&gt;(<span class="hljs-params">TE error</span>)</span>
+        =&gt; Fail(error);
+
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> GenericSuccess&lt;Unit&gt; <span class="hljs-title">Succeed</span>(<span class="hljs-params"></span>)</span>
+        =&gt; Succeed(Unit.<span class="hljs-built_in">unit</span>);
+
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> GenericFailure&lt;Unit&gt; <span class="hljs-title">Fail</span>(<span class="hljs-params"></span>)</span>
+        =&gt; Fail(Unit.<span class="hljs-built_in">unit</span>);
+
+    <span class="hljs-keyword">public</span> <span class="hljs-keyword">readonly</span> <span class="hljs-keyword">struct</span> GenericFailure&lt;T&gt; {
+      <span class="hljs-keyword">public</span> T Value { <span class="hljs-keyword">get</span>; }
+
+      <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">GenericFailure</span>(<span class="hljs-params">T <span class="hljs-keyword">value</span></span>)</span> {
+        Value = <span class="hljs-keyword">value</span>;
+      }
+    }
+
+    <span class="hljs-keyword">public</span> <span class="hljs-keyword">readonly</span> <span class="hljs-keyword">struct</span> GenericSuccess&lt;T&gt; {
+      <span class="hljs-keyword">public</span> T Value { <span class="hljs-keyword">get</span>; }
+
+      <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">GenericSuccess</span>(<span class="hljs-params">T <span class="hljs-keyword">value</span></span>)</span> {
+        Value = <span class="hljs-keyword">value</span>;
+      }
+    }
+  }</code></pre> </div> </div> </div> </div> </div> </div> <div id="footer"> <div id="footer-text"> Last updated 2021-08-02 10:53:37 +0200 </div> </div> </body></html>
