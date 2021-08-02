@@ -151,8 +151,7 @@ GetUser(username)
   );
 ....
 
-This style of programming is sometimes referred to as https://fsharpforfunandprofit.com/rop/[_railway oriented programming_], a term first invented by Scott Wlaschin.
-Why that is the case is easily demonstrated with some diagrams.
+If we visualize the code flow above in a diagram, it becomes clear why this style of programming is sometimes referred to as https://fsharpforfunandprofit.com/rop/[_railway oriented programming_].
 The Result type encapsulates two "paths" or "tracks", the success track and the failure track.
 
 [pikchr]

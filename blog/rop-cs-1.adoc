@@ -1,6 +1,9 @@
 = Railroad Oriented Programming in C#: Part 1
 
 // link:/?page=rop-cs-2[Next part]
+The term _Railroad Oriented Programming_ was https://fsharpforfunandprofit.com/rop/[popularized by Scott Wlaschin as a term for a certain programming style for handling failure].
+In this article series we will look at how we can implement this style of programming in C#.
+Let's start by talking about the problems it is trying to solve.
 
 ## The problem: implicit function failure
 
@@ -85,6 +88,11 @@ In functional programming languages such a construct _does_ exist and is called 
 But C-like languages, including C#, do not have support for such a type.
 Luckily C# has had added lots of language features over the years that make it possible to emulate discriminated unions and use them in a relatively convenient and type-safe way.
 In the next part of this article series we will have a look at one way of implementing explicit failure in C#: a `Result` type with two subtypes, the `Success` type for the success path and the `Failure` type for the failure path.
+
+### Default values vs the `Failure` type
+If performance is critical and you need to avoid as many allocations as possible, then using default values may be a good fit.
+However, be aware of the pitfalls listed above.
+If performance is not absolutely critical, a default value does not bear any advantages over a proper `Failure` type instance.
 
 ### Exception throwing vs the `Failure` type
 When writing a function, a good way for deciding whether to propagate a failure by throwing an exception is by asking the following question.
