@@ -3,6 +3,20 @@ linerad = .1
 linewid = .2
 lineht = .22
 
+define dashes {
+  line color lightblue dashed .03
+  move from last line.w down lineht 
+  right
+  line color orange dashed .03
+  move up lineht; right
+}
+
+define newline {
+  dashes
+  move left until even with (0,0) then down then right
+  dashes
+}
+
 define startResult {
   S0: arrow
   B: box $1 fit
@@ -19,7 +33,7 @@ define onSuccess {
   S0: arrow color lightblue
   B: box $1 fit
   SF: line right linerad then down then right until even with lineht e of B.e color orange behind B
-  S1: line from SF.start right until even with SF.end color lightblue behind B
+  S1: line from B.e right color lightblue behind B
   SR: oval $2 fit
   S2: line right lineht/2 color lightblue behind SR
 
@@ -28,32 +42,31 @@ define onSuccess {
   move up lineht; right
 }
 
-define onSuccessS {
-  S0: arrow color lightblue
-  B: box $1 fit
-  S1: line color lightblue behind B
-  move from S0.start down lineht
-  F: line right until even with S1.end color orange
-  move up lineht; right
-}
-
 define onFailure {
   move down lineht; right
-  F0: arrow color orange
+
+  S0: arrow color orange
   B: box $1 fit
-  FS: line right linerad then up then right color lightblue behind B
-  F1: line from FS.start right until even with FS.end color orange behind B
-  move from F0.start up lineht
-  S: line right until even with FS.end color lightblue
+  SF: line right linerad then up then right until even with lineht e of B.e color lightblue behind B
+  S1: line from B.e right color orange behind B
+  SR: oval $2 fit
+  S2: line right lineht/2 color orange behind SR
+
+  move from S0.start up lineht
+  F0: line right until even with S2.end color lightblue
 }
 
 define onFailureF {
   move down lineht; right
-  F0: arrow color orange
+
+  S0: arrow color orange
   B: box $1 fit
-  F1: line color orange behind B
-  move from F0.start up lineht
-  S: line right until even with F1.end color lightblue
+  S1: line from B.e right color orange behind B
+  SR: oval $2 fit
+  S2: line right lineht/2 color orange behind SR
+
+  move from S0.start up lineht
+  F0: line right until even with S2.end color lightblue
 }
 
 define handle {

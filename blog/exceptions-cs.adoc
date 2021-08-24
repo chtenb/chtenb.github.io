@@ -13,7 +13,7 @@ Let's discuss the tricky parts and how we can use exceptions to their strength.
   * Most functions are not part of a well-defined API. And even seemingly well-defined/documented APIs are not always documented exhaustively, especially as they change over time.
 - Throwing is slow and using throw/catch for control flow just kills performance.
 - When using a debugger, the debugger halts on most exceptions. Specifying which exceptions to halt on is a lot of work if you throw a lot of exceptions for control flow, instead of just for things that are really exceptional.
-- Frequent try-catch blocks are verbose, make the actual intention of the code much less clear and are bound to lead to making mistakes of forgetting to catch all the right things in all the right places.
+- Frequent try-catch blocks are verbose, make the actual intention of the code much less clear and which eventually leads to making mistakes.
 
 There are often other ways to handle failure, like having functions return an error value.
 A robust approach to this is discussed in link:/?page=rop-cs-1[this article about Railroad Oriented Programming].

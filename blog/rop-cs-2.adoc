@@ -1,12 +1,11 @@
 = Railroad Oriented Programming in C#: Part 2
 
-// link:/?page=rop-cs-1[Previous part]
+In the link:/?page=rop-cs-1[previous article] we looked at problems with traditional forms of handling failure.
+Here we will look at one solution to deal with these problems: a `Result` type that allows for a success case and a failure case.
 
-// link:/?page=rop-cs-3[Next part]
-
-## A Result type supporting the failure path
+## A result type supporting the failure path
 While C# does not directory support Discriminated Unions, it does support subclassing.
-Since a class can have multiple subclasses, and any object is always just one of them, we can use this phenomenon to implement the notion of having two returntypes, one for success result, and one for the failure result.
+Since a class can have multiple subclasses, and any object is always just one of them, we can use this phenomenon to implement the notion of having two return types, one for the success result, and one for the failure result.
 
 [source,cs]
 ....
@@ -97,12 +96,12 @@ if (result is Result<User, string>.Success) {
 
 We would like to
 
-- not have to unwrap the result type by doing a type check + cast
+- not have to unwrap the `Result` instance by doing a type check + cast
 - not have a new nesting level for each subsequent function we call
 - not have to handle all failures individually
-- not have to specify the whole type when creating a Result instance: `new Result<User, string>.Success()`
+- not have to specify the whole type when creating a `Result` instance: `new Result<User, string>.Success()`
 
-### A Fluent Result type
+### A fluent result type
 
 To resolve the complaints about our previous implementation, we'll define an `OnSuccess` function and a `Handle` function.
 They will do the unwrapping for us and form a https://en.wikipedia.org/wiki/Fluent_interface[Fluent Interface] and thereby removing the nesting.
@@ -151,8 +150,8 @@ GetUser(username)
   );
 ....
 
-If we visualize the code flow above in a diagram, it becomes clear why this style of programming is sometimes referred to as https://fsharpforfunandprofit.com/rop/[_railway oriented programming_].
-The Result type encapsulates two "paths" or "tracks", the success track and the failure track.
+If we visualize the code flow above in a diagram, it becomes clear why this style of programming is sometimes referred to as _railway oriented programming_.
+The `Result` type encapsulates two "paths" or "tracks", the success track and the failure track.
 
 [pikchr]
 ....
@@ -236,12 +235,9 @@ The railway of the example code would look like
 ....
 include::rop.pikchr[]
 
-X:[
-  startResult("GetUser","User","string")
-  onSuccess("GetEmailAddress","string")
-]
-
-move from X.w down then right
+startResult("GetUser","User","string")
+onSuccess("GetEmailAddress","string")
+newline
 onSuccess("CreateEmailMessage","EmailMessage")
 onSuccess("SendEmail","Unit")
 handle("Handle","string")
@@ -250,13 +246,13 @@ handle("Handle","string")
 ### The OnFailure method
 
 If we have a OnSuccess method, there is no reason why we couldn't have an OnFailure method too.
-This would allow us to do operations on the failure track, such as modifying or logging the error, or recovering from the error and get back on the success track.
+This would allow us to do operations on the failure track, such as modifying the error, or recovering from the error and get back on the success track.
 
 [pikchr]
 ....
 include::rop.pikchr[]
 
-onFailure("OnFailure")
+onFailure("OnFailure","ErrorValue")
 ....
 
 [source,cs]
@@ -267,13 +263,13 @@ string MailMessageToUser(string username, string msg) {
     .OnSuccess(GetEmailAddress)
     .OnSuccess(email => CreateEmailMessage(email, msg))
     .OnSuccess(SendEmail)
-    .OnFailure<string>(error => {
-      LogError(error);
-      return Result.Fail(error); // Only log the error and leave the Failure be
-    })
+    .OnFailure<Unit>(error => "And error occurred: " + error)
     .Handle(
       _ => "Email sent",
-      _ => "Email not sent"
+      error => {
+        Log(error);
+        return "Email not sent";
+      }
     );
 }
 ....
@@ -282,16 +278,13 @@ string MailMessageToUser(string username, string msg) {
 ....
 include::rop.pikchr[]
 
-X:[
-  startResult("GetUser","User","string")
-  onSuccess("GetEmailAddress","string")
-  onSuccess("CreateEmailMessage","EmailMessage")
-]
-
-move from X.w down then right
+startResult("GetUser","User","string")
+onSuccess("GetEmailAddress","string")
+onSuccess("CreateEmailMessage","EmailMessage")
+newline
 onSuccess("SendEmail","Unit")
-onFailureF("LogFailure")
+onFailureF("TransformError","string")
 handle("Handle","string")
 ....
 
-We still need to deal with the awkward construction of Result instances, and we'll do that in the next part.
+We still need to deal with the awkward construction of `Result` instances, and we'll do that in the link:/?page=rop-cs-3[next part].
