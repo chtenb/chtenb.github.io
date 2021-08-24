@@ -171,7 +171,12 @@ And the `OnSuccess` and `Handle` methods form trackpieces.
 include::rop.pikchr[]
 
 onSuccess("OnSuccess", "SuccessValue")
-move right
+....
+
+[pikchr]
+....
+include::rop.pikchr[]
+
 handle("Handle", "EndValue")
 ....
 
@@ -186,7 +191,7 @@ onSuccess("GetEmailAddress","string")
 handle("Handle","string")
 ....
 
-### Another Example
+### Another example
 
 Suppose now that we needed to write the following function.
 
@@ -207,7 +212,7 @@ Result<Unit, string> SendEmail(EmailMessage email);
 ....
 
 If you're wondering what that `Unit` type is, it's a replacement for `void`, since we can't put `void` in there.
-For more information link:/?page=unit-cs[read my respective article].
+For more information refer to link:/?page=unit-cs[The missing C# built-in type: void].
 
 Then we could implement the function as follows.
 
@@ -243,6 +248,49 @@ onSuccess("SendEmail","Unit")
 handle("Handle","string")
 ....
 
+### Void handlers
+
+If we would rather handle the end result without returning anything, e.g. using void methods only, we would need a variant of `Handle` for that.
+
+[source,cs]
+....
+public abstract class Result<TS, TF> {
+
+  // ...
+
+  public void HandleVoid(Action<TR> onSuccess, Action<TE> onFailure) {
+    _ = onSuccess ?? throw new ArgumentNullException(nameof(onSuccess));
+    _ = onFailure ?? throw new ArgumentNullException(nameof(onFailure));
+
+    _ = Handle(onSuccess.AsFunc(), onFailure.AsFunc());
+  }
+}
+....
+
+Then we could use it as follows.
+
+[source,cs]
+....
+/// <returns>Message to be printed on the screen</returns>
+string MailMessageToUser(string username, string msg) {
+  return GetUser(username)
+    .OnSuccess(GetEmailAddress)
+    .OnSuccess(email => CreateEmailMessage(email, msg))
+    .OnSuccess(SendEmail)
+    .HandleVoid(
+      _ => {
+        Console.WriteLine("Email sent");
+      },
+      error => {
+        Log(error);
+        Console.WriteLine("Email not sent");
+      }
+    );
+}
+....
+
+For the implementation of `AsFunc`, refer to link:/?page=unit-cs[The missing C# built-in type: void].
+
 ### The OnFailure method
 
 If we have a OnSuccess method, there is no reason why we couldn't have an OnFailure method too.
@@ -263,7 +311,7 @@ string MailMessageToUser(string username, string msg) {
     .OnSuccess(GetEmailAddress)
     .OnSuccess(email => CreateEmailMessage(email, msg))
     .OnSuccess(SendEmail)
-    .OnFailure<Unit>(error => "And error occurred: " + error)
+    .OnFailure(error => new Result<Unit, string>.Failure("And error occurred: " + error))
     .Handle(
       _ => "Email sent",
       error => {

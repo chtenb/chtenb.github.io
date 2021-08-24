@@ -4,27 +4,40 @@
 
 ## Creating Result Instances
 
+When creating a result instance we often find ourselves writing code like this.
+
 [source,cs]
 ....
 Result<User, string> GetUser(string username) {
   var user = Datastore.FindUser(username);
   if (user == null)
-    return new Result<User, string>.Failure("User has no email");
+    return new Result<User, string>.Failure("User not found");
   return new Result<User, string>.Success(user);
 }
 ....
 
+There is not much wrong with it, except that it may become cumbersome to have to specify those generic parameters all the time.
+We'd much rather write the following.
+
 [source,cs]
 ....
 Result<User, string> GetUser(string username) {
   var user = Datastore.FindUser(username);
   if (user == null)
-    return new Result.Fail("User has no email");
-  return new Result.Succeed(user);
+    return Result.Fail("User not found");
+  return Result.Succeed(user);
 }
 ....
 
-https://tyrrrz.me/blog/return-type-inference[Return type inference]
+Unfortunately C# won't let us do this, since the compiler is not smart enough to figure out what the type parameters should be.
+More specifically, the C# compiler cannot infer type parameters based on return types of functions.
+This is an annoying limitation, but something we have to live with for now.
+
+However, there are some clever tricks we can apply.
+Alexey Golub explains one neat approach in his article https://tyrrrz.me/blog/return-type-inference[Simulating Return Type Inference in C#].
+The idea is that we introduce types `GenericSuccess` and `GenericFailure` which do not have all the type parameters yet.
+Then we introduce implicit cast operators to make it possible to cast it to a full result type with all the type parameters specified.
+The win here is that the casting can be done by the compiler in a context where the type parameters are all clear from the context.
 
 
 [source,cs]
@@ -62,3 +75,33 @@ public static class Result {
   }
 }
 ....
+
+If we now attempt to compile the previous code snippet, we find that the compiler is happy with the type parameters being left out.
+However, there are still situations in which this will not infer all the types, for example when using a lambda expression, which has no explicit signature.
+
+[source,cs]
+....
+Result<string, string> GetEmail(string username) {
+  return GetUser(username)
+    .OnSuccess(user => {
+      return Result.Succeed("test@example.com");
+    });
+}
+....
+
+This will give a compiler error saying that the type arguments could not be inferred.
+In that case we should provide the type argument to the `OnSuccess` method.
+
+[source,cs]
+....
+Result<string, string> GetEmail(string username) {
+  return GetUser(username)
+    .OnSuccess<string>(user => {
+      return Result.Succeed("test@example.com");
+    });
+}
+....
+
+As a rule of thumb, if one encounters any confusing compile errors, try supplying the type parameters to the `OnSuccess`, `OnFailure` and `Handle` methods, and work from there.
+
+In the link:/?page=rop-cs-4[next article] we will conclude this article series with some final observations.
