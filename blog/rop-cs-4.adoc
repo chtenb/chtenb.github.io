@@ -1,11 +1,11 @@
 = Railroad Oriented Programming in C#: Part 4
 
-## Sub tracks
+## Subtracks and failure recovery
 
 Railroad Oriented Programming is not limited to having a single straight railroad.
 As we compose functions together writing our program, a more complex railroad system will evolve, reflecting our program flow.
 It is highly recommended that one does not put too much complex railroad logic in a single function, but it is perfectly possible to construct subtracks within a railroad function.
-Let's give an example.
+Let's give an example that demonstrates having a subtrack and performing a failure recovery.
 
 Suppose that now the `SendEmail` function does not return a `string` on failure, but some failure object like an `Exception` instance.
 
@@ -26,8 +26,8 @@ string MailMessageToUser(string username, string msg, MailServer server1, MailSe
     .OnSuccess(email => SendEmail(email, server1)
       .OnFailure(ex => ex switch {
         ServerNotFoundException => 
-          // We don't need to inspect the second exception,
-          // and can directly transform it to an error string using OnFailure
+          // Attempt server1. We don't need to inspect the second exception,
+          // and can directly transform it to an error string using OnFailure.
           SendEmail(email, server2).OnFailure<string>(ex => Result.Fail(ex.Message)),
         _ => Result.Fail(ex.Message)
       })
@@ -44,7 +44,7 @@ string MailMessageToUser(string username, string msg, MailServer server1, MailSe
 
 Here we attempt to defer our email to a second mail server when the first server appears unreachable.
 The function `MailMessageToUser` having two mail servers as parameters is a little odd, and probably not how we would want to do it in real life.
-But it demonstrates the concept of having subtracks very well.
+But it demonstrates having subtracks and failure recovery very well in the context of our email example.
 
 [pikchr]
 ....
@@ -76,115 +76,4 @@ line from B2.e right linerad then down then right color orange behind B2
 move to E.end
 
 handle("Handle","string")
-....
-
-## Asynchronous programming
-
-Using the `Result` type for asynchronous programming is perfectly possible, but again comes with a few hacks to account for some C# compiler limitations.
-Maybe I'll write another article about that some time.
-
-## Wrapping up
-
-Here is the code we've produced in this article series.
-
-[source,cs]
-....
-  public abstract class Result<TR, TE> {
-    public abstract Result<TNextR, TE> OnSuccess<TNextR>(Func<TR, Result<TNextR, TE>> onSuccess);
-    public abstract Result<TR, TNextE> OnFailure<TNextE>(Func<TE, Result<TR, TNextE>> onFailure);
-    /// <summary>
-    /// Prefer <see cref="OnSuccess"> and <see cref="OnFailure"> over this method for returning Result types.
-    /// </summary>
-    public abstract TReturn Handle<TReturn>(Func<TR, TReturn> onSuccess, Func<TE, TReturn> onFailure);
-
-    public bool IsSuccess() => this is Success;
-    public bool IsFailure() => this is Failure;
-
-    #region Void overloads (Because void is not an actual type in .NET)
-
-    public void HandleVoid(Action<TR> onSuccess, Action<TE> onFailure) {
-      _ = onSuccess ?? throw new ArgumentNullException(nameof(onSuccess));
-      _ = onFailure ?? throw new ArgumentNullException(nameof(onFailure));
-
-      _ = Handle(onSuccess.AsFunc(), onFailure.AsFunc());
-    }
-
-    #endregion
-
-    public sealed class Success : Result<TR, TE> {
-      public TR ResultValue { get; }
-
-      public Success(TR result) => ResultValue = result;
-
-      public override Result<TNextR, TE> OnSuccess<TNextR>(Func<TR, Result<TNextR, TE>> onSuccess)
-          => onSuccess(ResultValue);
-
-      public override Result<TR, TNextE> OnFailure<TNextE>(Func<TE, Result<TR, TNextE>> onFailure)
-          => Result.Succeed(ResultValue);
-
-      public override TReturn Handle<TReturn>(Func<TR, TReturn> onSuccess, Func<TE, TReturn> onFailure)
-          => onSuccess(ResultValue);
-    }
-
-    public sealed class Failure : Result<TR, TE> {
-      public TE ErrorValue { get; }
-
-      public Failure(TE error) => ErrorValue = error;
-
-      public override Result<TNextR, TE> OnSuccess<TNextR>(Func<TR, Result<TNextR, TE>> onSuccess)
-          => Result.Fail(ErrorValue);
-
-      public override Result<TR, TNextE> OnFailure<TNextE>(Func<TE, Result<TR, TNextE>> onFailure)
-          => onFailure(ErrorValue);
-
-      public override TReturn Handle<TReturn>(Func<TR, TReturn> onSuccess, Func<TE, TReturn> onFailure)
-          => onFailure(ErrorValue);
-    }
-
-    public static implicit operator Result<TR, TE>(Result.GenericSuccess<TR> ok) => new Success(ok.Value);
-
-    public static implicit operator Result<TR, TE>(Result.GenericFailure<TE> error) => new Failure(error.Value);
-
-    private Result() { }
-  }
-
-  /// <summary>
-  /// This factory method class makes it possible to create result objects without having to specify the full result type explicitly.
-  /// If the generic types cannot be inferred they can also be explicitly passed.
-  /// </summary>
-  public static class Result {
-    public static GenericSuccess<TR> Succeed<TR>(TR result)
-        => new(result);
-
-    public static GenericFailure<TE> Fail<TE>(TE error)
-        => new(error);
-
-    public static Result<TR, TE> Succeed<TR, TE>(TR result)
-        => Succeed(result);
-
-    public static Result<TR, TE> Fail<TR, TE>(TE error)
-        => Fail(error);
-
-    public static GenericSuccess<Unit> Succeed()
-        => Succeed(Unit.unit);
-
-    public static GenericFailure<Unit> Fail()
-        => Fail(Unit.unit);
-
-    public readonly struct GenericFailure<T> {
-      public T Value { get; }
-
-      public GenericFailure(T value) {
-        Value = value;
-      }
-    }
-
-    public readonly struct GenericSuccess<T> {
-      public T Value { get; }
-
-      public GenericSuccess(T value) {
-        Value = value;
-      }
-    }
-  }
 ....

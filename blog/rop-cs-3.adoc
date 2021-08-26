@@ -1,10 +1,11 @@
 = Railroad Oriented Programming in C#: Part 3
 
-// link:/?page=rop-cs-2[Previous part]
+In the link:/?page=rop-cs-2[previous article] we looked at an implementation of a `Result` type for explicit failure paths.
+In this article we'll look at how we can improve the creation of these `Result` objects.
 
-## Creating Result Instances
+## Creating `Result` instances
 
-When creating a result instance we often find ourselves writing code like this.
+When creating a `Result` instance we often find ourselves writing code like this.
 
 [source,cs]
 ....
@@ -29,15 +30,16 @@ Result<User, string> GetUser(string username) {
 }
 ....
 
-Unfortunately C# won't let us do this, since the compiler is not smart enough to figure out what the type parameters should be.
-More specifically, the C# compiler cannot infer type parameters based on return types of functions.
+Unfortunately the C# compiler cannot infer type parameters on types, but only on methods.
+So we could introduce a static class `Result` and put some factory methods in there.
+But that still wouldn't help us in the above example, because the C# compiler can't infer type parameters based on the return type of the enclosing function.
 This is an annoying limitation, but something we have to live with for now.
 
 However, there are some clever tricks we can apply.
 Alexey Golub explains one neat approach in his article https://tyrrrz.me/blog/return-type-inference[Simulating Return Type Inference in C#].
 The idea is that we introduce types `GenericSuccess` and `GenericFailure` which do not have all the type parameters yet.
 Then we introduce implicit cast operators to make it possible to cast it to a full result type with all the type parameters specified.
-The win here is that the casting can be done by the compiler in a context where the type parameters are all clear from the context.
+The win here is that the casting can be done by the compiler in a context where the type parameters are all clear from the context, even when it's based on the return type of the enclosing function.
 
 
 [source,cs]
