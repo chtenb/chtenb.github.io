@@ -112,32 +112,35 @@ Moreover, the OnSuccess function will "shortcircuit" the failure path, such that
 
 [source,cs]
 ....
-public abstract class Result<TS, TF> {
+public abstract class Result<TSuccess, TFailure> {
 
-  public abstract Result<TNextR, TF> OnSuccess<TNextR>(Func<TS, Result<TNextR, TF>> onSuccess);
-  public abstract TReturn Handle<TReturn>(Func<TS, TReturn> onSuccess, Func<TF, TReturn> onFailure);
+  public abstract Result<TNextSuccess, TFailure> OnSuccess<TNextSuccess>(
+    Func<TSuccess, Result<TNextSuccess, TFailure>> onSuccess);
+  public abstract TReturn Handle<TReturn>(Func<TSuccess, TReturn> onSuccess, Func<TFailure, TReturn> onFailure);
 
-  public sealed class Success : Result<TS, TF> {
-    public TS SuccessValue { get; }
+  public sealed class Success : Result<TSuccess, TFailure> {
+    public TSuccess SuccessValue { get; }
 
-    public Success(TS result) => SuccessValue = result;
+    public Success(TSuccess result) => SuccessValue = result;
 
-    public override Result<TNextR, TF> OnSuccess<TNextR>(Func<TS, Result<TNextR, TF>> onSuccess)
+    public override Result<TNextSuccess, TFailure> OnSuccess<TNextSuccess>(
+      Func<TSuccess, Result<TNextSuccess, TFailure>> onSuccess)
         => onSuccess(SuccessValue);
 
-    public override TReturn Handle<TReturn>(Func<TS, TReturn> onSuccess, Func<TF, TReturn> onFailure)
+    public override TReturn Handle<TReturn>(Func<TSuccess, TReturn> onSuccess, Func<TFailure, TReturn> onFailure)
         => onSuccess(SuccessValue);
   }
 
-  public sealed class Failure : Result<TS, TF> {
-    public TF FailureValue { get; }
+  public sealed class Failure : Result<TSuccess, TFailure> {
+    public TFailure FailureValue { get; }
 
-    public Failure(TF error) => FailureValue = error;
+    public Failure(TFailure error) => FailureValue = error;
 
-    public override Result<TNextR, TF> OnSuccess<TNextR>(Func<TS, Result<TNextR, TF>> onSuccess)
+    public override Result<TNextSuccess, TFailure> OnSuccess<TNextSuccess>(
+      Func<TSuccess, Result<TNextSuccess, TFailure>> onSuccess)
         => Result.Fail(FailureValue);
 
-    public override TReturn Handle<TReturn>(Func<TS, TReturn> onSuccess, Func<TF, TReturn> onFailure)
+    public override TReturn Handle<TReturn>(Func<TSuccess, TReturn> onSuccess, Func<TFailure, TReturn> onFailure)
         => onFailure(FailureValue);
   }
 
@@ -263,11 +266,11 @@ If we would rather handle the end result without returning anything, e.g. using 
 
 [source,cs]
 ....
-public abstract class Result<TS, TF> {
+public abstract class Result<TSuccess, TFailure> {
 
   // ...
 
-  public void HandleVoid(Action<TR> onSuccess, Action<TE> onFailure) {
+  public void HandleVoid(Action<TResult> onSuccess, Action<TError> onFailure) {
     _ = onSuccess ?? throw new ArgumentNullException(nameof(onSuccess));
     _ = onFailure ?? throw new ArgumentNullException(nameof(onFailure));
 

@@ -44,19 +44,21 @@ The win here is that the casting can be done by the compiler in a context where 
 
 [source,cs]
 ....
-public abstract class Result<TR, TE> {
+public abstract class Result<TSuccess, TFailure> {
 
   // ...
 
-  public static implicit operator Result<TR, TE>(Result.GenericSuccess<TR> ok) => new Success(ok.Value);
-  public static implicit operator Result<TR, TE>(Result.GenericFailure<TE> error) => new Failure(error.Value);
+  public static implicit operator Result<TSuccess, TFailure>(Result.GenericSuccess<TSuccess> ok)
+      => new Success(ok.Value);
+  public static implicit operator Result<TSuccess, TFailure>(Result.GenericFailure<TFailure> error)
+      => new Failure(error.Value);
 }
 
 public static class Result {
-  public static GenericSuccess<TR> Succeed<TR>(TR result) => new(result);
-  public static GenericFailure<TE> Fail<TE>(TE error) => new(error);
-  public static Result<TR, TE> Succeed<TR, TE>(TR result) => Succeed(result);
-  public static Result<TR, TE> Fail<TR, TE>(TE error) => Fail(error);
+  public static GenericSuccess<TSuccess> Succeed<TSuccess>(TSuccess result) => new(result);
+  public static GenericFailure<TFailure> Fail<TFailure>(TFailure error) => new(error);
+  public static Result<TSuccess, TFailure> Succeed<TSuccess, TFailure>(TSuccess result) => Succeed(result);
+  public static Result<TSuccess, TFailure> Fail<TSuccess, TFailure>(TFailure error) => Fail(error);
   public static GenericSuccess<Unit> Succeed() => Succeed(Unit.unit);
   public static GenericFailure<Unit> Fail() => Fail(Unit.unit);
 

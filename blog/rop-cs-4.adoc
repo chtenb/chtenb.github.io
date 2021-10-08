@@ -93,21 +93,23 @@ Here follows the code for the `Result` type we've produced in this article serie
 
 [source,cs]
 ....
-  public abstract class Result<TR, TE> {
+  public abstract class Result<TSuccess, TFailure> {
 
-    public abstract Result<TNextR, TE> OnSuccess<TNextR>(Func<TR, Result<TNextR, TE>> onSuccess);
-    public abstract Result<TR, TNextE> OnFailure<TNextE>(Func<TE, Result<TR, TNextE>> onFailure);
+    public abstract Result<TNextSuccess, TFailure> OnSuccess<TNextSuccess>(
+      Func<TSuccess, Result<TNextSuccess, TFailure>> onSuccess);
+    public abstract Result<TSuccess, TNextFailure> OnFailure<TNextFailure>(
+      Func<TFailure, Result<TSuccess, TNextFailure>> onFailure);
     /// <summary>
     /// Prefer <see cref="OnSuccess"> and <see cref="OnFailure"> over this method for returning Result types.
     /// </summary>
-    public abstract TReturn Handle<TReturn>(Func<TR, TReturn> onSuccess, Func<TE, TReturn> onFailure);
+    public abstract TReturn Handle<TReturn>(Func<TSuccess, TReturn> onSuccess, Func<TFailure, TReturn> onFailure);
 
     public bool IsSuccess() => this is Success;
     public bool IsFailure() => this is Failure;
 
     #region Void overloads (Because void is not an actual type in .NET)
 
-    public void HandleVoid(Action<TR> onSuccess, Action<TE> onFailure) {
+    public void HandleVoid(Action<TSuccess> onSuccess, Action<TFailure> onFailure) {
       _ = onSuccess ?? throw new ArgumentNullException(nameof(onSuccess));
       _ = onFailure ?? throw new ArgumentNullException(nameof(onFailure));
 
@@ -116,58 +118,65 @@ Here follows the code for the `Result` type we've produced in this article serie
 
     #endregion
 
-    public sealed class Success : Result<TR, TE> {
-      public TR ResultValue { get; }
+    public sealed class Success : Result<TSuccess, TFailure> {
+      public TSuccess ResultValue { get; }
 
-      public Success(TR result) => ResultValue = result;
+      public Success(TSuccess result) => ResultValue = result;
 
-      public override Result<TNextR, TE> OnSuccess<TNextR>(Func<TR, Result<TNextR, TE>> onSuccess)
+      public override Result<TNextSuccess, TFailure> OnSuccess<TNextSuccess>(
+        Func<TSuccess, Result<TNextSuccess, TFailure>> onSuccess)
           => onSuccess(ResultValue);
 
-      public override Result<TR, TNextE> OnFailure<TNextE>(Func<TE, Result<TR, TNextE>> onFailure)
+      public override Result<TSuccess, TNextFailure> OnFailure<TNextFailure>(
+        Func<TFailure, Result<TSuccess, TNextFailure>> onFailure)
           => Result.Succeed(ResultValue);
 
-      public override TReturn Handle<TReturn>(Func<TR, TReturn> onSuccess, Func<TE, TReturn> onFailure)
+      public override TReturn Handle<TReturn>(Func<TSuccess, TReturn> onSuccess, Func<TFailure, TReturn> onFailure)
           => onSuccess(ResultValue);
     }
 
-    public sealed class Failure : Result<TR, TE> {
-      public TE ErrorValue { get; }
+    public sealed class Failure : Result<TSuccess, TFailure> {
+      public TFailure ErrorValue { get; }
 
-      public Failure(TE error) => ErrorValue = error;
+      public Failure(TFailure error) => ErrorValue = error;
 
-      public override Result<TNextR, TE> OnSuccess<TNextR>(Func<TR, Result<TNextR, TE>> onSuccess)
+      public override Result<TNextSuccess, TFailure> OnSuccess<TNextSuccess>(
+        Func<TSuccess, Result<TNextSuccess, TFailure>> onSuccess)
           => Result.Fail(ErrorValue);
 
-      public override Result<TR, TNextE> OnFailure<TNextE>(Func<TE, Result<TR, TNextE>> onFailure)
+      public override Result<TSuccess, TNextFailure> OnFailure<TNextFailure>(
+        Func<TFailure, Result<TSuccess, TNextFailure>> onFailure)
           => onFailure(ErrorValue);
 
-      public override TReturn Handle<TReturn>(Func<TR, TReturn> onSuccess, Func<TE, TReturn> onFailure)
+      public override TReturn Handle<TReturn>(Func<TSuccess, TReturn> onSuccess, Func<TFailure, TReturn> onFailure)
           => onFailure(ErrorValue);
     }
 
-    public static implicit operator Result<TR, TE>(Result.GenericSuccess<TR> ok) => new Success(ok.Value);
+    public static implicit operator Result<TSuccess, TFailure>(Result.GenericSuccess<TSuccess> success)
+        => new Success(success.Value);
 
-    public static implicit operator Result<TR, TE>(Result.GenericFailure<TE> error) => new Failure(error.Value);
+    public static implicit operator Result<TSuccess, TFailure>(Result.GenericFailure<TFailure> failure)
+        => new Failure(failure.Value);
 
     private Result() { }
   }
 
   /// <summary>
-  /// This factory method class makes it possible to create result objects without having to specify the full result type explicitly.
+  /// This factory method class makes it possible to create result objects without
+  /// having to specify the full result type explicitly.
   /// If the generic types cannot be inferred they can also be explicitly passed.
   /// </summary>
   public static class Result {
-    public static GenericSuccess<TR> Succeed<TR>(TR result)
+    public static GenericSuccess<TSuccess> Succeed<TSuccess>(TSuccess result)
         => new(result);
 
-    public static GenericFailure<TE> Fail<TE>(TE error)
+    public static GenericFailure<TFailure> Fail<TFailure>(TFailure error)
         => new(error);
 
-    public static Result<TR, TE> Succeed<TR, TE>(TR result)
+    public static Result<TSuccess, TFailure> Succeed<TSuccess, TFailure>(TSuccess result)
         => Succeed(result);
 
-    public static Result<TR, TE> Fail<TR, TE>(TE error)
+    public static Result<TSuccess, TFailure> Fail<TSuccess, TFailure>(TFailure error)
         => Fail(error);
 
     public static GenericSuccess<Unit> Succeed()
