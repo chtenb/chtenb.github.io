@@ -1,7 +1,7 @@
 = Railroad Oriented Programming in C#: Part 3
 
-In the link:/?page=rop-cs-2[previous article] we looked at an implementation of a `Result` type for explicit failure paths.
-In this article we'll look at how we can improve the creation of these `Result` objects.
+In the link:/?page=rop-cs-2[previous part] we looked at an implementation of a `Result` type for explicit failure paths.
+In this part we'll look at how we can improve the creation of these `Result` objects.
 
 ## Creating `Result` instances
 
@@ -106,4 +106,4 @@ Result<string, string> GetEmail(string username) {
 
 As a rule of thumb, if one encounters any confusing compile errors, try supplying the type parameters to the `OnSuccess`, `OnFailure` and `Handle` methods, and work from there.
 
-In the link:/?page=rop-cs-4[next article] we will conclude this article series with some final observations.
+In the link:/?page=rop-cs-4[next part] we will look at more complex railway tracks and conclude this series.

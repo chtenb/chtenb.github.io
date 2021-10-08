@@ -1,5 +1,8 @@
 = Railroad Oriented Programming in C#: Part 4
 
+In the link:/?page=rop-cs-1[previous part] we looked at how we could construct `Result` instances more easily.
+In this part we will look at slightly more complex railway tracks and wrap up the series.
+
 ## Subtracks and failure recovery
 
 Railroad Oriented Programming is not limited to having a single straight railroad.
@@ -15,6 +18,7 @@ Result<Unit, Exception> SendEmail(EmailMessage email, MailServer server);
 ....
 
 We could then inspect this failure object and decide how to handle it based on the kind of failure.
+Suppose we want to send an email to the server, but we have a fallback server in case the first server fails.
 
 [source,cs]
 ....
@@ -76,4 +80,115 @@ line from B2.e right linerad then down then right color orange behind B2
 move to E.end
 
 handle("Handle","string")
+....
+
+## Asynchronous programming
+
+Using the `Result` type for asynchronous programming is perfectly possible, but again comes with a few hacks to account for some C# compiler limitations.
+Maybe I'll write another article about that some time.
+
+## Conclusion
+
+Here follows the code for the `Result` type we've produced in this article series. 
+
+[source,cs]
+....
+  public abstract class Result<TR, TE> {
+    public abstract Result<TNextR, TE> OnSuccess<TNextR>(Func<TR, Result<TNextR, TE>> onSuccess);
+    public abstract Result<TR, TNextE> OnFailure<TNextE>(Func<TE, Result<TR, TNextE>> onFailure);
+    /// <summary>
+    /// Prefer <see cref="OnSuccess"> and <see cref="OnFailure"> over this method for returning Result types.
+    /// </summary>
+    public abstract TReturn Handle<TReturn>(Func<TR, TReturn> onSuccess, Func<TE, TReturn> onFailure);
+
+    public bool IsSuccess() => this is Success;
+    public bool IsFailure() => this is Failure;
+
+    #region Void overloads (Because void is not an actual type in .NET)
+
+    public void HandleVoid(Action<TR> onSuccess, Action<TE> onFailure) {
+      _ = onSuccess ?? throw new ArgumentNullException(nameof(onSuccess));
+      _ = onFailure ?? throw new ArgumentNullException(nameof(onFailure));
+
+      _ = Handle(onSuccess.AsFunc(), onFailure.AsFunc());
+    }
+
+    #endregion
+
+    public sealed class Success : Result<TR, TE> {
+      public TR ResultValue { get; }
+
+      public Success(TR result) => ResultValue = result;
+
+      public override Result<TNextR, TE> OnSuccess<TNextR>(Func<TR, Result<TNextR, TE>> onSuccess)
+          => onSuccess(ResultValue);
+
+      public override Result<TR, TNextE> OnFailure<TNextE>(Func<TE, Result<TR, TNextE>> onFailure)
+          => Result.Succeed(ResultValue);
+
+      public override TReturn Handle<TReturn>(Func<TR, TReturn> onSuccess, Func<TE, TReturn> onFailure)
+          => onSuccess(ResultValue);
+    }
+
+    public sealed class Failure : Result<TR, TE> {
+      public TE ErrorValue { get; }
+
+      public Failure(TE error) => ErrorValue = error;
+
+      public override Result<TNextR, TE> OnSuccess<TNextR>(Func<TR, Result<TNextR, TE>> onSuccess)
+          => Result.Fail(ErrorValue);
+
+      public override Result<TR, TNextE> OnFailure<TNextE>(Func<TE, Result<TR, TNextE>> onFailure)
+          => onFailure(ErrorValue);
+
+      public override TReturn Handle<TReturn>(Func<TR, TReturn> onSuccess, Func<TE, TReturn> onFailure)
+          => onFailure(ErrorValue);
+    }
+
+    public static implicit operator Result<TR, TE>(Result.GenericSuccess<TR> ok) => new Success(ok.Value);
+
+    public static implicit operator Result<TR, TE>(Result.GenericFailure<TE> error) => new Failure(error.Value);
+
+    private Result() { }
+  }
+
+  /// <summary>
+  /// This factory method class makes it possible to create result objects without having to specify the full result type explicitly.
+  /// If the generic types cannot be inferred they can also be explicitly passed.
+  /// </summary>
+  public static class Result {
+    public static GenericSuccess<TR> Succeed<TR>(TR result)
+        => new(result);
+
+    public static GenericFailure<TE> Fail<TE>(TE error)
+        => new(error);
+
+    public static Result<TR, TE> Succeed<TR, TE>(TR result)
+        => Succeed(result);
+
+    public static Result<TR, TE> Fail<TR, TE>(TE error)
+        => Fail(error);
+
+    public static GenericSuccess<Unit> Succeed()
+        => Succeed(Unit.unit);
+
+    public static GenericFailure<Unit> Fail()
+        => Fail(Unit.unit);
+
+    public readonly struct GenericFailure<T> {
+      public T Value { get; }
+
+      public GenericFailure(T value) {
+        Value = value;
+      }
+    }
+
+    public readonly struct GenericSuccess<T> {
+      public T Value { get; }
+
+      public GenericSuccess(T value) {
+        Value = value;
+      }
+    }
+  }
 ....

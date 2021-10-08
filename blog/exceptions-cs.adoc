@@ -39,7 +39,7 @@ Given that we've succesfully composed our code in terms of transactions, excepti
 
 . Place a try-catch-all construction at the top of each transaction, such that it is guaranteed that each exception will not propagate beyond the transaction in which it occurs. Make sure the exception is properly handled and logged. If the exception cannot be properly handled in a particular transaction it should be rethrown and propagated to the parent transaction.
 . Never place a try-catch construction at a point in your program where it incorrectly may prevent a transaction to be aborted.
-. If your transactions are not bigger than the need to be, then your application is probably decently resilient to exceptions.
+. If your transactions are not bigger than they need to be, then your application is probably decently resilient to exceptions.
 
 How a program should be split up into transactions is very much dependent on the program.
 Some programs (perhaps a CLI) may even consist of a single transaction.

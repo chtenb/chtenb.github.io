@@ -1,6 +1,6 @@
 = Railroad Oriented Programming in C#: Part 2
 
-In the link:/?page=rop-cs-1[previous article] we looked at problems with traditional forms of handling failure.
+In the link:/?page=rop-cs-1[previous part] we looked at problems with traditional forms of handling failure.
 Here we will look at one solution to deal with these problems: a `Result` type that allows for a success case and a failure case.
 
 ## A result type supporting the failure path
@@ -311,7 +311,7 @@ string MailMessageToUser(string username, string msg) {
     .OnSuccess(GetEmailAddress)
     .OnSuccess(email => CreateEmailMessage(email, msg))
     .OnSuccess(SendEmail)
-    .OnFailure(error => new Result<Unit, string>.Failure("And error occurred: " + error))
+    .OnFailure(error => new Result<Unit, string>.Failure("An error occurred: " + error))
     .Handle(
       _ => "Email sent",
       error => {

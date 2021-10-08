@@ -93,7 +93,7 @@ You would need to have a return type that can be _either_ the success type _or_ 
 In functional programming languages such a construct _does_ exist and is called a https://en.wikipedia.org/wiki/Tagged_union[Discriminated Union].
 But C-like languages, including C#, do not have support for such a type.
 Luckily C# has had added lots of language features over the years that make it possible to emulate discriminated unions and use them in a relatively convenient and type-safe way.
-In the link:/?page=rop-cs-2[next part] of this article series we will have a look at one way of implementing explicit failure in C#: a `Result` type with two subtypes, the `Success` type for the success path and the `Failure` type for the failure path.
+In the link:/?page=rop-cs-2[next part] of this series we will have a look at one way of implementing explicit failure in C#: a `Result` type with two subtypes, the `Success` type for the success path and the `Failure` type for the failure path.
 
 ### Default values or Try-Parse vs the `Failure` type
 If performance is critical and you need to avoid as many allocations as possible, then using default values or the Try-Parse Pattern may be a good fit.
@@ -109,5 +109,5 @@ _Should the failure always cause the entire transaction to be aborted in any rea
 If the answer is yes, then it is probably appropriate to handle the failure by throwing an exception.
 If the answer is no, then it is probably better to handle the failure by incorporating it in the function return type, such that the caller is forced to make an explicit decision about how to handle the failure path.
 
-In the link:/?page=rop-cs-2[next part] of this article series we will implement a `Result` type for C#.
+In the link:/?page=rop-cs-2[next part] of this series we will implement a `Result` type for C#.
 
