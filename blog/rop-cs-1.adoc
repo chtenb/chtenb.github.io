@@ -44,7 +44,7 @@ If a function fails, usually one of the following things happens.
 
 
 ### Problems with using default values for failure
-- For *value types* the default value is a valid member of the value space of the type. So there would be no way to distinguish between a success return value and a failure return value in this case.
+- For *value types* the default value is a valid member of the value space of the type. So either there would be no way to distinguish between a success return value and a failure return value, or if there are special values reserved for failure signaling (like `-1` is often used in the case of `int`) there is no compile-time guarantee that the failure case is handled distinctly.
 - For *reference types* the default value (`null`) is not a valid member of the value space of a class in the sense that you can't call the class methods on it. The compiler however treats it as it _were_ a valid member, leading to null-reference bugs. Since the addition of nonnullable reference types in C# 8.0 this set of problems has been diminished a great deal, but a non-negligible pool of pitfalls remains.
 - There is no way to return any data along with the failure, such as an error message or some object indicating the reason or nature of the failure.
 - There is no way to distinguish between different kinds of failures.
@@ -62,8 +62,8 @@ This approach is more explicit than the other two approaches.
 However, the compiler is still unable to verify if the checks are done properly, if all cases are covered and if the right `out` parameters are used in the right cases.
 If you restrict yourself to the Try-Parse Pattern this becomes less of a problem, but that disables distinghuising between different kinds of failures or returning data along with failures.
 
-### Solution: explicit failure paths through a `Result` type
-The solution is pretty obvious: make the failure path part of the normal return type of the function.
+## Solution: explicit failure paths through a `Result` type
+The solution sounds pretty obvious: make the failure path part of the normal return type of the function.
 
 [pikchr]
 ....
@@ -87,7 +87,7 @@ oval "Failure" fit fill orange
 (Success<User> OR Failure<Error>) GetUser(string username);
 ....
 
-This sounds trivial, so why isn't this done traditionally?
+Since it sounds so trivial, so why isn't this done traditionally?
 At least part of that has to do with the fact C-like languages do not make it easy to do this.
 You would need to have a return type that can be _either_ the success type _or_ the failure type.
 In functional programming languages such a construct _does_ exist and is called a https://en.wikipedia.org/wiki/Tagged_union[Discriminated Union].
@@ -108,6 +108,7 @@ _Should the failure always cause the entire transaction to be aborted in any rea
 
 If the answer is yes, then it is probably appropriate to handle the failure by throwing an exception.
 If the answer is no, then it is probably better to handle the failure by incorporating it in the function return type, such that the caller is forced to make an explicit decision about how to handle the failure path.
+For a more elaborate discussion of when and how to use exceptions, again refer to link:/?page=exceptions-cs[this short article about exceptions].
 
 In the link:/?page=rop-cs-2[next part] of this series we will implement a `Result` type for C#.
 
