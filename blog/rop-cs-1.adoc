@@ -87,7 +87,7 @@ oval "Failure" fit fill orange
 (Success<User> OR Failure<Error>) GetUser(string username);
 ....
 
-Since it sounds so trivial, so why isn't this done traditionally?
+Since this idea sounds so trivial, why isn't this done traditionally?
 At least part of that has to do with the fact C-like languages do not make it easy to do this.
 You would need to have a return type that can be _either_ the success type _or_ the failure type.
 In functional programming languages such a construct _does_ exist and is called a https://en.wikipedia.org/wiki/Tagged_union[Discriminated Union].
