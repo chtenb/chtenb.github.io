@@ -1,6 +1,6 @@
 = Railroad Oriented Programming in C#: Part 4
 
-In the link:/?page=rop-cs-1[previous part] we looked at how we could construct `Result` instances more easily.
+In the link:/?page=rop-cs-3[previous part] we looked at how we could construct `Result` instances more easily.
 In this part we will look at slightly more complex railway tracks and wrap up the series.
 
 ## Subtracks and failure recovery
@@ -94,6 +94,7 @@ Here follows the code for the `Result` type we've produced in this article serie
 [source,cs]
 ....
   public abstract class Result<TR, TE> {
+
     public abstract Result<TNextR, TE> OnSuccess<TNextR>(Func<TR, Result<TNextR, TE>> onSuccess);
     public abstract Result<TR, TNextE> OnFailure<TNextE>(Func<TE, Result<TR, TNextE>> onFailure);
     /// <summary>
