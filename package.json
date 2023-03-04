@@ -17,7 +17,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Chiel92/chiel92.github.io"
+    "url": "git+https://github.com/chtenb/chtenb.github.io"
   },
   "keywords": [
     "dev"
@@ -29,9 +29,9 @@
     "asciidoctor": "^2.2.4",
     "asciidoctor-highlight.js": "^0.3.0",
     "asciidoctor-kroki": "^0.13.0",
+    "highlight.js": "latest",
     "parcel": "next",
     "purescript": "^0.14.1",
-    "spago": "^0.20.3",
-    "highlight.js": "latest"
+    "spago": "^0.20.9"
   }
 }
