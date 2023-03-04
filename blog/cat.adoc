@@ -68,12 +68,12 @@ f ∘ (g ∘ h) x
 [source,hs,subs="quotes"]
 ----
 (f ∘ id~a~) x 
-  = f (id~a~ x) -- definition composition
-  = f x         -- definition id~a~
+  = f (id~a~ x)    -- definition composition
+  = f x    -- definition id~a~
 
 (id~a~ ∘ f) x 
-  = id~a~ (f x) -- definition composition
-  = f x         -- definition id~a~
+  = id~a~ (f x)    -- definition composition
+  = f x    -- definition id~a~
 ----
 
 ∎

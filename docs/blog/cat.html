@@ -5,12 +5,12 @@
 <span class="hljs-title">f</span> ∘ (g ∘ h) x
   = f ((g ∘ h) x)
   = f (g (h x))</code></pre> </div> </div> <div class="lowerroman olist"> <ol class="lowerroman" type="i" start="2"> <li> <p>(Identity) For any object a in Obj<sub>FP</sub> and any morphism f in Mor<sub>FP</sub>, f ∘ id<sub>a</sub> = f and id<sub>a</sub> ∘ f = f.</p> </li> </ol> </div> <div class="listingblock"> <div class="content"> <pre class="highlight"><code class="language-hs" data-lang="hs">(f ∘ id<sub>a</sub>) x
-  = f (id<sub>a</sub> x) <span class="hljs-comment">-- definition composition</span>
-  = f x         <span class="hljs-comment">-- definition id<sub>a</sub></span>
+  = f (id<sub>a</sub> x)    <span class="hljs-comment">-- definition composition</span>
+  = f x    <span class="hljs-comment">-- definition id<sub>a</sub></span>
 
 (id<sub>a</sub> ∘ f) x
-  = id<sub>a</sub> (f x) <span class="hljs-comment">-- definition composition</span>
-  = f x         <span class="hljs-comment">-- definition id<sub>a</sub></span></code></pre> </div> </div> <div class="paragraph"> <p>∎</p> </div> </div> <div class="sect2"> <h3 id="ex-list-functor">2.2. The List Functor</h3> <div class="paragraph"> <p>The <code>List</code> type constructor forms an endofunctor in the category FP.</p> </div> <div class="listingblock"> <div class="content"> <pre class="highlight"><code class="language-hs" data-lang="hs"><span class="hljs-comment">-- List : Obj<sub>T</sub> → Obj<sub>T</sub></span>
+  = id<sub>a</sub> (f x)    <span class="hljs-comment">-- definition composition</span>
+  = f x    <span class="hljs-comment">-- definition id<sub>a</sub></span></code></pre> </div> </div> <div class="paragraph"> <p>∎</p> </div> </div> <div class="sect2"> <h3 id="ex-list-functor">2.2. The List Functor</h3> <div class="paragraph"> <p>The <code>List</code> type constructor forms an endofunctor in the category FP.</p> </div> <div class="listingblock"> <div class="content"> <pre class="highlight"><code class="language-hs" data-lang="hs"><span class="hljs-comment">-- List : Obj<sub>T</sub> → Obj<sub>T</sub></span>
 <span class="hljs-type">List</span> a = <span class="hljs-type">Nil</span> | <span class="hljs-type">Cons</span> a (<span class="hljs-type">List</span> a)
 <span class="hljs-comment">-- List<sub>map</sub> : Mor<sub>T</sub> → Mor<sub>T</sub></span>
 <span class="hljs-type">List</span><sub>map</sub> :: (a → b) → (<span class="hljs-type">List</span> a → <span class="hljs-type">List</span> b)

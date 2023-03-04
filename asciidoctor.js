@@ -13,7 +13,6 @@ var options = {
   'standalone': true,
   'attributes': {
     'linkcss': true,
-    'subs': '-replacements',
     'nofooter': true,
     'source-highlighter': 'highlightjs-ext',
     'docinfodir': '../res/',
