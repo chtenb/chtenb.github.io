@@ -1,6 +1,6 @@
 "use strict";
 
-exports.executeJavascriptHacks = function () {
+export const executeJavascriptHacks = function () {
   // Hack to be able to use the right viewport height in the CSS, because the CSS vh value doesn't behave well on mobile.
   var root = document.querySelector(':root');
   window.addEventListener('resize', () => {
@@ -12,7 +12,7 @@ exports.executeJavascriptHacks = function () {
   }
 };
 
-exports.executeSiteAnalytics = function () {
+export const executeSiteAnalytics = function () {
   window.dataLayer = window.dataLayer || [];
   function gtag() { dataLayer.push(arguments); }
   gtag('js', new Date());

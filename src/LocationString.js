@@ -1,14 +1,14 @@
 "use strict";
 
-exports.getLocationString = function () {
+export const getLocationString = function () {
   return window.location.href;
 };
 
-exports.getLocationBaseString = function () {
+export const getLocationBaseString = function () {
   return window.location.origin + window.location.pathname;
 };
 
-exports.setLocationString = function (value) {
+export const setLocationString = function (value) {
   return function () {
     _setLocationString(value);
   }
@@ -21,14 +21,14 @@ var _setLocationString = function (value) {
 };
 
 
-exports.getFragmentString = function () {
+export const getFragmentString = function () {
   var result = window.location.hash;
   if (result.startsWith("#"))
     return result.substring(1);
   return "";
 };
 
-exports.setFragmentString = function (value) {
+export const setFragmentString = function (value) {
   return function () {
     _setFragmentString(value);
   }
@@ -45,14 +45,14 @@ var _setFragmentString = function (value) {
 };
 
 
-exports.getQueryString = function () {
+export const getQueryString = function () {
   var result = window.location.search;
   if (result.startsWith("?"))
     return result.substring(1);
   return "";
 };
 
-exports.setQueryString = function (value) {
+export const setQueryString = function (value) {
   return function () {
     _setQueryString(value);
   }
@@ -65,7 +65,7 @@ var _setQueryString = function (value) {
   window.history.pushState({}, '', newurl);
 };
 
-exports._getQueryParam = function (paramName) {
+export const _getQueryParam = function (paramName) {
   return function () {
     const urlParams = new URLSearchParams(window.location.search);
     return urlParams.get(paramName);

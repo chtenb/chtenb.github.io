@@ -1,4 +1,4 @@
-var Main = require('../output/Main');
+import * as Main from '../output/Main';
 
 function main () {
     /*
