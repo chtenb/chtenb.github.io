@@ -13,6 +13,7 @@ var options = {
   'standalone': true,
   'attributes': {
     'linkcss': true,
+    'nofooter': true,
     'source-highlighter': 'highlightjs-ext',
     'docinfodir': '../res/',
     'docinfo': 'shared',
