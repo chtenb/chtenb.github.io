@@ -26,13 +26,13 @@
   "license": "ISC",
   "description": "",
   "devDependencies": {
-    "@parcel/transformer-image": "^2.0.0-rc.0",
-    "asciidoctor": "^2.2.4",
-    "asciidoctor-highlight.js": "^0.3.0",
-    "asciidoctor-kroki": "^0.13.0",
-    "highlight.js": "latest",
-    "parcel": "next",
-    "purescript": "^0.15.7",
-    "spago": "^0.20.9"
+    "parcel": "2.8.3",
+    "@parcel/transformer-image": "2.8.3",
+    "asciidoctor": "2.2.6",
+    "asciidoctor-highlight.js": "0.4.0",
+    "asciidoctor-kroki": "0.17.0",
+    "highlight.js": "11.7.0",
+    "purescript": "0.15.7",
+    "spago": "0.20.9"
   }
 }
