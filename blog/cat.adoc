@@ -133,7 +133,7 @@ We prove that these two expressions are the same for all possible inputs, namely
 [{eqtable}]
 |===
 | map~List~ id~a~ (Cons x xs)  | = Cons (id~a~ x) (map~List~ id~a~ xs)  | (definition map~List~)
-|                              | = Cons x (map~List~ id~a~ xs)          | (definition id~a~||
+|                              | = Cons x (map~List~ id~a~ xs)          | (definition id~a~)
 |||
 | id~List a~ (Cons x xs)       | = Cons x xs                            | (definition id~List a~)
 |===
