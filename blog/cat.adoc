@@ -21,6 +21,7 @@ The composition operation satisfies the following two axioms:
 . (Associativity) For any morphisms f, g, and h in Mor~C~,  (f ∘ g) ∘ h = f ∘ (g ∘ h).
 . (Identity) For any object a in Obj~C~ and any morphism f in Mor~C~,  f ∘ id~a~ = f and id~a~ ∘ f = f.
 
+
 [#def-functor]
 === Definition Functor
 
@@ -36,6 +37,22 @@ These functions must satisfy the following two conditions:
 . For any object a in Obj~C~,  map~F~ id~a~ = id~F a~.
 
 If C and D are the same category, F is called an *endofunctor*.
+
+[#def-product]
+=== Definition Product and Coproduct
+A *product* of two objects a and b is the object c equipped with two morphisms (called projections) p: c → a and q: c → b 
+such that for any other object c' equipped with two projections p': c' → a and q': c' → b there is a unique morphism m: c' → c that factorizes those projections: 
+
+[lowerroman]
+. p' = p ∘ m
+. q' = q ∘ m
+
+Dually, a *coproduct* of two objects a and b is the object c equipped with two morphisms (called injections) i: a → c and j: b → c 
+such that for any other object c' equipped with two injections i': a → c' and j': b → c' there is a unique morphism m: c → c' that factorizes those injections: 
+
+[lowerroman]
+. i' = m ∘ i
+. j' = m ∘ j
 
 == Examples
 

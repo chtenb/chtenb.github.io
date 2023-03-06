@@ -11,7 +11,7 @@
     "test": "spago test",
     "adocw": "watchexec -w blog/ -e adoc,pikchr npm run adoc",
     "serve": "npm run build && parcel serve index.html blog/*.html",
-    "release": "rm -rf docs && npm run build && parcel build --dist-dir docs/ './index.html' './blog/*.html' && git checkout -- docs/CNAME",
+    "release": "rm -rf docs && npm run build && parcel build --no-minify --dist-dir docs/ './index.html' './blog/*.html' && git checkout -- docs/CNAME",
     "publish": "npm run release && git checkout -- docs/CNAME && git add . && git commit -m publish",
     "clean": "rm -rf .cache .spago .psci_modules node_modules output .parcel-cache"
   },
