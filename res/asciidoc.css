@@ -660,7 +660,7 @@ table thead tr th,
 table thead tr td,
 table tfoot tr th,
 table tfoot tr td {
-  padding: .5em .625em .625em;
+  padding: .4em .625em .4em;
   font-size: inherit;
   color: rgba(0, 0, 0, .8);
   text-align: left
@@ -668,7 +668,7 @@ table tfoot tr td {
 
 table tr th,
 table tr td {
-  padding: .5625em .625em;
+  padding: .4em .625em;
   font-size: inherit;
   color: rgba(0, 0, 0, .8)
 }

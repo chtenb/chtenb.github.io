@@ -42,7 +42,7 @@ If C and D are the same category, F is called an *endofunctor*.
 [#ex-fp]
 === The FP Category
 
-The category FP, with objects being types and morphisms being functions, forms a category.
+The category *FP*, with objects being types and morphisms being functions, forms a category.
 
 Composition of two functions f and g in Mor~FP~ is defined as  (f ∘ g) x = f (g x).
 
@@ -78,13 +78,13 @@ To prove the equivalence of two functions, it suffices to show that they yield t
 [#ex-List-functor]
 === The List Functor
 
-The `List` type constructor forms an endofunctor in the category FP.
+The *List* type constructor forms an endofunctor in the category FP.
 
 [{eqtable}]
 |===
 | List : Obj~T~ → Obj~T~                                |
 | List a = Nil \| Cons a (List a)                       |
-| map~List~ : Mor~T~ → Mor~T~                           | Or, specialized to FP,  map~List~ :: (a → b) → (List a → List b)
+| map~List~ : Mor~T~ → Mor~T~                           | Or, specialized to FP,  map~List~ : (a → b) → (List a → List b)
 | map~List~ f Nil = Nil                                 |
 | map~List~ f (Cons x xs) = Cons (f x) (map~List~ f xs) |
 |===
