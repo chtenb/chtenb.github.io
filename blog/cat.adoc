@@ -82,12 +82,11 @@ The `List` type constructor forms an endofunctor in the category FP.
 
 [{eqtable}]
 |===
-| List : Obj~T~ → Obj~T~
-| List a = Nil \| Cons a (List a)
-| map~List~ : Mor~T~ → Mor~T~
-| Or, specialized to FP,  map~List~ :: (a → b) → (List a → List b)
-| map~List~ f Nil = Nil
-| map~List~ f (Cons x xs) = Cons (f x) (map~List~ f xs)
+| List : Obj~T~ → Obj~T~                                |
+| List a = Nil \| Cons a (List a)                       |
+| map~List~ : Mor~T~ → Mor~T~                           | Or, specialized to FP,  map~List~ :: (a → b) → (List a → List b)
+| map~List~ f Nil = Nil                                 |
+| map~List~ f (Cons x xs) = Cons (f x) (map~List~ f xs) |
 |===
 
 _Proof._
@@ -99,21 +98,21 @@ We prove that these two expressions are the same for all possible inputs, namely
 
 [{eqtable}]
 |===
-| map~List~ (f ∘ g) Nil = Nil ||
+| map~List~ (f ∘ g) Nil            | = Nil                            |
 |||
-| (map~List~ f ∘ map~List~ g) Nil  | = map~List~ f (map~List~ g Nil)    | (definition composition)
-|                                  | = map~List~ f Nil                  | (definition map~List~)
-|                                  | = Nil                              | (definition map~List~)
+| (map~List~ f ∘ map~List~ g) Nil  | = map~List~ f (map~List~ g Nil)  | (definition composition)
+|                                  | = map~List~ f Nil                | (definition map~List~)
+|                                  | = Nil                            | (definition map~List~)
 |===
   
 [{eqtable}]
 |===
-| map~List~ (f ∘ g) (Cons x xs) | = Cons ((f ∘ g) x) (map~List~ (f ∘ g) xs)    | (definition map~List~)
+| map~List~ (f ∘ g) (Cons x xs)           | = Cons ((f ∘ g) x) (map~List~ (f ∘ g) xs)            | (definition map~List~)
 |||
-| (map~List~ f ∘ map~List~ g) (Cons x xs) | =  map~List~ f (map~List~ g (Cons x xs))               | (definition composition)
-|                                         | = map~List~ f (Cons (g x) (map~List~ g xs))            | (definition map~List~)
-|                                         | = Cons (f (g x)) (map~List~ f (map~List~ g xs))        | (definition map~List~)
-|                                         | = Cons ((f ∘ g) x) ((map~List~ f ∘ map~List~ g) xs)    | (definition composition)
+| (map~List~ f ∘ map~List~ g) (Cons x xs) | = map~List~ f (map~List~ g (Cons x xs))              | (definition composition)
+|                                         | = map~List~ f (Cons (g x) (map~List~ g xs))          | (definition map~List~)
+|                                         | = Cons (f (g x)) (map~List~ f (map~List~ g xs))      | (definition map~List~)
+|                                         | = Cons ((f ∘ g) x) ((map~List~ f ∘ map~List~ g) xs)  | (definition composition)
 |===
 
 All we have left to prove is that map~List~ (f ∘ g) xs = (map~List~ f ∘ map~List~ g) xs.
@@ -126,17 +125,17 @@ We prove that these two expressions are the same for all possible inputs, namely
 
 [{eqtable}]
 |===
-| map~List~ id~a~ Nil = Nil    | (definition map~List~)
-| |
-| id~List a~ Nil = Nil    | (definition id~List a~)
+| map~List~ id~a~ Nil = Nil  | (definition map~List~)
+||
+| id~List a~ Nil = Nil       | (definition id~List a~)
 |===
 
 [{eqtable}]
 |===
-| map~List~ id~a~ (Cons x xs)  | = Cons (id~a~ x) (map~List~ id~a~ xs)    | (definition map~List~)
-|                              | = Cons x (map~List~ id~a~ xs)            | (definition id~a~||
+| map~List~ id~a~ (Cons x xs)  | = Cons (id~a~ x) (map~List~ id~a~ xs)  | (definition map~List~)
+|                              | = Cons x (map~List~ id~a~ xs)          | (definition id~a~||
 |||
-| id~List a~ (Cons x xs)       | = Cons x xs    | (definition id~List a~)
+| id~List a~ (Cons x xs)       | = Cons x xs                            | (definition id~List a~)
 |===
 
 All we have left to prove is that map~List~ id~a~ xs = xs.
