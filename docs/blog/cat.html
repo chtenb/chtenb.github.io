@@ -1,1 +1,406 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="Asciidoctor 2.0.17"><title>Category Theory</title><link rel="stylesheet" href="/blog/cat.43caabae.css"><base target="_parent"></head><body class="article"> <div id="header"> <h1>Category Theory</h1> </div> <div id="content"> <div class="sect1"> <h2 id="_definitions">1. Definitions</h2> <div class="sectionbody"> <div class="sect2"> <h3 id="def-category">1.1. Definition Category</h3> <div class="paragraph"> <p>A <strong>category</strong> C consists of:</p> </div> <div class="ulist"> <ul> <li> <p>A collection of objects, denoted by Obj<sub>C</sub>.</p> </li> <li> <p>A collection of morphisms (arrows) between objects, denoted by Mor<sub>C</sub>.</p> </li> <li> <p>A composition operation, denoted by ∘ : Mor<sub>C</sub> × Mor<sub>C</sub> → Mor<sub>C</sub>.</p> </li> <li> <p>For each object a in Obj<sub>C</sub>, an identity morphism id<sub>a</sub> in Mor<sub>C</sub>.</p> </li> </ul> </div> <div class="paragraph"> <p>The composition operation satisfies the following two axioms:</p> </div> <div class="lowerroman olist"> <ol class="lowerroman" type="i"> <li> <p>(Associativity) For any morphisms f, g, and h in Mor<sub>C</sub>, (f ∘ g) ∘ h = f ∘ (g ∘ h).</p> </li> <li> <p>(Identity) For any object a in Obj<sub>C</sub> and any morphism f in Mor<sub>C</sub>, f ∘ id<sub>a</sub> = f and id<sub>a</sub> ∘ f = f.</p> </li> </ol> </div> </div> <div class="sect2"> <h3 id="def-functor">1.2. Definition Functor</h3> <div class="paragraph"> <p>Given two categories C and D, a <strong>functor</strong> F : C → D consists of:</p> </div> <div class="ulist"> <ul> <li> <p>A function F : Obj<sub>C</sub> → Obj<sub>D</sub></p> </li> <li> <p>A function map<sub>F</sub> : Mor<sub>C</sub> → Mor<sub>D</sub></p> </li> </ul> </div> <div class="paragraph"> <p>These functions must satisfy the following two conditions:</p> </div> <div class="lowerroman olist"> <ol class="lowerroman" type="i"> <li> <p>For any two morphisms f and g in Mor<sub>C</sub>, map<sub>F</sub> (f ∘ g) = map<sub>F</sub> f ∘ map<sub>F</sub> g.</p> </li> <li> <p>For any object a in Obj<sub>C</sub>, map<sub>F</sub> id<sub>a</sub> = id~F a~.</p> </li> </ol> </div> <div class="paragraph"> <p>If C and D are the same category, F is called an <strong>endofunctor</strong>.</p> </div> </div> </div> </div> <div class="sect1"> <h2 id="_examples">2. Examples</h2> <div class="sectionbody"> <div class="sect2"> <h3 id="ex-fp">2.1. The FP Category</h3> <div class="paragraph"> <p>The category <strong>FP</strong>, with objects being types and morphisms being functions, forms a category.</p> </div> <div class="paragraph"> <p>Composition of two functions f and g in Mor<sub>FP</sub> is defined as (f ∘ g) x = f (g x).</p> </div> <div class="paragraph"> <p>For any object a in Obj<sub>FP</sub>, id<sub>a</sub> is defined as the function id<sub>a</sub> x = x.</p> </div> <div class="paragraph"> <p><em>Proof.</em></p> </div> <div class="paragraph"> <p>To prove the equivalence of two functions, it suffices to show that they yield the same output for the same input.</p> </div> <div class="lowerroman olist"> <ol class="lowerroman" type="i"> <li> <p>(Associativity) For any morphisms f, g, and h in Mor<sub>FP</sub>, (f ∘ g) ∘ h = f ∘ (g ∘ h).</p> </li> </ol> </div> <table class="fit-content frame-none grid-none tableblock"> <colgroup> <col> <col> <col> </colgroup> <tbody> <tr> <td class="halign-left tableblock valign-top"><p class="tableblock">((f ∘ g) ∘ h) x</p></td> <td class="halign-left tableblock valign-top"><p class="tableblock">= (f ∘ g) (h x)</p></td> <td class="halign-left tableblock valign-top"><p class="tableblock">(definition composition)</p></td> </tr> <tr> <td class="halign-left tableblock valign-top"></td> <td class="halign-left tableblock valign-top"><p class="tableblock">= f (g (h x))</p></td> <td class="halign-left tableblock valign-top"><p class="tableblock">(definition composition)</p></td> </tr> </tbody> </table> <div class="lowerroman olist"> <ol class="lowerroman" type="i" start="2"> <li> <p>(Identity) For any object a in Obj<sub>FP</sub> and any morphism f in Mor<sub>FP</sub>, f ∘ id<sub>a</sub> = f and id<sub>a</sub> ∘ f = f.</p> </li> </ol> </div> <table class="fit-content frame-none grid-none tableblock"> <colgroup> <col> <col> <col> </colgroup> <tbody> <tr> <td class="halign-left tableblock valign-top"><p class="tableblock">(f ∘ id<sub>a</sub>) x</p></td> <td class="halign-left tableblock valign-top"><p class="tableblock">= f (id<sub>a</sub> x)</p></td> <td class="halign-left tableblock valign-top"><p class="tableblock">(definition composition)</p></td> </tr> <tr> <td class="halign-left tableblock valign-top"></td> <td class="halign-left tableblock valign-top"><p class="tableblock">= f x</p></td> <td class="halign-left tableblock valign-top"><p class="tableblock">(definition id<sub>a</sub>)</p></td> </tr> <tr> <td class="halign-left tableblock valign-top"></td> <td class="halign-left tableblock valign-top"></td> <td class="halign-left tableblock valign-top"></td> </tr> <tr> <td class="halign-left tableblock valign-top"><p class="tableblock">(id<sub>a</sub> ∘ f) x</p></td> <td class="halign-left tableblock valign-top"><p class="tableblock">= id<sub>a</sub> (f x)</p></td> <td class="halign-left tableblock valign-top"><p class="tableblock">(definition composition)</p></td> </tr> <tr> <td class="halign-left tableblock valign-top"></td> <td class="halign-left tableblock valign-top"><p class="tableblock">= f x</p></td> <td class="halign-left tableblock valign-top"><p class="tableblock">(definition id<sub>a</sub>)</p></td> </tr> </tbody> </table> <div class="paragraph"> <p>∎</p> </div> </div> <div class="sect2"> <h3 id="ex-List-functor">2.2. The List Functor</h3> <div class="paragraph"> <p>The <strong>List</strong> type constructor forms an endofunctor in the category FP.</p> </div> <table class="fit-content frame-none grid-none tableblock"> <colgroup> <col> <col> </colgroup> <tbody> <tr> <td class="halign-left tableblock valign-top"><p class="tableblock">List : Obj<sub>T</sub> → Obj<sub>T</sub></p></td> <td class="halign-left tableblock valign-top"></td> </tr> <tr> <td class="halign-left tableblock valign-top"><p class="tableblock">List a = Nil | Cons a (List a)</p></td> <td class="halign-left tableblock valign-top"></td> </tr> <tr> <td class="halign-left tableblock valign-top"><p class="tableblock">map<sub>List</sub> : Mor<sub>T</sub> → Mor<sub>T</sub></p></td> <td class="halign-left tableblock valign-top"><p class="tableblock">Or, specialized to FP, map<sub>List</sub> : (a → b) → (List a → List b)</p></td> </tr> <tr> <td class="halign-left tableblock valign-top"><p class="tableblock">map<sub>List</sub> f Nil = Nil</p></td> <td class="halign-left tableblock valign-top"></td> </tr> <tr> <td class="halign-left tableblock valign-top"><p class="tableblock">map<sub>List</sub> f (Cons x xs) = Cons (f x) (map<sub>List</sub> f xs)</p></td> <td class="halign-left tableblock valign-top"></td> </tr> </tbody> </table> <div class="paragraph"> <p><em>Proof.</em></p> </div> <div class="lowerroman olist"> <ol class="lowerroman" type="i"> <li> <p>For any two morphisms f and g in Mor<sub>T</sub>, map<sub>List</sub> (f ∘ g) = map<sub>List</sub> f ∘ map<sub>List</sub> g.</p> </li> </ol> </div> <div class="paragraph"> <p>We prove that these two expressions are the same for all possible inputs, namely Nil and Cons x xs.</p> </div> <table class="fit-content frame-none grid-none tableblock"> <colgroup> <col> <col> <col> </colgroup> <tbody> <tr> <td class="halign-left tableblock valign-top"><p class="tableblock">map<sub>List</sub> (f ∘ g) Nil</p></td> <td class="halign-left tableblock valign-top"><p class="tableblock">= Nil</p></td> <td class="halign-left tableblock valign-top"></td> </tr> <tr> <td class="halign-left tableblock valign-top"></td> <td class="halign-left tableblock valign-top"></td> <td class="halign-left tableblock valign-top"></td> </tr> <tr> <td class="halign-left tableblock valign-top"><p class="tableblock">(map<sub>List</sub> f ∘ map<sub>List</sub> g) Nil</p></td> <td class="halign-left tableblock valign-top"><p class="tableblock">= map<sub>List</sub> f (map<sub>List</sub> g Nil)</p></td> <td class="halign-left tableblock valign-top"><p class="tableblock">(definition composition)</p></td> </tr> <tr> <td class="halign-left tableblock valign-top"></td> <td class="halign-left tableblock valign-top"><p class="tableblock">= map<sub>List</sub> f Nil</p></td> <td class="halign-left tableblock valign-top"><p class="tableblock">(definition map<sub>List</sub>)</p></td> </tr> <tr> <td class="halign-left tableblock valign-top"></td> <td class="halign-left tableblock valign-top"><p class="tableblock">= Nil</p></td> <td class="halign-left tableblock valign-top"><p class="tableblock">(definition map<sub>List</sub>)</p></td> </tr> </tbody> </table> <table class="fit-content frame-none grid-none tableblock"> <colgroup> <col> <col> <col> </colgroup> <tbody> <tr> <td class="halign-left tableblock valign-top"><p class="tableblock">map<sub>List</sub> (f ∘ g) (Cons x xs)</p></td> <td class="halign-left tableblock valign-top"><p class="tableblock">= Cons ((f ∘ g) x) (map<sub>List</sub> (f ∘ g) xs)</p></td> <td class="halign-left tableblock valign-top"><p class="tableblock">(definition map<sub>List</sub>)</p></td> </tr> <tr> <td class="halign-left tableblock valign-top"></td> <td class="halign-left tableblock valign-top"></td> <td class="halign-left tableblock valign-top"></td> </tr> <tr> <td class="halign-left tableblock valign-top"><p class="tableblock">(map<sub>List</sub> f ∘ map<sub>List</sub> g) (Cons x xs)</p></td> <td class="halign-left tableblock valign-top"><p class="tableblock">= map<sub>List</sub> f (map<sub>List</sub> g (Cons x xs))</p></td> <td class="halign-left tableblock valign-top"><p class="tableblock">(definition composition)</p></td> </tr> <tr> <td class="halign-left tableblock valign-top"></td> <td class="halign-left tableblock valign-top"><p class="tableblock">= map<sub>List</sub> f (Cons (g x) (map<sub>List</sub> g xs))</p></td> <td class="halign-left tableblock valign-top"><p class="tableblock">(definition map<sub>List</sub>)</p></td> </tr> <tr> <td class="halign-left tableblock valign-top"></td> <td class="halign-left tableblock valign-top"><p class="tableblock">= Cons (f (g x)) (map<sub>List</sub> f (map<sub>List</sub> g xs))</p></td> <td class="halign-left tableblock valign-top"><p class="tableblock">(definition map<sub>List</sub>)</p></td> </tr> <tr> <td class="halign-left tableblock valign-top"></td> <td class="halign-left tableblock valign-top"><p class="tableblock">= Cons ((f ∘ g) x) ((map<sub>List</sub> f ∘ map<sub>List</sub> g) xs)</p></td> <td class="halign-left tableblock valign-top"><p class="tableblock">(definition composition)</p></td> </tr> </tbody> </table> <div class="paragraph"> <p>All we have left to prove is that map<sub>List</sub> (f ∘ g) xs = (map<sub>List</sub> f ∘ map<sub>List</sub> g) xs. Because it is true for xs = Nil, it follows by induction that the statement is true for all xs.</p> </div> <div class="lowerroman olist"> <ol class="lowerroman" type="i" start="2"> <li> <p>For any object a in Obj<sub>T</sub>, map<sub>List</sub> id<sub>a</sub> = id~List a~.</p> </li> </ol> </div> <div class="paragraph"> <p>We prove that these two expressions are the same for all possible inputs, namely Nil and Cons x xs.</p> </div> <table class="fit-content frame-none grid-none tableblock"> <colgroup> <col> <col> </colgroup> <tbody> <tr> <td class="halign-left tableblock valign-top"><p class="tableblock">map<sub>List</sub> id<sub>a</sub> Nil = Nil</p></td> <td class="halign-left tableblock valign-top"><p class="tableblock">(definition map<sub>List</sub>)</p></td> </tr> <tr> <td class="halign-left tableblock valign-top"></td> <td class="halign-left tableblock valign-top"></td> </tr> <tr> <td class="halign-left tableblock valign-top"><p class="tableblock">id~List a~ Nil = Nil</p></td> <td class="halign-left tableblock valign-top"><p class="tableblock">(definition id~List a~)</p></td> </tr> </tbody> </table> <table class="fit-content frame-none grid-none tableblock"> <colgroup> <col> <col> <col> </colgroup> <tbody> <tr> <td class="halign-left tableblock valign-top"><p class="tableblock">map<sub>List</sub> id<sub>a</sub> (Cons x xs)</p></td> <td class="halign-left tableblock valign-top"><p class="tableblock">= Cons (id<sub>a</sub> x) (map<sub>List</sub> id<sub>a</sub> xs)</p></td> <td class="halign-left tableblock valign-top"><p class="tableblock">(definition map<sub>List</sub>)</p></td> </tr> <tr> <td class="halign-left tableblock valign-top"></td> <td class="halign-left tableblock valign-top"><p class="tableblock">= Cons x (map<sub>List</sub> id<sub>a</sub> xs)</p></td> <td class="halign-left tableblock valign-top"><p class="tableblock">(definition id<sub>a</sub>)</p></td> </tr> <tr> <td class="halign-left tableblock valign-top"></td> <td class="halign-left tableblock valign-top"></td> <td class="halign-left tableblock valign-top"></td> </tr> <tr> <td class="halign-left tableblock valign-top"><p class="tableblock">id~List a~ (Cons x xs)</p></td> <td class="halign-left tableblock valign-top"><p class="tableblock">= Cons x xs</p></td> <td class="halign-left tableblock valign-top"><p class="tableblock">(definition id~List a~)</p></td> </tr> </tbody> </table> <div class="paragraph"> <p>All we have left to prove is that map<sub>List</sub> id<sub>a</sub> xs = xs. Because it is true for xs = Nil, it follows by induction that the statement is true for all xs.</p> </div> <div class="paragraph"> <p>∎</p> </div> </div> </div> </div> </div> </body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Asciidoctor 2.0.17">
+<title>Category Theory</title>
+<link rel="stylesheet" href="/blog/cat.00d63a8d.css">
+
+<base target="_parent">
+</head>
+<body class="article">
+<div id="header">
+<h1>Category Theory</h1>
+</div>
+<div id="content">
+<div class="sect1">
+<h2 id="_definitions">1. Definitions</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="def-category">1.1. Definition Category</h3>
+<div class="paragraph">
+<p>A <strong>category</strong> C consists of:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>A collection of objects, denoted by Obj<sub>C</sub>.</p>
+</li>
+<li>
+<p>A collection of morphisms (arrows) between objects, denoted by Mor<sub>C</sub>.</p>
+</li>
+<li>
+<p>A composition operation, denoted by ∘ : Mor<sub>C</sub> × Mor<sub>C</sub> → Mor<sub>C</sub>.</p>
+</li>
+<li>
+<p>For each object a in Obj<sub>C</sub>, an identity morphism id<sub>a</sub> in Mor<sub>C</sub>.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The composition operation satisfies the following two axioms:</p>
+</div>
+<div class="olist lowerroman">
+<ol class="lowerroman" type="i">
+<li>
+<p>(Associativity) For any morphisms f, g, and h in Mor<sub>C</sub>,  (f ∘ g) ∘ h = f ∘ (g ∘ h).</p>
+</li>
+<li>
+<p>(Identity) For any object a in Obj<sub>C</sub> and any morphism f in Mor<sub>C</sub>,  f ∘ id<sub>a</sub> = f and id<sub>a</sub> ∘ f = f.</p>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect2">
+<h3 id="def-functor">1.2. Definition Functor</h3>
+<div class="paragraph">
+<p>Given two categories C and D, a <strong>functor</strong> F : C → D consists of:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>A function  F : Obj<sub>C</sub> → Obj<sub>D</sub></p>
+</li>
+<li>
+<p>A function  map<sub>F</sub> : Mor<sub>C</sub> → Mor<sub>D</sub></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>These functions must satisfy the following two conditions:</p>
+</div>
+<div class="olist lowerroman">
+<ol class="lowerroman" type="i">
+<li>
+<p>For any two morphisms f and g in Mor<sub>C</sub>,  map<sub>F</sub> (f ∘ g) = map<sub>F</sub> f ∘ map<sub>F</sub> g.</p>
+</li>
+<li>
+<p>For any object a in Obj<sub>C</sub>,  map<sub>F</sub> id<sub>a</sub> = id<sub>F a</sub>.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>If C and D are the same category, F is called an <strong>endofunctor</strong>.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="def-product">1.3. Definition Product and Coproduct</h3>
+<div class="paragraph">
+<p>A <strong>product</strong> of two objects a and b is the object c equipped with two morphisms (called projections) p: c → a and q: c → b
+such that for any other object c' equipped with two projections p': c' → a and q': c' → b there is a unique morphism m: c' → c that factorizes those projections:</p>
+</div>
+<div class="olist lowerroman">
+<ol class="lowerroman" type="i">
+<li>
+<p>p' = p ∘ m</p>
+</li>
+<li>
+<p>q' = q ∘ m</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>Dually, a <strong>coproduct</strong> of two objects a and b is the object c equipped with two morphisms (called injections) i: a → c and j: b → c
+such that for any other object c' equipped with two injections i': a → c' and j': b → c' there is a unique morphism m: c → c' that factorizes those injections:</p>
+</div>
+<div class="olist lowerroman">
+<ol class="lowerroman" type="i">
+<li>
+<p>i' = m ∘ i</p>
+</li>
+<li>
+<p>j' = m ∘ j</p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_examples">2. Examples</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="ex-fp">2.1. The FP Category</h3>
+<div class="paragraph">
+<p>The category <strong>FP</strong>, with objects being types and morphisms being functions, forms a category.</p>
+</div>
+<div class="paragraph">
+<p>Composition of two functions f and g in Mor<sub>FP</sub> is defined as  (f ∘ g) x = f (g x).</p>
+</div>
+<div class="paragraph">
+<p>For any object a in Obj<sub>FP</sub>, id<sub>a</sub> is defined as the function  id<sub>a</sub> x = x.</p>
+</div>
+<div class="paragraph">
+<p><em>Proof.</em></p>
+</div>
+<div class="paragraph">
+<p>To prove the equivalence of two functions, it suffices to show that they yield the same output for the same input.</p>
+</div>
+<div class="olist lowerroman">
+<ol class="lowerroman" type="i">
+<li>
+<p>(Associativity) For any morphisms f, g, and h in Mor<sub>FP</sub>,  (f ∘ g) ∘ h = f ∘ (g ∘ h).</p>
+</li>
+</ol>
+</div>
+<table class="tableblock frame-none grid-none fit-content">
+<colgroup>
+<col>
+<col>
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">((f ∘ g) ∘ h) x</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">= (f ∘ g) (h x)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">(definition composition)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">= f (g (h x))</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">(definition composition)</p></td>
+</tr>
+</tbody>
+</table>
+<div class="olist lowerroman">
+<ol class="lowerroman" type="i" start="2">
+<li>
+<p>(Identity) For any object a in Obj<sub>FP</sub> and any morphism f in Mor<sub>FP</sub>,  f ∘ id<sub>a</sub> = f and id<sub>a</sub> ∘ f = f.</p>
+</li>
+</ol>
+</div>
+<table class="tableblock frame-none grid-none fit-content">
+<colgroup>
+<col>
+<col>
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">(f ∘ id<sub>a</sub>) x</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">= f (id<sub>a</sub> x)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">(definition composition)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">= f x</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">(definition id<sub>a</sub>)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">(id<sub>a</sub> ∘ f) x</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">= id<sub>a</sub> (f x)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">(definition composition)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">= f x</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">(definition id<sub>a</sub>)</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>∎</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="ex-List-functor">2.2. The List Functor</h3>
+<div class="paragraph">
+<p>The <strong>List</strong> type constructor forms an endofunctor in the category FP.</p>
+</div>
+<table class="tableblock frame-none grid-none fit-content">
+<colgroup>
+<col>
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">List : Obj<sub>T</sub> → Obj<sub>T</sub></p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">List a = Nil | Cons a (List a)</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">map<sub>List</sub> : Mor<sub>T</sub> → Mor<sub>T</sub></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Or, specialized to FP,  map<sub>List</sub> : (a → b) → (List a → List b)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">map<sub>List</sub> f Nil = Nil</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">map<sub>List</sub> f (Cons x xs) = Cons (f x) (map<sub>List</sub> f xs)</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p><em>Proof.</em></p>
+</div>
+<div class="olist lowerroman">
+<ol class="lowerroman" type="i">
+<li>
+<p>For any two morphisms f and g in Mor<sub>T</sub>,  map<sub>List</sub> (f ∘ g) = map<sub>List</sub> f ∘ map<sub>List</sub> g.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>We prove that these two expressions are the same for all possible inputs, namely Nil and Cons x xs.</p>
+</div>
+<table class="tableblock frame-none grid-none fit-content">
+<colgroup>
+<col>
+<col>
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">map<sub>List</sub> (f ∘ g) Nil</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">= Nil</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">(map<sub>List</sub> f ∘ map<sub>List</sub> g) Nil</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">= map<sub>List</sub> f (map<sub>List</sub> g Nil)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">(definition composition)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">= map<sub>List</sub> f Nil</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">(definition map<sub>List</sub>)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">= Nil</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">(definition map<sub>List</sub>)</p></td>
+</tr>
+</tbody>
+</table>
+<table class="tableblock frame-none grid-none fit-content">
+<colgroup>
+<col>
+<col>
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">map<sub>List</sub> (f ∘ g) (Cons x xs)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">= Cons ((f ∘ g) x) (map<sub>List</sub> (f ∘ g) xs)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">(definition map<sub>List</sub>)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">(map<sub>List</sub> f ∘ map<sub>List</sub> g) (Cons x xs)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">= map<sub>List</sub> f (map<sub>List</sub> g (Cons x xs))</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">(definition composition)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">= map<sub>List</sub> f (Cons (g x) (map<sub>List</sub> g xs))</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">(definition map<sub>List</sub>)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">= Cons (f (g x)) (map<sub>List</sub> f (map<sub>List</sub> g xs))</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">(definition map<sub>List</sub>)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">= Cons ((f ∘ g) x) ((map<sub>List</sub> f ∘ map<sub>List</sub> g) xs)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">(definition composition)</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>All we have left to prove is that map<sub>List</sub> (f ∘ g) xs = (map<sub>List</sub> f ∘ map<sub>List</sub> g) xs.
+Because it is true for xs = Nil, it follows by induction that the statement is true for all xs.</p>
+</div>
+<div class="olist lowerroman">
+<ol class="lowerroman" type="i" start="2">
+<li>
+<p>For any object a in Obj<sub>T</sub>,  map<sub>List</sub> id<sub>a</sub> = id<sub>List a</sub>.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>We prove that these two expressions are the same for all possible inputs, namely Nil and Cons x xs.</p>
+</div>
+<table class="tableblock frame-none grid-none fit-content">
+<colgroup>
+<col>
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">map<sub>List</sub> id<sub>a</sub> Nil = Nil</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">(definition map<sub>List</sub>)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">id<sub>List a</sub> Nil = Nil</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">(definition id<sub>List a</sub>)</p></td>
+</tr>
+</tbody>
+</table>
+<table class="tableblock frame-none grid-none fit-content">
+<colgroup>
+<col>
+<col>
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">map<sub>List</sub> id<sub>a</sub> (Cons x xs)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">= Cons (id<sub>a</sub> x) (map<sub>List</sub> id<sub>a</sub> xs)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">(definition map<sub>List</sub>)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">= Cons x (map<sub>List</sub> id<sub>a</sub> xs)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">(definition id<sub>a</sub>)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">id<sub>List a</sub> (Cons x xs)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">= Cons x xs</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">(definition id<sub>List a</sub>)</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>All we have left to prove is that map<sub>List</sub> id<sub>a</sub> xs = xs.
+Because it is true for xs = Nil, it follows by induction that the statement is true for all xs.</p>
+</div>
+<div class="paragraph">
+<p>∎</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</body>
+</html>

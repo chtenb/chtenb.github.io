@@ -1,9 +1,52 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="Asciidoctor 2.0.17"><title>Railroad Oriented Programming in C#: Part 2</title><link rel="stylesheet" href="/blog/cat.43caabae.css"><base target="_parent"></head><body class="article"> <div id="header"> <h1>Railroad Oriented Programming in C#: Part 2</h1> </div> <div id="content"> <div id="preamble"> <div class="sectionbody"> <div class="paragraph"> <p>In the <a href="/?page=rop-cs-1">previous part</a> we looked at problems with traditional forms of handling failure. Here we will look at one solution to deal with these problems: a <code>Result</code> type that allows for a success case and a failure case.</p> </div> </div> </div> <div class="sect1"> <h2 id="_a_result_type_supporting_the_failure_path">A result type supporting the failure path</h2> <div class="sectionbody"> <div class="paragraph"> <p>While C# does not directory support Discriminated Unions, it does support subclassing. Since a class can have multiple subclasses, and any object is always just one of them, we can use this phenomenon to implement the notion of having two return types, one for the success result, and one for the failure result.</p> </div> <div class="listingblock"> <div class="content"> <pre class="highlight"><code class="language-cs" data-lang="cs"><span class="hljs-keyword">public</span> <span class="hljs-keyword">abstract</span> <span class="hljs-keyword">class</span> <span class="hljs-title">Result</span> {
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Asciidoctor 2.0.17">
+<title>Railroad Oriented Programming in C#: Part 2</title>
+<link rel="stylesheet" href="/blog/cat.00d63a8d.css">
+
+<base target="_parent">
+</head>
+<body class="article">
+<div id="header">
+<h1>Railroad Oriented Programming in C#: Part 2</h1>
+</div>
+<div id="content">
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>In the <a href="/?page=rop-cs-1">previous part</a> we looked at problems with traditional forms of handling failure.
+Here we will look at one solution to deal with these problems: a <code>Result</code> type that allows for a success case and a failure case.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_a_result_type_supporting_the_failure_path">A result type supporting the failure path</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>While C# does not directory support Discriminated Unions, it does support subclassing.
+Since a class can have multiple subclasses, and any object is always just one of them, we can use this phenomenon to implement the notion of having two return types, one for the success result, and one for the failure result.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-cs" data-lang="cs"><span class="hljs-keyword">public</span> <span class="hljs-keyword">abstract</span> <span class="hljs-keyword">class</span> <span class="hljs-title">Result</span> {
   <span class="hljs-keyword">public</span> <span class="hljs-keyword">sealed</span> <span class="hljs-keyword">class</span> <span class="hljs-title">Success</span> : <span class="hljs-title">Result</span> { }
   <span class="hljs-keyword">public</span> <span class="hljs-keyword">sealed</span> <span class="hljs-keyword">class</span> <span class="hljs-title">Failure</span> : <span class="hljs-title">Result</span> { }
   <span class="hljs-comment">// Private constructor so we are certain that Success and Failure are the only subclasses</span>
   <span class="hljs-function"><span class="hljs-keyword">private</span> <span class="hljs-title">Result</span> ()</span> { }
-}</code></pre> </div> </div> <div class="paragraph"> <p>However, this class does not allow us to associate any return data with either the success or the failure result. We can fix that.</p> </div> <div class="listingblock"> <div class="content"> <pre class="highlight"><code class="language-cs" data-lang="cs"><span class="hljs-keyword">public</span> <span class="hljs-keyword">abstract</span> <span class="hljs-keyword">class</span> <span class="hljs-title">Result</span>&lt;<span class="hljs-title">TSuccess</span>, <span class="hljs-title">TFailure</span>&gt; {
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>However, this class does not allow us to associate any return data with either the success or the failure result.
+We can fix that.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-cs" data-lang="cs"><span class="hljs-keyword">public</span> <span class="hljs-keyword">abstract</span> <span class="hljs-keyword">class</span> <span class="hljs-title">Result</span>&lt;<span class="hljs-title">TSuccess</span>, <span class="hljs-title">TFailure</span>&gt; {
 
   <span class="hljs-keyword">public</span> <span class="hljs-keyword">sealed</span> <span class="hljs-keyword">class</span> <span class="hljs-title">Success</span> : <span class="hljs-title">Result</span>&lt;<span class="hljs-title">TSuccess</span>, <span class="hljs-title">TFailure</span>&gt; {
     <span class="hljs-keyword">public</span> <span class="hljs-keyword">readonly</span> TSuccess SuccessValue;
@@ -21,19 +64,46 @@
 
   <span class="hljs-comment">// Private constructor so we are certain that Success and Failure are the only subclasses</span>
   <span class="hljs-function"><span class="hljs-keyword">private</span> <span class="hljs-title">Result</span> ()</span> { }
-}</code></pre> </div> </div> <div class="paragraph"> <p>With this in our toolkit we can now implement our <code>GetEmailAddress</code> function from earlier with an explicit failure path.</p> </div> <div class="listingblock"> <div class="content"> <pre class="highlight"><code class="language-cs" data-lang="cs"><span class="hljs-function">Result&lt;User, <span class="hljs-built_in">string</span>&gt; <span class="hljs-title">GetUser</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> username</span>)</span> {
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>With this in our toolkit we can now implement our <code>GetEmailAddress</code> function from earlier with an explicit failure path.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-cs" data-lang="cs"><span class="hljs-function">Result&lt;User, <span class="hljs-built_in">string</span>&gt; <span class="hljs-title">GetUser</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> username</span>)</span> {
   <span class="hljs-keyword">var</span> user = Datastore.FindUser(username);
   <span class="hljs-keyword">if</span> (user == <span class="hljs-literal">null</span>)
     <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> Result&lt;User, <span class="hljs-built_in">string</span>&gt;.Failure(<span class="hljs-string">&quot;User has no email&quot;</span>);
   <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> Result&lt;User, <span class="hljs-built_in">string</span>&gt;.Success(user);
-}</code></pre> </div> </div> <div class="paragraph"> <p>Usage of this function would look something like</p> </div> <div class="listingblock"> <div class="content"> <pre class="highlight"><code class="language-cs" data-lang="cs"><span class="hljs-keyword">var</span> result = GetUser(username);
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Usage of this function would look something like</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-cs" data-lang="cs"><span class="hljs-keyword">var</span> result = GetUser(username);
 <span class="hljs-keyword">if</span> (result <span class="hljs-keyword">is</span> Result&lt;User,<span class="hljs-built_in">string</span>&gt;.Success) {
   <span class="hljs-keyword">var</span> user = ((Result&lt;User,<span class="hljs-built_in">string</span>&gt;.Success)result).ResultValue;
   <span class="hljs-comment">// Do what you wanna do</span>
 } <span class="hljs-keyword">else</span> {
   <span class="hljs-keyword">var</span> error = ((Result&lt;User,<span class="hljs-built_in">string</span>&gt;.Failure)result).ErrorValue;
   <span class="hljs-comment">// Handle the failure appropriately</span>
-}</code></pre> </div> </div> <div class="paragraph"> <p>As you can see we&#8217;ve achieved an explicit failure path. When we call <code>GetUser</code> we obtain a result object and this encourages us to consider both the success and the failure case. But the code leaves much to be desired. Even more so when we need to call more than one function.</p> </div> <div class="listingblock"> <div class="content"> <pre class="highlight"><code class="language-cs" data-lang="cs"><span class="hljs-function">Result&lt;<span class="hljs-built_in">string</span>, <span class="hljs-built_in">string</span>&gt; <span class="hljs-title">GetEmailAddress</span>(<span class="hljs-params">User user</span>)</span>;
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>As you can see we&#8217;ve achieved an explicit failure path.
+When we call <code>GetUser</code> we obtain a result object and this encourages us to consider both the success and the failure case.
+But the code leaves much to be desired.
+Even more so when we need to call more than one function.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-cs" data-lang="cs"><span class="hljs-function">Result&lt;<span class="hljs-built_in">string</span>, <span class="hljs-built_in">string</span>&gt; <span class="hljs-title">GetEmailAddress</span>(<span class="hljs-params">User user</span>)</span>;
 
 <span class="hljs-comment">// ...</span>
 
@@ -51,7 +121,38 @@
 } <span class="hljs-keyword">else</span> {
   <span class="hljs-keyword">var</span> error = ((Result&lt;User, <span class="hljs-built_in">string</span>&gt;.Failure)result).ErrorValue;
   <span class="hljs-comment">// Handle the failure appropriately</span>
-}</code></pre> </div> </div> <div class="paragraph"> <p>We would like to</p> </div> <div class="ulist"> <ul> <li> <p>not have to unwrap the <code>Result</code> instance by doing a type check + cast</p> </li> <li> <p>not have a new nesting level for each subsequent function we call</p> </li> <li> <p>not have to handle all failures individually</p> </li> <li> <p>not have to specify the whole type when creating a <code>Result</code> instance: <code>new Result&lt;User, string&gt;.Success()</code></p> </li> </ul> </div> <div class="sect2"> <h3 id="_a_fluent_result_type">A fluent result type</h3> <div class="paragraph"> <p>To resolve the complaints about our previous implementation, we&#8217;ll define an <code>OnSuccess</code> function and a <code>Handle</code> function. They will do the unwrapping for us and form a <a href="https://en.wikipedia.org/wiki/Fluent_interface">Fluent Interface</a> and thereby removing the nesting. Moreover, the OnSuccess function will "shortcircuit" the failure path, such that we only have to handle the failure path once.</p> </div> <div class="listingblock"> <div class="content"> <pre class="highlight"><code class="language-cs" data-lang="cs"><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">abstract</span> <span class="hljs-keyword">class</span> <span class="hljs-title">Result</span>&lt;<span class="hljs-title">TSuccess</span>, <span class="hljs-title">TFailure</span>&gt;</span> {
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We would like to</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>not have to unwrap the <code>Result</code> instance by doing a type check + cast</p>
+</li>
+<li>
+<p>not have a new nesting level for each subsequent function we call</p>
+</li>
+<li>
+<p>not have to handle all failures individually</p>
+</li>
+<li>
+<p>not have to specify the whole type when creating a <code>Result</code> instance: <code>new Result&lt;User, string&gt;.Success()</code></p>
+</li>
+</ul>
+</div>
+<div class="sect2">
+<h3 id="_a_fluent_result_type">A fluent result type</h3>
+<div class="paragraph">
+<p>To resolve the complaints about our previous implementation, we&#8217;ll define an <code>OnSuccess</code> function and a <code>Handle</code> function.
+They will do the unwrapping for us and form a <a href="https://en.wikipedia.org/wiki/Fluent_interface">Fluent Interface</a> and thereby removing the nesting.
+Moreover, the OnSuccess function will "shortcircuit" the failure path, such that we only have to handle the failure path once.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-cs" data-lang="cs"><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">abstract</span> <span class="hljs-keyword">class</span> <span class="hljs-title">Result</span>&lt;<span class="hljs-title">TSuccess</span>, <span class="hljs-title">TFailure</span>&gt;</span> {
 
   <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">abstract</span> <span class="hljs-title">Result</span>&lt;<span class="hljs-title">TNextSuccess</span>, <span class="hljs-title">TFailure</span>&gt; <span class="hljs-title">OnSuccess</span>&lt;<span class="hljs-title">TNextSuccess</span>&gt;(<span class="hljs-params">
     Func&lt;TSuccess, Result&lt;TNextSuccess, TFailure&gt;&gt; onSuccess</span>)</span>;
@@ -84,16 +185,159 @@
   }
 
   <span class="hljs-function"><span class="hljs-keyword">private</span> <span class="hljs-title">Result</span>()</span> { }
-}</code></pre> </div> </div> <div class="paragraph"> <p>Apart from the daunting function signatures, the actual function bodies are trivial. Yet they suddenly allow us to write very concise code. Compare the following with what we had in the previous section.</p> </div> <div class="listingblock"> <div class="content"> <pre class="highlight"><code class="language-cs" data-lang="cs">GetUser(username)
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Apart from the daunting function signatures, the actual function bodies are trivial.
+Yet they suddenly allow us to write very concise code.
+Compare the following with what we had in the previous section.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-cs" data-lang="cs">GetUser(username)
   .OnSuccess(GetEmailAddress);
   .Handle(
     emailAddress =&gt; ..., <span class="hljs-comment">// Do your thing</span>
     error =&gt; ... <span class="hljs-comment">// Handle the failure appropriately</span>
-  );</code></pre> </div> </div> <div class="paragraph"> <p>If we visualize the code flow above in a diagram, it becomes clear why this style of programming is sometimes referred to as <em>railway oriented programming</em>. The <code>Result</code> type encapsulates two "paths" or "tracks", the success track and the failure track.</p> </div> <div class="imageblock kroki"> <div class="content"> <svg xmlns="http://www.w3.org/2000/svg" class="pikchr" width="149" height="51" viewbox="0 0 187.43 64.8"> <polygon points="106,17 95,21 95,12" style="fill:#add8e6"></polygon> <path d="M34,17L100,17" style="fill:none;stroke-width:2.16px;stroke:#add8e6"></path> <polygon points="106,47 95,51 95,43" style="fill:orange"></polygon> <path d="M34,47L100,47" style="fill:none;stroke-width:2.16px;stroke:orange"></path> <path d="M17,47L52,47A15 15 0 0 0 67 32A15 15 0 0 0 52 17L17,17A15 15 0 0 0 2 32A15 15 0 0 0 17 47Z" style="fill:none;stroke-width:2.16px;stroke:#000"></path> <text x="34" y="32" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">Result</text> <path d="M121,32L170,32A15 15 0 0 0 185 17A15 15 0 0 0 170 2L121,2A15 15 0 0 0 106 17A15 15 0 0 0 121 32Z" style="fill:#add8e6;stroke-width:2.16px;stroke:#000"></path> <text x="145" y="17" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">Success</text> <path d="M121,62L163,62A15 15 0 0 0 178 47A15 15 0 0 0 163 32L121,32A15 15 0 0 0 106 47A15 15 0 0 0 121 62Z" style="fill:orange;stroke-width:2.16px;stroke:#000"></path> <text x="142" y="47" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">Failure</text> </svg> </div> </div> <div class="paragraph"> <p>And the <code>OnSuccess</code> and <code>Handle</code> methods form trackpieces.</p> </div> <div class="imageblock kroki"> <div class="content"> <svg xmlns="http://www.w3.org/2000/svg" class="pikchr" width="244" height="40" viewbox="0 0 306.317 51.12"> <path d="M133,17 L 140,17 Q 147,17 147,31 L 147,34 Q 147,48 156,48 L 165,48" style="fill:none;stroke-width:2.16px;stroke:orange"></path> <path d="M133,17L162,17" style="fill:none;stroke-width:2.16px;stroke:#add8e6"></path> <path d="M288,17L304,17" style="fill:none;stroke-width:2.16px;stroke:#add8e6"></path> <polygon points="30,17 19,21 19,12" style="fill:#add8e6"></polygon> <path d="M2,17L25,17" style="fill:none;stroke-width:2.16px;stroke:#add8e6"></path> <path d="M30,32L133,32L133,2L30,2Z" style="fill:none;stroke-width:2.16px;stroke:#000"></path> <text x="82" y="17" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">OnSuccess</text> <path d="M177,32L273,32A15 15 0 0 0 288 17A15 15 0 0 0 273 2L177,2A15 15 0 0 0 162 17A15 15 0 0 0 177 32Z" style="fill:none;stroke-width:2.16px;stroke:#000"></path> <text x="225" y="17" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">SuccessValue</text> <path d="M2,48L304,48" style="fill:none;stroke-width:2.16px;stroke:orange"></path> </svg> </div> </div> <div class="imageblock kroki"> <div class="content"> <svg xmlns="http://www.w3.org/2000/svg" class="pikchr" width="207" height="35" viewbox="0 0 259.776 44.64"> <polygon points="30,6 19,10 19,2" style="fill:#add8e6"></polygon> <path d="M2,6L25,6" style="fill:none;stroke-width:2.16px;stroke:#add8e6"></path> <polygon points="30,38 19,42 19,33" style="fill:orange"></polygon> <path d="M2,38L25,38" style="fill:none;stroke-width:2.16px;stroke:orange"></path> <path d="M30,37L103,37L103,7L30,7Z" style="fill:none;stroke-width:2.16px;stroke:#000"></path> <text x="67" y="22" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">Handle</text> <path d="M103,22L132,22" style="fill:none;stroke-width:2.16px;stroke:#000"></path> <path d="M147,37L209,37A15 15 0 0 0 224 22L224,22A15 15 0 0 0 209 7L147,7A15 15 0 0 0 132 22L132,22A15 15 0 0 0 147 37Z" style="fill:none;stroke-width:2.16px;stroke:#000"></path> <text x="178" y="22" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">EndValue</text> <polygon points="253,22 241,26 241,18" style="fill:#000"></polygon> <path d="M224,22L247,22" style="fill:none;stroke-width:2.16px;stroke:#000"></path> </svg> </div> </div> <div class="paragraph"> <p>The railway of the example code would look like</p> </div> <div class="imageblock kroki"> <div class="content"> <svg xmlns="http://www.w3.org/2000/svg" class="pikchr" width="580" height="52" viewbox="0 0 725.184 66.24"> <path d="M111,17 L 118,17 Q 125,17 125,31 L 125,34 Q 125,48 134,48 L 142,48" style="fill:none;stroke-width:2.16px;stroke:orange"></path> <path d="M204,48L219,48" style="fill:none;stroke-width:2.16px;stroke:orange"></path> <path d="M111,17L139,17" style="fill:none;stroke-width:2.16px;stroke:#add8e6"></path> <path d="M191,17L207,17" style="fill:none;stroke-width:2.16px;stroke:#add8e6"></path> <path d="M392,17 L 399,17 Q 406,17 406,31 L 406,34 Q 406,48 415,48 L 424,48" style="fill:none;stroke-width:2.16px;stroke:orange"></path> <path d="M392,17L421,17" style="fill:none;stroke-width:2.16px;stroke:#add8e6"></path> <path d="M482,17L498,17" style="fill:none;stroke-width:2.16px;stroke:#add8e6"></path> <polygon points="30,17 19,21 19,12" style="fill:#000"></polygon> <path d="M2,17L25,17" style="fill:none;stroke-width:2.16px;stroke:#000"></path> <path d="M30,32L111,32L111,2L30,2Z" style="fill:none;stroke-width:2.16px;stroke:#000"></path> <text x="70" y="17" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">GetUser</text> <path d="M157,64L188,64A15 15 0 0 0 204 48L204,48A15 15 0 0 0 188 33L157,33A15 15 0 0 0 142 48L142,48A15 15 0 0 0 157 64Z" style="fill:none;stroke-width:2.16px;stroke:#000"></path> <text x="173" y="48" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">string</text> <path d="M154,32L176,32A15 15 0 0 0 191 17A15 15 0 0 0 176 2L154,2A15 15 0 0 0 139 17A15 15 0 0 0 154 32Z" style="fill:none;stroke-width:2.16px;stroke:#000"></path> <text x="165" y="17" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">User</text> <polygon points="235,17 224,21 224,12" style="fill:#add8e6"></polygon> <path d="M207,17L230,17" style="fill:none;stroke-width:2.16px;stroke:#add8e6"></path> <path d="M235,32L392,32L392,2L235,2Z" style="fill:none;stroke-width:2.16px;stroke:#000"></path> <text x="314" y="17" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">GetEmailAddress</text> <path d="M436,32L467,32A15 15 0 0 0 482 17A15 15 0 0 0 467 2L436,2A15 15 0 0 0 421 17A15 15 0 0 0 436 32Z" style="fill:none;stroke-width:2.16px;stroke:#000"></path> <text x="452" y="17" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">string</text> <path d="M207,48L498,48" style="fill:none;stroke-width:2.16px;stroke:orange"></path> <polygon points="527,17 515,21 515,12" style="fill:#add8e6"></polygon> <path d="M498,17L521,17" style="fill:none;stroke-width:2.16px;stroke:#add8e6"></path> <polygon points="527,48 515,53 515,44" style="fill:orange"></polygon> <path d="M498,48L521,48" style="fill:none;stroke-width:2.16px;stroke:orange"></path> <path d="M527,48L599,48L599,17L527,17Z" style="fill:none;stroke-width:2.16px;stroke:#000"></path> <text x="563" y="33" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">Handle</text> <path d="M599,33L628,33" style="fill:none;stroke-width:2.16px;stroke:#000"></path> <path d="M643,48L674,48A15 15 0 0 0 689 33L689,33A15 15 0 0 0 674 18L643,18A15 15 0 0 0 628 33L628,33A15 15 0 0 0 643 48Z" style="fill:none;stroke-width:2.16px;stroke:#000"></path> <text x="659" y="33" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">string</text> <polygon points="718,33 707,37 707,28" style="fill:#000"></polygon> <path d="M689,33L712,33" style="fill:none;stroke-width:2.16px;stroke:#000"></path> </svg> </div> </div> </div> <div class="sect2"> <h3 id="_another_example">Another example</h3> <div class="paragraph"> <p>Suppose now that we needed to write the following function.</p> </div> <div class="listingblock"> <div class="content"> <pre class="highlight"><code class="language-cs" data-lang="cs"><span class="hljs-comment"><span class="hljs-doctag">///</span> <span class="hljs-doctag">&lt;returns&gt;</span>Message to be printed on the screen<span class="hljs-doctag">&lt;/returns&gt;</span></span>
-<span class="hljs-function"><span class="hljs-built_in">string</span> <span class="hljs-title">MailMessageToUser</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> username, <span class="hljs-built_in">string</span> msg</span>)</span>;</code></pre> </div> </div> <div class="paragraph"> <p>And suppose that we have the following functions at our disposal.</p> </div> <div class="listingblock"> <div class="content"> <pre class="highlight"><code class="language-cs" data-lang="cs"><span class="hljs-function">Result&lt;User, <span class="hljs-built_in">string</span>&gt; <span class="hljs-title">GetUser</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> username</span>)</span>;
+  );</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If we visualize the code flow above in a diagram, it becomes clear why this style of programming is sometimes referred to as <em>railway oriented programming</em>.
+The <code>Result</code> type encapsulates two "paths" or "tracks", the success track and the failure track.</p>
+</div>
+<div class="imageblock kroki">
+<div class="content">
+<svg xmlns="http://www.w3.org/2000/svg" class="pikchr" width="149" height="51" viewbox="0 0 187.43 64.8">
+<polygon points="106,17 95,21 95,12" style="fill: #add8e6"></polygon>
+<path d="M34,17L100,17" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
+<polygon points="106,47 95,51 95,43" style="fill: orange"></polygon>
+<path d="M34,47L100,47" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
+<path d="M17,47L52,47A15 15 0 0 0 67 32A15 15 0 0 0 52 17L17,17A15 15 0 0 0 2 32A15 15 0 0 0 17 47Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<text x="34" y="32" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">Result</text>
+<path d="M121,32L170,32A15 15 0 0 0 185 17A15 15 0 0 0 170 2L121,2A15 15 0 0 0 106 17A15 15 0 0 0 121 32Z" style="fill: #add8e6; stroke-width: 2.16px; stroke: #000"></path>
+<text x="145" y="17" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">Success</text>
+<path d="M121,62L163,62A15 15 0 0 0 178 47A15 15 0 0 0 163 32L121,32A15 15 0 0 0 106 47A15 15 0 0 0 121 62Z" style="fill: orange; stroke-width: 2.16px; stroke: #000"></path>
+<text x="142" y="47" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">Failure</text>
+</svg>
+
+</div>
+</div>
+<div class="paragraph">
+<p>And the <code>OnSuccess</code> and <code>Handle</code> methods form trackpieces.</p>
+</div>
+<div class="imageblock kroki">
+<div class="content">
+<svg xmlns="http://www.w3.org/2000/svg" class="pikchr" width="244" height="40" viewbox="0 0 306.317 51.12">
+<path d="M133,17 L 140,17 Q 147,17 147,31 L 147,34 Q 147,48 156,48 L 165,48" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
+<path d="M133,17L162,17" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
+<path d="M288,17L304,17" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
+<polygon points="30,17 19,21 19,12" style="fill: #add8e6"></polygon>
+<path d="M2,17L25,17" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
+<path d="M30,32L133,32L133,2L30,2Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<text x="82" y="17" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">OnSuccess</text>
+<path d="M177,32L273,32A15 15 0 0 0 288 17A15 15 0 0 0 273 2L177,2A15 15 0 0 0 162 17A15 15 0 0 0 177 32Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<text x="225" y="17" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">SuccessValue</text>
+<path d="M2,48L304,48" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
+</svg>
+
+</div>
+</div>
+<div class="imageblock kroki">
+<div class="content">
+<svg xmlns="http://www.w3.org/2000/svg" class="pikchr" width="207" height="35" viewbox="0 0 259.776 44.64">
+<polygon points="30,6 19,10 19,2" style="fill: #add8e6"></polygon>
+<path d="M2,6L25,6" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
+<polygon points="30,38 19,42 19,33" style="fill: orange"></polygon>
+<path d="M2,38L25,38" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
+<path d="M30,37L103,37L103,7L30,7Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<text x="67" y="22" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">Handle</text>
+<path d="M103,22L132,22" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<path d="M147,37L209,37A15 15 0 0 0 224 22L224,22A15 15 0 0 0 209 7L147,7A15 15 0 0 0 132 22L132,22A15 15 0 0 0 147 37Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<text x="178" y="22" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">EndValue</text>
+<polygon points="253,22 241,26 241,18" style="fill: #000"></polygon>
+<path d="M224,22L247,22" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+</svg>
+
+</div>
+</div>
+<div class="paragraph">
+<p>The railway of the example code would look like</p>
+</div>
+<div class="imageblock kroki">
+<div class="content">
+<svg xmlns="http://www.w3.org/2000/svg" class="pikchr" width="580" height="52" viewbox="0 0 725.184 66.24">
+<path d="M111,17 L 118,17 Q 125,17 125,31 L 125,34 Q 125,48 134,48 L 142,48" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
+<path d="M204,48L219,48" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
+<path d="M111,17L139,17" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
+<path d="M191,17L207,17" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
+<path d="M392,17 L 399,17 Q 406,17 406,31 L 406,34 Q 406,48 415,48 L 424,48" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
+<path d="M392,17L421,17" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
+<path d="M482,17L498,17" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
+<polygon points="30,17 19,21 19,12" style="fill: #000"></polygon>
+<path d="M2,17L25,17" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<path d="M30,32L111,32L111,2L30,2Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<text x="70" y="17" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">GetUser</text>
+<path d="M157,64L188,64A15 15 0 0 0 204 48L204,48A15 15 0 0 0 188 33L157,33A15 15 0 0 0 142 48L142,48A15 15 0 0 0 157 64Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<text x="173" y="48" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">string</text>
+<path d="M154,32L176,32A15 15 0 0 0 191 17A15 15 0 0 0 176 2L154,2A15 15 0 0 0 139 17A15 15 0 0 0 154 32Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<text x="165" y="17" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">User</text>
+<polygon points="235,17 224,21 224,12" style="fill: #add8e6"></polygon>
+<path d="M207,17L230,17" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
+<path d="M235,32L392,32L392,2L235,2Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<text x="314" y="17" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">GetEmailAddress</text>
+<path d="M436,32L467,32A15 15 0 0 0 482 17A15 15 0 0 0 467 2L436,2A15 15 0 0 0 421 17A15 15 0 0 0 436 32Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<text x="452" y="17" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">string</text>
+<path d="M207,48L498,48" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
+<polygon points="527,17 515,21 515,12" style="fill: #add8e6"></polygon>
+<path d="M498,17L521,17" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
+<polygon points="527,48 515,53 515,44" style="fill: orange"></polygon>
+<path d="M498,48L521,48" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
+<path d="M527,48L599,48L599,17L527,17Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<text x="563" y="33" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">Handle</text>
+<path d="M599,33L628,33" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<path d="M643,48L674,48A15 15 0 0 0 689 33L689,33A15 15 0 0 0 674 18L643,18A15 15 0 0 0 628 33L628,33A15 15 0 0 0 643 48Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<text x="659" y="33" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">string</text>
+<polygon points="718,33 707,37 707,28" style="fill: #000"></polygon>
+<path d="M689,33L712,33" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+</svg>
+
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_another_example">Another example</h3>
+<div class="paragraph">
+<p>Suppose now that we needed to write the following function.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-cs" data-lang="cs"><span class="hljs-comment"><span class="hljs-doctag">///</span> <span class="hljs-doctag">&lt;returns&gt;</span>Message to be printed on the screen<span class="hljs-doctag">&lt;/returns&gt;</span></span>
+<span class="hljs-function"><span class="hljs-built_in">string</span> <span class="hljs-title">MailMessageToUser</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> username, <span class="hljs-built_in">string</span> msg</span>)</span>;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>And suppose that we have the following functions at our disposal.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-cs" data-lang="cs"><span class="hljs-function">Result&lt;User, <span class="hljs-built_in">string</span>&gt; <span class="hljs-title">GetUser</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> username</span>)</span>;
 <span class="hljs-function">Result&lt;<span class="hljs-built_in">string</span>, <span class="hljs-built_in">string</span>&gt; <span class="hljs-title">GetEmailAddress</span>(<span class="hljs-params">User user</span>)</span>;
 <span class="hljs-function">Result&lt;EmailMessage, <span class="hljs-built_in">string</span>&gt; <span class="hljs-title">CreateEmailMessage</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> emailAddress, <span class="hljs-built_in">string</span> msg</span>)</span>;
-<span class="hljs-function">Result&lt;Unit, <span class="hljs-built_in">string</span>&gt; <span class="hljs-title">SendEmail</span>(<span class="hljs-params">EmailMessage email</span>)</span>;</code></pre> </div> </div> <div class="paragraph"> <p>If you&#8217;re wondering what that <code>Unit</code> type is, it&#8217;s a replacement for <code>void</code>, since we can&#8217;t put <code>void</code> in there. For more information refer to <a href="/?page=unit-cs">The missing C# built-in type: void</a>.</p> </div> <div class="paragraph"> <p>Then we could implement the function as follows.</p> </div> <div class="listingblock"> <div class="content"> <pre class="highlight"><code class="language-cs" data-lang="cs"><span class="hljs-comment"><span class="hljs-doctag">///</span> <span class="hljs-doctag">&lt;returns&gt;</span>Message to be printed on the screen<span class="hljs-doctag">&lt;/returns&gt;</span></span>
+<span class="hljs-function">Result&lt;Unit, <span class="hljs-built_in">string</span>&gt; <span class="hljs-title">SendEmail</span>(<span class="hljs-params">EmailMessage email</span>)</span>;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If you&#8217;re wondering what that <code>Unit</code> type is, it&#8217;s a replacement for <code>void</code>, since we can&#8217;t put <code>void</code> in there.
+For more information refer to <a href="/?page=unit-cs">The missing C# built-in type: void</a>.</p>
+</div>
+<div class="paragraph">
+<p>Then we could implement the function as follows.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-cs" data-lang="cs"><span class="hljs-comment"><span class="hljs-doctag">///</span> <span class="hljs-doctag">&lt;returns&gt;</span>Message to be printed on the screen<span class="hljs-doctag">&lt;/returns&gt;</span></span>
 <span class="hljs-function"><span class="hljs-built_in">string</span> <span class="hljs-title">MailMessageToUser</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> username, <span class="hljs-built_in">string</span> msg</span>)</span> {
   <span class="hljs-keyword">return</span> GetUser(username)
     .OnSuccess(GetEmailAddress)
@@ -106,7 +350,85 @@
         <span class="hljs-keyword">return</span> <span class="hljs-string">&quot;Email not sent&quot;</span>;
       }
     );
-}</code></pre> </div> </div> <div class="paragraph"> <p>The railway of the example code would look like</p> </div> <div class="imageblock kroki"> <div class="content"> <svg xmlns="http://www.w3.org/2000/svg" class="pikchr" width="760" height="101" viewbox="0 0 951.206 127.44"> <path d="M111,17 L 118,17 Q 125,17 125,31 L 125,34 Q 125,48 134,48 L 142,48" style="fill:none;stroke-width:2.16px;stroke:orange"></path> <path d="M204,48L219,48" style="fill:none;stroke-width:2.16px;stroke:orange"></path> <path d="M111,17L139,17" style="fill:none;stroke-width:2.16px;stroke:#add8e6"></path> <path d="M191,17L207,17" style="fill:none;stroke-width:2.16px;stroke:#add8e6"></path> <path d="M392,17 L 399,17 Q 406,17 406,31 L 406,34 Q 406,48 415,48 L 424,48" style="fill:none;stroke-width:2.16px;stroke:orange"></path> <path d="M392,17L421,17" style="fill:none;stroke-width:2.16px;stroke:#add8e6"></path> <path d="M482,17L498,17" style="fill:none;stroke-width:2.16px;stroke:#add8e6"></path> <path d="M322,89 L 329,89 Q 337,89 337,103 L 337,106 Q 337,120 345,120 L 354,120" style="fill:none;stroke-width:2.16px;stroke:orange"></path> <path d="M322,89L351,89" style="fill:none;stroke-width:2.16px;stroke:#add8e6"></path> <path d="M485,89L501,89" style="fill:none;stroke-width:2.16px;stroke:#add8e6"></path> <path d="M632,89 L 639,89 Q 646,89 646,103 L 646,106 Q 646,120 655,120 L 663,120" style="fill:none;stroke-width:2.16px;stroke:orange"></path> <path d="M632,89L660,89" style="fill:none;stroke-width:2.16px;stroke:#add8e6"></path> <path d="M708,89L724,89" style="fill:none;stroke-width:2.16px;stroke:#add8e6"></path> <polygon points="30,17 19,21 19,12" style="fill:#000"></polygon> <path d="M2,17L25,17" style="fill:none;stroke-width:2.16px;stroke:#000"></path> <path d="M30,32L111,32L111,2L30,2Z" style="fill:none;stroke-width:2.16px;stroke:#000"></path> <text x="70" y="17" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">GetUser</text> <path d="M157,64L188,64A15 15 0 0 0 204 48L204,48A15 15 0 0 0 188 33L157,33A15 15 0 0 0 142 48L142,48A15 15 0 0 0 157 64Z" style="fill:none;stroke-width:2.16px;stroke:#000"></path> <text x="173" y="48" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">string</text> <path d="M154,32L176,32A15 15 0 0 0 191 17A15 15 0 0 0 176 2L154,2A15 15 0 0 0 139 17A15 15 0 0 0 154 32Z" style="fill:none;stroke-width:2.16px;stroke:#000"></path> <text x="165" y="17" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">User</text> <polygon points="235,17 224,21 224,12" style="fill:#add8e6"></polygon> <path d="M207,17L230,17" style="fill:none;stroke-width:2.16px;stroke:#add8e6"></path> <path d="M235,32L392,32L392,2L235,2Z" style="fill:none;stroke-width:2.16px;stroke:#000"></path> <text x="314" y="17" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">GetEmailAddress</text> <path d="M436,32L467,32A15 15 0 0 0 482 17A15 15 0 0 0 467 2L436,2A15 15 0 0 0 421 17A15 15 0 0 0 436 32Z" style="fill:none;stroke-width:2.16px;stroke:#000"></path> <text x="452" y="17" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">string</text> <path d="M207,48L498,48" style="fill:none;stroke-width:2.16px;stroke:orange"></path> <path d="M498,17L527,17" style="fill:none;stroke-width:2.16px;stroke:#add8e6;stroke-dasharray:4.32 4.32"></path> <path d="M498,48L527,48" style="fill:none;stroke-width:2.16px;stroke:orange;stroke-dasharray:4.32 4.32"></path> <path d="M74,89L102,89" style="fill:none;stroke-width:2.16px;stroke:#add8e6;stroke-dasharray:4.32 4.32"></path> <path d="M74,120L102,120" style="fill:none;stroke-width:2.16px;stroke:orange;stroke-dasharray:4.32 4.32"></path> <polygon points="131,89 120,93 120,84" style="fill:#add8e6"></polygon> <path d="M102,89L125,89" style="fill:none;stroke-width:2.16px;stroke:#add8e6"></path> <path d="M131,104L322,104L322,74L131,74Z" style="fill:none;stroke-width:2.16px;stroke:#000"></path> <text x="227" y="89" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">CreateEmailMessage</text> <path d="M366,104L470,104A15 15 0 0 0 485 89A15 15 0 0 0 470 74L366,74A15 15 0 0 0 351 89A15 15 0 0 0 366 104Z" style="fill:none;stroke-width:2.16px;stroke:#000"></path> <text x="418" y="89" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">EmailMessage</text> <path d="M102,120L501,120" style="fill:none;stroke-width:2.16px;stroke:orange"></path> <polygon points="530,89 518,93 518,84" style="fill:#add8e6"></polygon> <path d="M501,89L524,89" style="fill:none;stroke-width:2.16px;stroke:#add8e6"></path> <path d="M530,104L632,104L632,74L530,74Z" style="fill:none;stroke-width:2.16px;stroke:#000"></path> <text x="581" y="89" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">SendEmail</text> <path d="M676,104L693,104A15 15 0 0 0 708 89A15 15 0 0 0 693 74L676,74A15 15 0 0 0 660 89A15 15 0 0 0 676 104Z" style="fill:none;stroke-width:2.16px;stroke:#000"></path> <text x="684" y="89" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">Unit</text> <path d="M501,120L724,120" style="fill:none;stroke-width:2.16px;stroke:orange"></path> <polygon points="753,89 741,93 741,84" style="fill:#add8e6"></polygon> <path d="M724,89L747,89" style="fill:none;stroke-width:2.16px;stroke:#add8e6"></path> <polygon points="753,120 741,125 741,116" style="fill:orange"></polygon> <path d="M724,120L747,120" style="fill:none;stroke-width:2.16px;stroke:orange"></path> <path d="M753,120L825,120L825,89L753,89Z" style="fill:none;stroke-width:2.16px;stroke:#000"></path> <text x="789" y="105" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">Handle</text> <path d="M825,105L854,105" style="fill:none;stroke-width:2.16px;stroke:#000"></path> <path d="M869,120L900,120A15 15 0 0 0 915 105A15 15 0 0 0 900 90L869,90A15 15 0 0 0 854 105A15 15 0 0 0 869 120Z" style="fill:none;stroke-width:2.16px;stroke:#000"></path> <text x="885" y="105" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">string</text> <polygon points="944,105 933,109 933,100" style="fill:#000"></polygon> <path d="M915,105L938,105" style="fill:none;stroke-width:2.16px;stroke:#000"></path> </svg> </div> </div> </div> <div class="sect2"> <h3 id="_void_handlers">Void handlers</h3> <div class="paragraph"> <p>If we would rather handle the end result without returning anything, e.g. using void methods only, we would need a variant of <code>Handle</code> for that.</p> </div> <div class="listingblock"> <div class="content"> <pre class="highlight"><code class="language-cs" data-lang="cs"><span class="hljs-keyword">public</span> <span class="hljs-keyword">abstract</span> <span class="hljs-keyword">class</span> <span class="hljs-title">Result</span>&lt;<span class="hljs-title">TSuccess</span>, <span class="hljs-title">TFailure</span>&gt; {
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The railway of the example code would look like</p>
+</div>
+<div class="imageblock kroki">
+<div class="content">
+<svg xmlns="http://www.w3.org/2000/svg" class="pikchr" width="760" height="101" viewbox="0 0 951.206 127.44">
+<path d="M111,17 L 118,17 Q 125,17 125,31 L 125,34 Q 125,48 134,48 L 142,48" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
+<path d="M204,48L219,48" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
+<path d="M111,17L139,17" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
+<path d="M191,17L207,17" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
+<path d="M392,17 L 399,17 Q 406,17 406,31 L 406,34 Q 406,48 415,48 L 424,48" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
+<path d="M392,17L421,17" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
+<path d="M482,17L498,17" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
+<path d="M322,89 L 329,89 Q 337,89 337,103 L 337,106 Q 337,120 345,120 L 354,120" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
+<path d="M322,89L351,89" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
+<path d="M485,89L501,89" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
+<path d="M632,89 L 639,89 Q 646,89 646,103 L 646,106 Q 646,120 655,120 L 663,120" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
+<path d="M632,89L660,89" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
+<path d="M708,89L724,89" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
+<polygon points="30,17 19,21 19,12" style="fill: #000"></polygon>
+<path d="M2,17L25,17" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<path d="M30,32L111,32L111,2L30,2Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<text x="70" y="17" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">GetUser</text>
+<path d="M157,64L188,64A15 15 0 0 0 204 48L204,48A15 15 0 0 0 188 33L157,33A15 15 0 0 0 142 48L142,48A15 15 0 0 0 157 64Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<text x="173" y="48" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">string</text>
+<path d="M154,32L176,32A15 15 0 0 0 191 17A15 15 0 0 0 176 2L154,2A15 15 0 0 0 139 17A15 15 0 0 0 154 32Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<text x="165" y="17" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">User</text>
+<polygon points="235,17 224,21 224,12" style="fill: #add8e6"></polygon>
+<path d="M207,17L230,17" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
+<path d="M235,32L392,32L392,2L235,2Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<text x="314" y="17" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">GetEmailAddress</text>
+<path d="M436,32L467,32A15 15 0 0 0 482 17A15 15 0 0 0 467 2L436,2A15 15 0 0 0 421 17A15 15 0 0 0 436 32Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<text x="452" y="17" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">string</text>
+<path d="M207,48L498,48" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
+<path d="M498,17L527,17" style="fill: none; stroke-width: 2.16px; stroke: #add8e6; stroke-dasharray: 4.32 4.32"></path>
+<path d="M498,48L527,48" style="fill: none; stroke-width: 2.16px; stroke: orange; stroke-dasharray: 4.32 4.32"></path>
+<path d="M74,89L102,89" style="fill: none; stroke-width: 2.16px; stroke: #add8e6; stroke-dasharray: 4.32 4.32"></path>
+<path d="M74,120L102,120" style="fill: none; stroke-width: 2.16px; stroke: orange; stroke-dasharray: 4.32 4.32"></path>
+<polygon points="131,89 120,93 120,84" style="fill: #add8e6"></polygon>
+<path d="M102,89L125,89" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
+<path d="M131,104L322,104L322,74L131,74Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<text x="227" y="89" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">CreateEmailMessage</text>
+<path d="M366,104L470,104A15 15 0 0 0 485 89A15 15 0 0 0 470 74L366,74A15 15 0 0 0 351 89A15 15 0 0 0 366 104Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<text x="418" y="89" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">EmailMessage</text>
+<path d="M102,120L501,120" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
+<polygon points="530,89 518,93 518,84" style="fill: #add8e6"></polygon>
+<path d="M501,89L524,89" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
+<path d="M530,104L632,104L632,74L530,74Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<text x="581" y="89" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">SendEmail</text>
+<path d="M676,104L693,104A15 15 0 0 0 708 89A15 15 0 0 0 693 74L676,74A15 15 0 0 0 660 89A15 15 0 0 0 676 104Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<text x="684" y="89" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">Unit</text>
+<path d="M501,120L724,120" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
+<polygon points="753,89 741,93 741,84" style="fill: #add8e6"></polygon>
+<path d="M724,89L747,89" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
+<polygon points="753,120 741,125 741,116" style="fill: orange"></polygon>
+<path d="M724,120L747,120" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
+<path d="M753,120L825,120L825,89L753,89Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<text x="789" y="105" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">Handle</text>
+<path d="M825,105L854,105" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<path d="M869,120L900,120A15 15 0 0 0 915 105A15 15 0 0 0 900 90L869,90A15 15 0 0 0 854 105A15 15 0 0 0 869 120Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<text x="885" y="105" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">string</text>
+<polygon points="944,105 933,109 933,100" style="fill: #000"></polygon>
+<path d="M915,105L938,105" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+</svg>
+
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_void_handlers">Void handlers</h3>
+<div class="paragraph">
+<p>If we would rather handle the end result without returning anything, e.g. using void methods only, we would need a variant of <code>Handle</code> for that.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-cs" data-lang="cs"><span class="hljs-keyword">public</span> <span class="hljs-keyword">abstract</span> <span class="hljs-keyword">class</span> <span class="hljs-title">Result</span>&lt;<span class="hljs-title">TSuccess</span>, <span class="hljs-title">TFailure</span>&gt; {
 
   <span class="hljs-comment">// ...</span>
 
@@ -116,7 +438,15 @@
 
     _ = Handle(onSuccess.AsFunc(), onFailure.AsFunc());
   }
-}</code></pre> </div> </div> <div class="paragraph"> <p>Then we could use it as follows.</p> </div> <div class="listingblock"> <div class="content"> <pre class="highlight"><code class="language-cs" data-lang="cs"><span class="hljs-comment"><span class="hljs-doctag">///</span> <span class="hljs-doctag">&lt;returns&gt;</span>Message to be printed on the screen<span class="hljs-doctag">&lt;/returns&gt;</span></span>
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Then we could use it as follows.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-cs" data-lang="cs"><span class="hljs-comment"><span class="hljs-doctag">///</span> <span class="hljs-doctag">&lt;returns&gt;</span>Message to be printed on the screen<span class="hljs-doctag">&lt;/returns&gt;</span></span>
 <span class="hljs-function"><span class="hljs-built_in">string</span> <span class="hljs-title">MailMessageToUser</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> username, <span class="hljs-built_in">string</span> msg</span>)</span> {
   <span class="hljs-keyword">return</span> GetUser(username)
     .OnSuccess(GetEmailAddress)
@@ -131,7 +461,39 @@
         Console.WriteLine(<span class="hljs-string">&quot;Email not sent&quot;</span>);
       }
     );
-}</code></pre> </div> </div> <div class="paragraph"> <p>For the implementation of <code>AsFunc</code>, refer to <a href="/?page=unit-cs">The missing C# built-in type: void</a>.</p> </div> </div> <div class="sect2"> <h3 id="_the_onfailure_method">The OnFailure method</h3> <div class="paragraph"> <p>If we have a OnSuccess method, there is no reason why we couldn&#8217;t have an OnFailure method too. This would allow us to do operations on the failure track, such as modifying the error, or recovering from the error and get back on the success track.</p> </div> <div class="imageblock kroki"> <div class="content"> <svg xmlns="http://www.w3.org/2000/svg" class="pikchr" width="222" height="40" viewbox="0 0 278.554 51.12"> <path d="M126,33 L 134,33 Q 141,33 141,19 L 141,16 Q 141,2 149,2 L 158,2" style="fill:none;stroke-width:2.16px;stroke:#add8e6"></path> <path d="M126,33L155,33" style="fill:none;stroke-width:2.16px;stroke:orange"></path> <path d="M260,33L276,33" style="fill:none;stroke-width:2.16px;stroke:orange"></path> <polygon points="30,33 19,38 19,29" style="fill:orange"></polygon> <path d="M2,33L25,33" style="fill:none;stroke-width:2.16px;stroke:orange"></path> <path d="M30,48L126,48L126,18L30,18Z" style="fill:none;stroke-width:2.16px;stroke:#000"></path> <text x="78" y="33" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">OnFailure</text> <path d="M170,48L245,48A15 15 0 0 0 260 33L260,33A15 15 0 0 0 245 18L170,18A15 15 0 0 0 155 33L155,33A15 15 0 0 0 170 48Z" style="fill:none;stroke-width:2.16px;stroke:#000"></path> <text x="208" y="33" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">ErrorValue</text> <path d="M2,2L276,2" style="fill:none;stroke-width:2.16px;stroke:#add8e6"></path> </svg> </div> </div> <div class="listingblock"> <div class="content"> <pre class="highlight"><code class="language-cs" data-lang="cs"><span class="hljs-comment"><span class="hljs-doctag">///</span> <span class="hljs-doctag">&lt;returns&gt;</span>Message to be printed on the screen<span class="hljs-doctag">&lt;/returns&gt;</span></span>
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>For the implementation of <code>AsFunc</code>, refer to <a href="/?page=unit-cs">The missing C# built-in type: void</a>.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_the_onfailure_method">The OnFailure method</h3>
+<div class="paragraph">
+<p>If we have a OnSuccess method, there is no reason why we couldn&#8217;t have an OnFailure method too.
+This would allow us to do operations on the failure track, such as modifying the error, or recovering from the error and get back on the success track.</p>
+</div>
+<div class="imageblock kroki">
+<div class="content">
+<svg xmlns="http://www.w3.org/2000/svg" class="pikchr" width="222" height="40" viewbox="0 0 278.554 51.12">
+<path d="M126,33 L 134,33 Q 141,33 141,19 L 141,16 Q 141,2 149,2 L 158,2" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
+<path d="M126,33L155,33" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
+<path d="M260,33L276,33" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
+<polygon points="30,33 19,38 19,29" style="fill: orange"></polygon>
+<path d="M2,33L25,33" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
+<path d="M30,48L126,48L126,18L30,18Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<text x="78" y="33" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">OnFailure</text>
+<path d="M170,48L245,48A15 15 0 0 0 260 33L260,33A15 15 0 0 0 245 18L170,18A15 15 0 0 0 155 33L155,33A15 15 0 0 0 170 48Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<text x="208" y="33" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">ErrorValue</text>
+<path d="M2,2L276,2" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
+</svg>
+
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-cs" data-lang="cs"><span class="hljs-comment"><span class="hljs-doctag">///</span> <span class="hljs-doctag">&lt;returns&gt;</span>Message to be printed on the screen<span class="hljs-doctag">&lt;/returns&gt;</span></span>
 <span class="hljs-function"><span class="hljs-built_in">string</span> <span class="hljs-title">MailMessageToUser</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> username, <span class="hljs-built_in">string</span> msg</span>)</span> {
   <span class="hljs-keyword">return</span> GetUser(username)
     .OnSuccess(GetEmailAddress)
@@ -145,4 +507,88 @@
         <span class="hljs-keyword">return</span> <span class="hljs-string">&quot;Email not sent&quot;</span>;
       }
     );
-}</code></pre> </div> </div> <div class="imageblock kroki"> <div class="content"> <svg xmlns="http://www.w3.org/2000/svg" class="pikchr" width="741" height="110" viewbox="0 0 927.936 138.24"> <path d="M111,17 L 118,17 Q 125,17 125,31 L 125,34 Q 125,48 134,48 L 142,48" style="fill:none;stroke-width:2.16px;stroke:orange"></path> <path d="M204,48L219,48" style="fill:none;stroke-width:2.16px;stroke:orange"></path> <path d="M111,17L139,17" style="fill:none;stroke-width:2.16px;stroke:#add8e6"></path> <path d="M191,17L207,17" style="fill:none;stroke-width:2.16px;stroke:#add8e6"></path> <path d="M392,17 L 399,17 Q 406,17 406,31 L 406,34 Q 406,48 415,48 L 424,48" style="fill:none;stroke-width:2.16px;stroke:orange"></path> <path d="M392,17L421,17" style="fill:none;stroke-width:2.16px;stroke:#add8e6"></path> <path d="M482,17L498,17" style="fill:none;stroke-width:2.16px;stroke:#add8e6"></path> <path d="M718,17 L 725,17 Q 732,17 732,31 L 732,34 Q 732,48 741,48 L 749,48" style="fill:none;stroke-width:2.16px;stroke:orange"></path> <path d="M718,17L747,17" style="fill:none;stroke-width:2.16px;stroke:#add8e6"></path> <path d="M881,17L896,17" style="fill:none;stroke-width:2.16px;stroke:#add8e6"></path> <path d="M233,89 L 240,89 Q 248,89 248,103 L 248,106 Q 248,120 256,120 L 265,120" style="fill:none;stroke-width:2.16px;stroke:orange"></path> <path d="M233,89L262,89" style="fill:none;stroke-width:2.16px;stroke:#add8e6"></path> <path d="M310,89L326,89" style="fill:none;stroke-width:2.16px;stroke:#add8e6"></path> <path d="M499,120L528,120" style="fill:none;stroke-width:2.16px;stroke:orange"></path> <path d="M590,120L606,120" style="fill:none;stroke-width:2.16px;stroke:orange"></path> <polygon points="30,17 19,21 19,12" style="fill:#000"></polygon> <path d="M2,17L25,17" style="fill:none;stroke-width:2.16px;stroke:#000"></path> <path d="M30,32L111,32L111,2L30,2Z" style="fill:none;stroke-width:2.16px;stroke:#000"></path> <text x="70" y="17" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">GetUser</text> <path d="M157,64L188,64A15 15 0 0 0 204 48L204,48A15 15 0 0 0 188 33L157,33A15 15 0 0 0 142 48L142,48A15 15 0 0 0 157 64Z" style="fill:none;stroke-width:2.16px;stroke:#000"></path> <text x="173" y="48" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">string</text> <path d="M154,32L176,32A15 15 0 0 0 191 17A15 15 0 0 0 176 2L154,2A15 15 0 0 0 139 17A15 15 0 0 0 154 32Z" style="fill:none;stroke-width:2.16px;stroke:#000"></path> <text x="165" y="17" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">User</text> <polygon points="235,17 224,21 224,12" style="fill:#add8e6"></polygon> <path d="M207,17L230,17" style="fill:none;stroke-width:2.16px;stroke:#add8e6"></path> <path d="M235,32L392,32L392,2L235,2Z" style="fill:none;stroke-width:2.16px;stroke:#000"></path> <text x="314" y="17" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">GetEmailAddress</text> <path d="M436,32L467,32A15 15 0 0 0 482 17A15 15 0 0 0 467 2L436,2A15 15 0 0 0 421 17A15 15 0 0 0 436 32Z" style="fill:none;stroke-width:2.16px;stroke:#000"></path> <text x="452" y="17" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">string</text> <path d="M207,48L498,48" style="fill:none;stroke-width:2.16px;stroke:orange"></path> <polygon points="527,17 515,21 515,12" style="fill:#add8e6"></polygon> <path d="M498,17L521,17" style="fill:none;stroke-width:2.16px;stroke:#add8e6"></path> <path d="M527,32L718,32L718,2L527,2Z" style="fill:none;stroke-width:2.16px;stroke:#000"></path> <text x="622" y="17" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">CreateEmailMessage</text> <path d="M762,32L866,32A15 15 0 0 0 881 17A15 15 0 0 0 866 2L762,2A15 15 0 0 0 747 17A15 15 0 0 0 762 32Z" style="fill:none;stroke-width:2.16px;stroke:#000"></path> <text x="814" y="17" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">EmailMessage</text> <path d="M498,48L896,48" style="fill:none;stroke-width:2.16px;stroke:orange"></path> <path d="M896,17L925,17" style="fill:none;stroke-width:2.16px;stroke:#add8e6;stroke-dasharray:4.32 4.32"></path> <path d="M896,48L925,48" style="fill:none;stroke-width:2.16px;stroke:orange;stroke-dasharray:4.32 4.32"></path> <path d="M74,89L102,89" style="fill:none;stroke-width:2.16px;stroke:#add8e6;stroke-dasharray:4.32 4.32"></path> <path d="M74,120L102,120" style="fill:none;stroke-width:2.16px;stroke:orange;stroke-dasharray:4.32 4.32"></path> <polygon points="131,89 120,93 120,84" style="fill:#add8e6"></polygon> <path d="M102,89L125,89" style="fill:none;stroke-width:2.16px;stroke:#add8e6"></path> <path d="M131,104L233,104L233,74L131,74Z" style="fill:none;stroke-width:2.16px;stroke:#000"></path> <text x="182" y="89" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">SendEmail</text> <path d="M277,104L295,104A15 15 0 0 0 310 89A15 15 0 0 0 295 74L277,74A15 15 0 0 0 262 89A15 15 0 0 0 277 104Z" style="fill:none;stroke-width:2.16px;stroke:#000"></path> <text x="286" y="89" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">Unit</text> <path d="M102,120L326,120" style="fill:none;stroke-width:2.16px;stroke:orange"></path> <polygon points="354,120 343,125 343,116" style="fill:orange"></polygon> <path d="M326,120L349,120" style="fill:none;stroke-width:2.16px;stroke:orange"></path> <path d="M354,136L499,136L499,105L354,105Z" style="fill:none;stroke-width:2.16px;stroke:#000"></path> <text x="427" y="120" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">TransformError</text> <path d="M543,136L575,136A15 15 0 0 0 590 120A15 15 0 0 0 575 105L543,105A15 15 0 0 0 528 120A15 15 0 0 0 543 136Z" style="fill:none;stroke-width:2.16px;stroke:#000"></path> <text x="559" y="120" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">string</text> <path d="M326,89L606,89" style="fill:none;stroke-width:2.16px;stroke:#add8e6"></path> <polygon points="634,89 623,93 623,84" style="fill:#add8e6"></polygon> <path d="M606,89L629,89" style="fill:none;stroke-width:2.16px;stroke:#add8e6"></path> <polygon points="634,120 623,125 623,116" style="fill:orange"></polygon> <path d="M606,120L629,120" style="fill:none;stroke-width:2.16px;stroke:orange"></path> <path d="M634,120L707,120L707,89L634,89Z" style="fill:none;stroke-width:2.16px;stroke:#000"></path> <text x="671" y="105" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">Handle</text> <path d="M707,105L735,105" style="fill:none;stroke-width:2.16px;stroke:#000"></path> <path d="M751,120L782,120A15 15 0 0 0 797 105A15 15 0 0 0 782 90L751,90A15 15 0 0 0 735 105A15 15 0 0 0 751 120Z" style="fill:none;stroke-width:2.16px;stroke:#000"></path> <text x="766" y="105" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">string</text> <polygon points="826,105 814,109 814,100" style="fill:#000"></polygon> <path d="M797,105L820,105" style="fill:none;stroke-width:2.16px;stroke:#000"></path> </svg> </div> </div> <div class="paragraph"> <p>We still need to deal with the awkward construction of <code>Result</code> instances, and we&#8217;ll do that in the <a href="/?page=rop-cs-3">next part</a>.</p> </div> </div> </div> </div> </div> </body></html>
+}</code></pre>
+</div>
+</div>
+<div class="imageblock kroki">
+<div class="content">
+<svg xmlns="http://www.w3.org/2000/svg" class="pikchr" width="741" height="110" viewbox="0 0 927.936 138.24">
+<path d="M111,17 L 118,17 Q 125,17 125,31 L 125,34 Q 125,48 134,48 L 142,48" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
+<path d="M204,48L219,48" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
+<path d="M111,17L139,17" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
+<path d="M191,17L207,17" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
+<path d="M392,17 L 399,17 Q 406,17 406,31 L 406,34 Q 406,48 415,48 L 424,48" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
+<path d="M392,17L421,17" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
+<path d="M482,17L498,17" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
+<path d="M718,17 L 725,17 Q 732,17 732,31 L 732,34 Q 732,48 741,48 L 749,48" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
+<path d="M718,17L747,17" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
+<path d="M881,17L896,17" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
+<path d="M233,89 L 240,89 Q 248,89 248,103 L 248,106 Q 248,120 256,120 L 265,120" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
+<path d="M233,89L262,89" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
+<path d="M310,89L326,89" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
+<path d="M499,120L528,120" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
+<path d="M590,120L606,120" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
+<polygon points="30,17 19,21 19,12" style="fill: #000"></polygon>
+<path d="M2,17L25,17" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<path d="M30,32L111,32L111,2L30,2Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<text x="70" y="17" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">GetUser</text>
+<path d="M157,64L188,64A15 15 0 0 0 204 48L204,48A15 15 0 0 0 188 33L157,33A15 15 0 0 0 142 48L142,48A15 15 0 0 0 157 64Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<text x="173" y="48" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">string</text>
+<path d="M154,32L176,32A15 15 0 0 0 191 17A15 15 0 0 0 176 2L154,2A15 15 0 0 0 139 17A15 15 0 0 0 154 32Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<text x="165" y="17" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">User</text>
+<polygon points="235,17 224,21 224,12" style="fill: #add8e6"></polygon>
+<path d="M207,17L230,17" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
+<path d="M235,32L392,32L392,2L235,2Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<text x="314" y="17" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">GetEmailAddress</text>
+<path d="M436,32L467,32A15 15 0 0 0 482 17A15 15 0 0 0 467 2L436,2A15 15 0 0 0 421 17A15 15 0 0 0 436 32Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<text x="452" y="17" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">string</text>
+<path d="M207,48L498,48" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
+<polygon points="527,17 515,21 515,12" style="fill: #add8e6"></polygon>
+<path d="M498,17L521,17" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
+<path d="M527,32L718,32L718,2L527,2Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<text x="622" y="17" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">CreateEmailMessage</text>
+<path d="M762,32L866,32A15 15 0 0 0 881 17A15 15 0 0 0 866 2L762,2A15 15 0 0 0 747 17A15 15 0 0 0 762 32Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<text x="814" y="17" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">EmailMessage</text>
+<path d="M498,48L896,48" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
+<path d="M896,17L925,17" style="fill: none; stroke-width: 2.16px; stroke: #add8e6; stroke-dasharray: 4.32 4.32"></path>
+<path d="M896,48L925,48" style="fill: none; stroke-width: 2.16px; stroke: orange; stroke-dasharray: 4.32 4.32"></path>
+<path d="M74,89L102,89" style="fill: none; stroke-width: 2.16px; stroke: #add8e6; stroke-dasharray: 4.32 4.32"></path>
+<path d="M74,120L102,120" style="fill: none; stroke-width: 2.16px; stroke: orange; stroke-dasharray: 4.32 4.32"></path>
+<polygon points="131,89 120,93 120,84" style="fill: #add8e6"></polygon>
+<path d="M102,89L125,89" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
+<path d="M131,104L233,104L233,74L131,74Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<text x="182" y="89" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">SendEmail</text>
+<path d="M277,104L295,104A15 15 0 0 0 310 89A15 15 0 0 0 295 74L277,74A15 15 0 0 0 262 89A15 15 0 0 0 277 104Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<text x="286" y="89" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">Unit</text>
+<path d="M102,120L326,120" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
+<polygon points="354,120 343,125 343,116" style="fill: orange"></polygon>
+<path d="M326,120L349,120" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
+<path d="M354,136L499,136L499,105L354,105Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<text x="427" y="120" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">TransformError</text>
+<path d="M543,136L575,136A15 15 0 0 0 590 120A15 15 0 0 0 575 105L543,105A15 15 0 0 0 528 120A15 15 0 0 0 543 136Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<text x="559" y="120" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">string</text>
+<path d="M326,89L606,89" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
+<polygon points="634,89 623,93 623,84" style="fill: #add8e6"></polygon>
+<path d="M606,89L629,89" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
+<polygon points="634,120 623,125 623,116" style="fill: orange"></polygon>
+<path d="M606,120L629,120" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
+<path d="M634,120L707,120L707,89L634,89Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<text x="671" y="105" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">Handle</text>
+<path d="M707,105L735,105" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<path d="M751,120L782,120A15 15 0 0 0 797 105A15 15 0 0 0 782 90L751,90A15 15 0 0 0 735 105A15 15 0 0 0 751 120Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<text x="766" y="105" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">string</text>
+<polygon points="826,105 814,109 814,100" style="fill: #000"></polygon>
+<path d="M797,105L820,105" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+</svg>
+
+</div>
+</div>
+<div class="paragraph">
+<p>We still need to deal with the awkward construction of <code>Result</code> instances, and we&#8217;ll do that in the <a href="/?page=rop-cs-3">next part</a>.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</body>
+</html>
