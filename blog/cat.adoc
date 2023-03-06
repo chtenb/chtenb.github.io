@@ -1,3 +1,5 @@
+:eqtable: %autowidth,frame=none,grid=none
+
 = Category Theory
 :sectnums:
 
@@ -16,22 +18,22 @@ A *category* C consists of:
 The composition operation satisfies the following two axioms:
 
 [lowerroman]
-. (Associativity) For any morphisms f, g, and h in Mor~C~, (f ∘ g) ∘ h = f ∘ (g ∘ h).
-. (Identity) For any object a in Obj~C~ and any morphism f in Mor~C~, f ∘ id~a~ = f and id~a~ ∘ f = f.
+. (Associativity) For any morphisms f, g, and h in Mor~C~,  (f ∘ g) ∘ h = f ∘ (g ∘ h).
+. (Identity) For any object a in Obj~C~ and any morphism f in Mor~C~,  f ∘ id~a~ = f and id~a~ ∘ f = f.
 
 [#def-functor]
 === Definition Functor
 
 Given two categories C and D, a *functor* F : C → D consists of:
 
-* A function F : Obj~C~ → Obj~D~
-* A function F~map~ : Mor~C~ → Mor~D~
+* A function  F : Obj~C~ → Obj~D~
+* A function  map~F~ : Mor~C~ → Mor~D~
 
 These functions must satisfy the following two conditions:
 
 [lowerroman]
-. For any two morphisms f and g in Mor~C~, F~map~ (f ∘ g) = F~map~ f ∘ F~map~ g.
-. For any object a in Obj~C~, F~map~ id~a~ = id~F{sp}a~.
+. For any two morphisms f and g in Mor~C~,  map~F~ (f ∘ g) = map~F~ f ∘ map~F~ g.
+. For any object a in Obj~C~,  map~F~ id~a~ = id~F a~.
 
 If C and D are the same category, F is called an *endofunctor*.
 
@@ -41,111 +43,103 @@ If C and D are the same category, F is called an *endofunctor*.
 === The FP Category
 
 The category FP, with objects being types and morphisms being functions, forms a category.
-Composition of two functions f and g in Mor~FP~ is defined as `(f ∘ g) x = f (g x)`.
-For any object a in Obj~FP~, id~a~ is defined as the function `id~a~ x = x`.
+
+Composition of two functions f and g in Mor~FP~ is defined as  (f ∘ g) x = f (g x).
+
+For any object a in Obj~FP~, id~a~ is defined as the function  id~a~ x = x.
 
 _Proof._
 
 To prove the equivalence of two functions, it suffices to show that they yield the same output for the same input.
 
 [lowerroman]
-. (Associativity) For any morphisms f, g, and h in Mor~FP~, (f ∘ g) ∘ h = f ∘ (g ∘ h).
+. (Associativity) For any morphisms f, g, and h in Mor~FP~,  (f ∘ g) ∘ h = f ∘ (g ∘ h).
 
-[source,hs,subs="quotes"]
-----
-((f ∘ g) ∘ h) x 
-  = (f ∘ g) (h x) 
-  = f (g (h x))
-
-f ∘ (g ∘ h) x 
-  = f ((g ∘ h) x) 
-  = f (g (h x))
-----
+[{eqtable}] 
+|===
+| ((f ∘ g) ∘ h) x  | = (f ∘ g) (h x)   | (definition composition)
+|                  | = f (g (h x))     | (definition composition)
+|===
 
 [lowerroman,start=2]
-. (Identity) For any object a in Obj~FP~ and any morphism f in Mor~FP~, f ∘ id~a~ = f and id~a~ ∘ f = f.
+. (Identity) For any object a in Obj~FP~ and any morphism f in Mor~FP~,  f ∘ id~a~ = f and id~a~ ∘ f = f.
 
-[source,hs,subs="quotes"]
-----
-(f ∘ id~a~) x 
-  = f (id~a~ x)    -- definition composition
-  = f x    -- definition id~a~
-
-(id~a~ ∘ f) x 
-  = id~a~ (f x)    -- definition composition
-  = f x    -- definition id~a~
-----
+[{eqtable}] 
+|===
+| (f ∘ id~a~) x  |  = f (id~a~ x)   | (definition composition)
+|                | = f x            | (definition id~a~)
+|||
+|(id~a~ ∘ f) x  |  = id~a~ (f x)    | (definition composition)
+|               |  = f x            | (definition id~a~)
+|===
 
 ∎
 
-[#ex-list-functor]
+[#ex-List-functor]
 === The List Functor
 
 The `List` type constructor forms an endofunctor in the category FP.
 
-[source,hs,subs="quotes"]
-----
--- List : Obj~T~ → Obj~T~
-List a = Nil | Cons a (List a)
--- List~map~ : Mor~T~ → Mor~T~
-List~map~ :: (a → b) → (List a → List b)
-List~map~ f Nil = Nil
-List~map~ f (Cons x xs) = Cons (f x) (List~map~ f xs)
-----
+[{eqtable}]
+|===
+| List : Obj~T~ → Obj~T~
+| List a = Nil \| Cons a (List a)
+| map~List~ : Mor~T~ → Mor~T~
+| Or, specialized to FP,  map~List~ :: (a → b) → (List a → List b)
+| map~List~ f Nil = Nil
+| map~List~ f (Cons x xs) = Cons (f x) (map~List~ f xs)
+|===
 
 _Proof._
 
 [lowerroman]
-. For any two morphisms f and g in Mor~T~, List~map~ (f ∘ g) = List~map~ f ∘ List~map~ g.
+. For any two morphisms f and g in Mor~T~,  map~List~ (f ∘ g) = map~List~ f ∘ map~List~ g.
 
 We prove that these two expressions are the same for all possible inputs, namely Nil and Cons x xs.
-[source,hs,subs="quotes"]
-----
-List~map~ (f ∘ g) Nil = Nil
 
-(List~map~ f ∘ List~map~ g) Nil 
-  = List~map~ f (List~map~ g Nil)    -- definition composition
-  = List~map~ f Nil    -- definition List~map~
-  = Nil    -- definition List~map~
-----
+[{eqtable}]
+|===
+| map~List~ (f ∘ g) Nil = Nil ||
+|||
+| (map~List~ f ∘ map~List~ g) Nil  | = map~List~ f (map~List~ g Nil)    | (definition composition)
+|                                  | = map~List~ f Nil                  | (definition map~List~)
+|                                  | = Nil                              | (definition map~List~)
+|===
   
-[source,hs,subs="quotes"]
-----
-List~map~ (f ∘ g) (Cons x xs)
-  = Cons ((f ∘ g) x) (List~map~ (f ∘ g) xs)    -- definition List~map~
+[{eqtable}]
+|===
+| map~List~ (f ∘ g) (Cons x xs) | = Cons ((f ∘ g) x) (map~List~ (f ∘ g) xs)    | (definition map~List~)
+|||
+| (map~List~ f ∘ map~List~ g) (Cons x xs) | =  map~List~ f (map~List~ g (Cons x xs))               | (definition composition)
+|                                         | = map~List~ f (Cons (g x) (map~List~ g xs))            | (definition map~List~)
+|                                         | = Cons (f (g x)) (map~List~ f (map~List~ g xs))        | (definition map~List~)
+|                                         | = Cons ((f ∘ g) x) ((map~List~ f ∘ map~List~ g) xs)    | (definition composition)
+|===
 
-(List~map~ f ∘ List~map~ g) (Cons x xs)
-  = List~map~ f (List~map~ g (Cons x xs))    -- definition composition
-  = List~map~ f (Cons (g x) (List~map~ g xs))    -- definition List~map~
-  = Cons (f (g x)) (List~map~ f (List~map~ g xs))    -- definition List~map~
-  = Cons ((f ∘ g) x) ((List~map~ f ∘ List~map~ g) xs)    -- definition composition
-----
-
-All we have left to prove is that List~map~ (f ∘ g) xs = (List~map~ f ∘ List~map~ g) xs.
+All we have left to prove is that map~List~ (f ∘ g) xs = (map~List~ f ∘ map~List~ g) xs.
 Because it is true for xs = Nil, it follows by induction that the statement is true for all xs.
 
 [lowerroman,start=2]
-. For any object a in Obj~T~, List~map~ id~a~ = id~List{sp}a~.
+. For any object a in Obj~T~,  map~List~ id~a~ = id~List a~. 
 
 We prove that these two expressions are the same for all possible inputs, namely Nil and Cons x xs.
 
-[source,hs,subs="normal"]
-----
-List~map~ id~a~ Nil = Nil    -- definition List~map~
+[{eqtable}]
+|===
+| map~List~ id~a~ Nil = Nil    | (definition map~List~)
+| |
+| id~List a~ Nil = Nil    | (definition id~List a~)
+|===
 
-id~list{sp}a~ Nil = Nil    -- definition id~list{sp}a~
-----
+[{eqtable}]
+|===
+| map~List~ id~a~ (Cons x xs)  | = Cons (id~a~ x) (map~List~ id~a~ xs)    | (definition map~List~)
+|                              | = Cons x (map~List~ id~a~ xs)            | (definition id~a~||
+|||
+| id~List a~ (Cons x xs)       | = Cons x xs    | (definition id~List a~)
+|===
 
-[source,hs,subs="normal"]
-----
-List~map~ id~a~ (Cons x xs) 
-  = Cons (id~a~ x) (List~map~ id~a~ xs)    -- definition List~map~
-  = Cons x (List~map~ id~a~ xs)    -- definition id~a~
-
-id~list{sp}a~ (Cons x xs) = Cons x xs    -- definition id~list{sp}a~
-----
-
-All we have left to prove is that List~map~ id~a~ xs = xs.
+All we have left to prove is that map~List~ id~a~ xs = xs.
 Because it is true for xs = Nil, it follows by induction that the statement is true for all xs.
 
 ∎
