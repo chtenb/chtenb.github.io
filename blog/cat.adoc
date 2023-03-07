@@ -19,13 +19,11 @@ A *category* C consists of:
 * A collection of *objects*, denoted by Obj~C~.
 * A collection of *morphisms* (arrows) between objects, denoted by Mor~C~. 
   A morphism f from an object a to an object b can be written as f: a → b.
-  The objects a and b are called the source and target of f respectively.
+  The collection of morphisms from a to b is denoted by mor~C~ a b.
+  In other words,  mor~C~: Obj~C~ → Obj~C~ → Mor~C~.
 * For each triple of objects a, b and c, a *composition* operation, denoted by  ∘ : mor~C~ b c → mor~C~ a b → mor~C~ a c.
 * For each object a in Obj~C~, an *identity morphism* id~a~: a → a in Mor~C~.
 
-
-The collection of morphisms from a to b is denoted by mor~C~ a b.
-In other words,  mor~C~: Obj~C~ → Obj~C~ → Mor~C~.
 
 The composition operation satisfies the following two axioms:
 
