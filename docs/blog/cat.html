@@ -190,8 +190,62 @@ such that for any other object c' equipped with two injections i': a → c' and 
 <div class="paragraph">
 <p><em>Proof.</em></p>
 </div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>(Associativity) For any morphisms (f, f'), (g, g'), and (h, h') in Mor<sub>C⨯D</sub>,</p>
+</li>
+</ol>
+</div>
 <div class="paragraph">
-<p>TODO</p>
+<p> ((f, f') ∘ (g, g')) ∘ (h, h') = (f, f') ∘ ((g, g') ∘ (h, h')).</p>
+</div>
+<table class="tableblock frame-none grid-none fit-content">
+<colgroup>
+<col>
+<col>
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">((f, f') ∘ (g, g')) ∘ (h, h')</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">= (f ∘ g, f' ∘ g') ∘ (h, h')</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">(definition composition)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">= ((f ∘ g) ∘ h, (f' ∘ g') ∘ h')</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">(definition composition)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">(f, f') ∘ ((g, g') ∘ (h, h'))</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">= (f ∘ (g ∘ h), f' ∘ (g' ∘ h'))</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">(definition composition)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">= ((f ∘ g) ∘ h, (f' ∘ g') ∘ h')</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">(associativity composition)</p></td>
+</tr>
+</tbody>
+</table>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>(Identity) For any object (a, b) in Obj<sub>C⨯D</sub> and any morphism (f, f') going out of (a, b) and any morphism (g, g') coming into (a, b),</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p> (f, f') ∘ id<sub>(a,b)</sub> = (f, f') ∘ (id<sub>a</sub>, id<sub>b</sub>) = (f ∘ id<sub>a</sub>, f' ∘ id<sub>b</sub>) = (f, f')</p>
+</div>
+<div class="paragraph">
+<p> id<sub>(a,b)</sub> ∘ (g, g') = (id<sub>a</sub>, id<sub>b</sub>) ∘ (g, g') = (id<sub>a</sub> ∘ g, id<sub>b</sub> ∘ g') = (g, g')</p>
 </div>
 </div>
 <div class="sect2">

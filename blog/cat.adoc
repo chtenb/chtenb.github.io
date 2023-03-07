@@ -86,7 +86,24 @@ This forms a category.
 
 _Proof._
 
-TODO
+. (Associativity) For any morphisms (f, f'), (g, g'), and (h, h') in Mor~C⨯D~, 
+
+ \((f, f') ∘ (g, g')) ∘ (h, h') = (f, f') ∘ \((g, g') ∘ (h, h')).
+
+[{eqtable}]
+|===
+| \((f, f') ∘ (g, g')) ∘ (h, h') | = (f ∘ g, f' ∘ g') ∘ (h, h')    | (definition composition)
+|                               | = ((f ∘ g) ∘ h, (f' ∘ g') ∘ h') | (definition composition)
+|                               |                                 |
+| (f, f') ∘ \((g, g') ∘ (h, h')) | = (f ∘ (g ∘ h), f' ∘ (g' ∘ h')) | (definition composition)
+|                               | = ((f ∘ g) ∘ h, (f' ∘ g') ∘ h') | (associativity composition)
+|===
+
+. (Identity) For any object (a, b) in Obj~C⨯D~ and any morphism (f, f') going out of (a, b) and any morphism (g, g') coming into (a, b),
+
+ (f, f') ∘ id~(a,b)~ = (f, f') ∘ (id~a~, id~b~) = (f ∘ id~a~, f' ∘ id~b~) = (f, f')
+
+ id~(a,b)~ ∘ (g, g') = (id~a~, id~b~) ∘ (g, g') = (id~a~ ∘ g, id~b~ ∘ g') = (g, g')
 
 [#def-bifunctor]
 === Definition Bifunctor
