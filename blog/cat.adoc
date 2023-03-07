@@ -2,6 +2,12 @@
 
 = Category Theory
 :sectnums:
+:toc:
+
+== Notation
+
+- Mathematical functions are often written in curried form, so f: X → Y → Z and f x y = z, instead of f: X ⨯ Y → Z and f(x,y) = z.
+- Subscripts are often used for denoting a specialization. When they are clear from the context, they can be omitted.
 
 == Definitions
 
@@ -10,17 +16,32 @@
 
 A *category* C consists of:
 
-* A collection of objects, denoted by Obj~C~.
-* A collection of morphisms (arrows) between objects, denoted by Mor~C~.
-* A composition operation, denoted by ∘ : Mor~C~ × Mor~C~ → Mor~C~.
-* For each object a in Obj~C~, an identity morphism id~a~ in Mor~C~.
+* A collection of *objects*, denoted by Obj~C~.
+* A collection of *morphisms* (arrows) between objects, denoted by Mor~C~. 
+  A morphism f from an object a to an object b can be written as f: a → b.
+  The objects a and b are called the source and target of f respectively.
+* For each triple of objects a, b and c, a *composition* operation, denoted by  ∘ : mor~C~ b c → mor~C~ a b → mor~C~ a c.
+* For each object a in Obj~C~, an *identity morphism* id~a~: a → a in Mor~C~.
+
+
+The collection of morphisms from a to b is denoted by mor~C~ a b.
+In other words,  mor~C~: Obj~C~ → Obj~C~ → Mor~C~.
 
 The composition operation satisfies the following two axioms:
 
 [lowerroman]
 . (Associativity) For any morphisms f, g, and h in Mor~C~,  (f ∘ g) ∘ h = f ∘ (g ∘ h).
-. (Identity) For any object a in Obj~C~ and any morphism f in Mor~C~,  f ∘ id~a~ = f and id~a~ ∘ f = f.
+. (Identity) For any object a in Obj~C~ and any morphism f going out of a and any morphism g coming into a,
 
+ f ∘ id~a~ = f 
+ id~a~ ∘ g = g.
+
+[#def-isomorphism]
+=== Definition Isomorphism
+Given a category C, a morphism f: a → b is called an *isomorphism* if there exists another morphism g: b → a such that
+
+ f ∘ g = id~a~
+ g ∘ f = id~b~
 
 [#def-functor]
 === Definition Functor
@@ -43,16 +64,33 @@ If C and D are the same category, F is called an *endofunctor*.
 A *product* of two objects a and b is the object c equipped with two morphisms (called projections) p: c → a and q: c → b 
 such that for any other object c' equipped with two projections p': c' → a and q': c' → b there is a unique morphism m: c' → c that factorizes those projections: 
 
-[lowerroman]
-. p' = p ∘ m
-. q' = q ∘ m
+ p' = p ∘ m
+ q' = q ∘ m
 
 Dually, a *coproduct* of two objects a and b is the object c equipped with two morphisms (called injections) i: a → c and j: b → c 
 such that for any other object c' equipped with two injections i': a → c' and j': b → c' there is a unique morphism m: c → c' that factorizes those injections: 
 
-[lowerroman]
-. i' = m ∘ i
-. j' = m ∘ j
+ i' = m ∘ i
+ j' = m ∘ j
+
+[#def-product-category]
+=== Definition Product Category
+Given two categories C and D, the product category C ⨯ D is defined as follows.
+
+* Obj~C⨯D~ = Obj~C~ ⨯ Obj~D~
+* For every two objects (a,b) and (c,d),  mor~C⨯D~ (a,b) (c,d) = mor~C~ a c ⨯ mor~D~ b d
+* For every two morphisms (f,g) and (h,i),  (f,g) ∘ (h,i) = (f ∘ h, g ∘ i)
+* For every object (a,b),  id~(a,b)~ = (id~a~, id~b~)
+
+This forms a category.
+
+_Proof._
+
+TODO
+
+[#def-bifunctor]
+=== Definition Bifunctor
+Given three categories C,D and E, a functor F: C ⨯ D → E is called a *bifunctor*.
 
 == Examples
 
@@ -79,18 +117,52 @@ To prove the equivalence of two functions, it suffices to show that they yield t
 |===
 
 [lowerroman,start=2]
-. (Identity) For any object a in Obj~FP~ and any morphism f in Mor~FP~,  f ∘ id~a~ = f and id~a~ ∘ f = f.
+. (Identity) For any object a in Obj~FP~ and any morphism f going out of a,  f ∘ id~a~ = f 
+   and any morphism g coming into a  id~a~ ∘ g = g.
 
 [{eqtable}] 
 |===
-| (f ∘ id~a~) x  |  = f (id~a~ x)   | (definition composition)
-|                | = f x            | (definition id~a~)
-|||
-|(id~a~ ∘ f) x  |  = id~a~ (f x)    | (definition composition)
-|               |  = f x            | (definition id~a~)
+| (f ∘ id~a~) x  | = f (id~a~ x)  | (definition composition)
+|                | = f x          | (definition id~a~)
+|                |                |
+|(id~a~ ∘ g) x   | = id~a~ (g x)  | (definition composition)
+|                | = g x          | (definition id~a~)
 |===
 
 ∎
+
+[#ex-monoid]
+=== The Monoid Category 
+A monoid M is characterized by a set of values M, an identity value 0 and an operator + : M → M → M, such that the following conditions are met.
+
+[lowerroman]
+. (Associativity) For every three values x, y and x in M,  (x + y) + z = x + (y + z).
+. (Identity) For every value x in M,  x + 0 = x  and  0 + x = x.
+
+This structure forms a category with one object, named 1, and a morphism f~x~: 1 → 1 for every value x in M.
+Composition is defined as  f~x~ ∘ f~y~ = f~x+y~.
+
+_Proof._
+
+[lowerroman]
+. (Associativity) For any morphisms f~x~, f~y~, and f~z~ in Mor,  (f~x~ ∘ f~y~) ∘ f~z~ = f~x~ ∘ (f~y~ ∘ f~z~).
+
+[{eqtable}]
+|===
+| (f~x~ ∘ f~y~) ∘ f~z~ | = f~x+y~ ∘ f~z~      | = f~(x+y)+z~  | (definition composition)
+| f~x~ ∘ (f~y~ ∘ f~z~) | = f~x~ ∘ (f~y+z~)    | = f~x+(y+z)~  | (definition composition)
+|                      |                      | = f~(x+y)+z~  | (associativity of +)
+|===
+
+. (Identity) For any morphism f~x~ in Mor,  f~x~ ∘ f~0~ = f~x~  and  f~0~ ∘ f~x~ = f~x~.
+
+[{eqtable}]
+|===
+| f~x~ ∘ f~0~ | = f~x+0~ | (definition composition)
+|             | = f~x~   | (definition monoid identity)
+| f~0~ ∘ f~x~ | = f~0+x~ | (definition composition)
+|             | = f~x~   | (definition monoid identity)
+|===
 
 [#ex-List-functor]
 === The List Functor
@@ -116,7 +188,7 @@ We prove that these two expressions are the same for all possible inputs, namely
 [{eqtable}]
 |===
 | map~List~ (f ∘ g) Nil            | = Nil                            |
-|||
+|                                  |                                  |
 | (map~List~ f ∘ map~List~ g) Nil  | = map~List~ f (map~List~ g Nil)  | (definition composition)
 |                                  | = map~List~ f Nil                | (definition map~List~)
 |                                  | = Nil                            | (definition map~List~)
@@ -125,7 +197,7 @@ We prove that these two expressions are the same for all possible inputs, namely
 [{eqtable}]
 |===
 | map~List~ (f ∘ g) (Cons x xs)           | = Cons ((f ∘ g) x) (map~List~ (f ∘ g) xs)            | (definition map~List~)
-|||
+|                                         |                                                      |
 | (map~List~ f ∘ map~List~ g) (Cons x xs) | = map~List~ f (map~List~ g (Cons x xs))              | (definition composition)
 |                                         | = map~List~ f (Cons (g x) (map~List~ g xs))          | (definition map~List~)
 |                                         | = Cons (f (g x)) (map~List~ f (map~List~ g xs))      | (definition map~List~)
@@ -143,7 +215,7 @@ We prove that these two expressions are the same for all possible inputs, namely
 [{eqtable}]
 |===
 | map~List~ id~a~ Nil = Nil  | (definition map~List~)
-||
+|                            |
 | id~List a~ Nil = Nil       | (definition id~List a~)
 |===
 
@@ -151,7 +223,7 @@ We prove that these two expressions are the same for all possible inputs, namely
 |===
 | map~List~ id~a~ (Cons x xs)  | = Cons (id~a~ x) (map~List~ id~a~ xs)  | (definition map~List~)
 |                              | = Cons x (map~List~ id~a~ xs)          | (definition id~a~)
-|||
+|                              |                                        |
 | id~List a~ (Cons x xs)       | = Cons x xs                            | (definition id~List a~)
 |===
 
@@ -159,3 +231,12 @@ All we have left to prove is that map~List~ id~a~ xs = xs.
 Because it is true for xs = Nil, it follows by induction that the statement is true for all xs.
 
 ∎
+
+
+[#ex-cat]
+=== The Category of Categories
+The category *Cat* where objects are categories and morphisms are functors between categories, is a category.
+
+_Proof._
+
+TODO

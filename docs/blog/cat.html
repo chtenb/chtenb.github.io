@@ -13,31 +13,76 @@
 <body class="article">
 <div id="header">
 <h1>Category Theory</h1>
+<div id="toc" class="toc">
+<div id="toctitle">Table of Contents</div>
+<ul class="sectlevel1">
+<li><a href="#_notation">1. Notation</a></li>
+<li><a href="#_definitions">2. Definitions</a>
+<ul class="sectlevel2">
+<li><a href="#def-category">2.1. Definition Category</a></li>
+<li><a href="#def-isomorphism">2.2. Definition Isomorphism</a></li>
+<li><a href="#def-functor">2.3. Definition Functor</a></li>
+<li><a href="#def-product">2.4. Definition Product and Coproduct</a></li>
+<li><a href="#def-product-category">2.5. Definition Product Category</a></li>
+<li><a href="#def-bifunctor">2.6. Definition Bifunctor</a></li>
+</ul>
+</li>
+<li><a href="#_examples">3. Examples</a>
+<ul class="sectlevel2">
+<li><a href="#ex-fp">3.1. The FP Category</a></li>
+<li><a href="#ex-monoid">3.2. The Monoid Category</a></li>
+<li><a href="#ex-List-functor">3.3. The List Functor</a></li>
+<li><a href="#ex-cat">3.4. The Category of Categories</a></li>
+</ul>
+</li>
+</ul>
+</div>
 </div>
 <div id="content">
 <div class="sect1">
-<h2 id="_definitions">1. Definitions</h2>
+<h2 id="_notation">1. Notation</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>Mathematical functions are often written in curried form, so f: X → Y → Z and f x y = z, instead of f: X ⨯ Y → Z and f(x,y) = z.</p>
+</li>
+<li>
+<p>Subscripts are often used for denoting a specialization. When they are clear from the context, they can be omitted.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_definitions">2. Definitions</h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="def-category">1.1. Definition Category</h3>
+<h3 id="def-category">2.1. Definition Category</h3>
 <div class="paragraph">
 <p>A <strong>category</strong> C consists of:</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p>A collection of objects, denoted by Obj<sub>C</sub>.</p>
+<p>A collection of <strong>objects</strong>, denoted by Obj<sub>C</sub>.</p>
 </li>
 <li>
-<p>A collection of morphisms (arrows) between objects, denoted by Mor<sub>C</sub>.</p>
+<p>A collection of <strong>morphisms</strong> (arrows) between objects, denoted by Mor<sub>C</sub>.
+A morphism f from an object a to an object b can be written as f: a → b.
+The objects a and b are called the source and target of f respectively.</p>
 </li>
 <li>
-<p>A composition operation, denoted by ∘ : Mor<sub>C</sub> × Mor<sub>C</sub> → Mor<sub>C</sub>.</p>
+<p>For each triple of objects a, b and c, a <strong>composition</strong> operation, denoted by  ∘ : mor<sub>C</sub> b c → mor<sub>C</sub> a b → mor<sub>C</sub> a c.</p>
 </li>
 <li>
-<p>For each object a in Obj<sub>C</sub>, an identity morphism id<sub>a</sub> in Mor<sub>C</sub>.</p>
+<p>For each object a in Obj<sub>C</sub>, an <strong>identity morphism</strong> id<sub>a</sub>: a → a in Mor<sub>C</sub>.</p>
 </li>
 </ul>
+</div>
+<div class="paragraph">
+<p>The collection of morphisms from a to b is denoted by mor<sub>C</sub> a b.
+In other words,  mor<sub>C</sub>: Obj<sub>C</sub> → Obj<sub>C</sub> → Mor<sub>C</sub>.</p>
 </div>
 <div class="paragraph">
 <p>The composition operation satisfies the following two axioms:</p>
@@ -48,13 +93,27 @@
 <p>(Associativity) For any morphisms f, g, and h in Mor<sub>C</sub>,  (f ∘ g) ∘ h = f ∘ (g ∘ h).</p>
 </li>
 <li>
-<p>(Identity) For any object a in Obj<sub>C</sub> and any morphism f in Mor<sub>C</sub>,  f ∘ id<sub>a</sub> = f and id<sub>a</sub> ∘ f = f.</p>
+<p>(Identity) For any object a in Obj<sub>C</sub> and any morphism f going out of a and any morphism g coming into a,</p>
 </li>
 </ol>
 </div>
+<div class="paragraph">
+<p> f ∘ id<sub>a</sub> = f
+ id<sub>a</sub> ∘ g = g.</p>
+</div>
 </div>
 <div class="sect2">
-<h3 id="def-functor">1.2. Definition Functor</h3>
+<h3 id="def-isomorphism">2.2. Definition Isomorphism</h3>
+<div class="paragraph">
+<p>Given a category C, a morphism f: a → b is called an <strong>isomorphism</strong> if there exists another morphism g: b → a such that</p>
+</div>
+<div class="paragraph">
+<p> f ∘ g = id<sub>a</sub>
+ g ∘ f = id<sub>b</sub></p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="def-functor">2.3. Definition Functor</h3>
 <div class="paragraph">
 <p>Given two categories C and D, a <strong>functor</strong> F : C → D consists of:</p>
 </div>
@@ -86,43 +145,68 @@
 </div>
 </div>
 <div class="sect2">
-<h3 id="def-product">1.3. Definition Product and Coproduct</h3>
+<h3 id="def-product">2.4. Definition Product and Coproduct</h3>
 <div class="paragraph">
 <p>A <strong>product</strong> of two objects a and b is the object c equipped with two morphisms (called projections) p: c → a and q: c → b
 such that for any other object c' equipped with two projections p': c' → a and q': c' → b there is a unique morphism m: c' → c that factorizes those projections:</p>
 </div>
-<div class="olist lowerroman">
-<ol class="lowerroman" type="i">
-<li>
-<p>p' = p ∘ m</p>
-</li>
-<li>
-<p>q' = q ∘ m</p>
-</li>
-</ol>
+<div class="paragraph">
+<p> p' = p ∘ m
+ q' = q ∘ m</p>
 </div>
 <div class="paragraph">
 <p>Dually, a <strong>coproduct</strong> of two objects a and b is the object c equipped with two morphisms (called injections) i: a → c and j: b → c
 such that for any other object c' equipped with two injections i': a → c' and j': b → c' there is a unique morphism m: c → c' that factorizes those injections:</p>
 </div>
-<div class="olist lowerroman">
-<ol class="lowerroman" type="i">
+<div class="paragraph">
+<p> i' = m ∘ i
+ j' = m ∘ j</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="def-product-category">2.5. Definition Product Category</h3>
+<div class="paragraph">
+<p>Given two categories C and D, the product category C ⨯ D is defined as follows.</p>
+</div>
+<div class="ulist">
+<ul>
 <li>
-<p>i' = m ∘ i</p>
+<p>Obj<sub>C⨯D</sub> = Obj<sub>C</sub> ⨯ Obj<sub>D</sub></p>
 </li>
 <li>
-<p>j' = m ∘ j</p>
+<p>For every two objects (a,b) and (c,d),  mor<sub>C⨯D</sub> (a,b) (c,d) = mor<sub>C</sub> a c ⨯ mor<sub>D</sub> b d</p>
 </li>
-</ol>
+<li>
+<p>For every two morphisms (f,g) and (h,i),  (f,g) ∘ (h,i) = (f ∘ h, g ∘ i)</p>
+</li>
+<li>
+<p>For every object (a,b),  id<sub>(a,b)</sub> = (id<sub>a</sub>, id<sub>b</sub>)</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>This forms a category.</p>
+</div>
+<div class="paragraph">
+<p><em>Proof.</em></p>
+</div>
+<div class="paragraph">
+<p>TODO</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="def-bifunctor">2.6. Definition Bifunctor</h3>
+<div class="paragraph">
+<p>Given three categories C,D and E, a functor F: C ⨯ D → E is called a <strong>bifunctor</strong>.</p>
 </div>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_examples">2. Examples</h2>
+<h2 id="_examples">3. Examples</h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="ex-fp">2.1. The FP Category</h3>
+<h3 id="ex-fp">3.1. The FP Category</h3>
 <div class="paragraph">
 <p>The category <strong>FP</strong>, with objects being types and morphisms being functions, forms a category.</p>
 </div>
@@ -167,7 +251,8 @@ such that for any other object c' equipped with two injections i': a → c' and 
 <div class="olist lowerroman">
 <ol class="lowerroman" type="i" start="2">
 <li>
-<p>(Identity) For any object a in Obj<sub>FP</sub> and any morphism f in Mor<sub>FP</sub>,  f ∘ id<sub>a</sub> = f and id<sub>a</sub> ∘ f = f.</p>
+<p>(Identity) For any object a in Obj<sub>FP</sub> and any morphism f going out of a,  f ∘ id<sub>a</sub> = f
+and any morphism g coming into a  id<sub>a</sub> ∘ g = g.</p>
 </li>
 </ol>
 </div>
@@ -194,13 +279,13 @@ such that for any other object c' equipped with two injections i': a → c' and 
 <td class="tableblock halign-left valign-top"></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">(id<sub>a</sub> ∘ f) x</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">= id<sub>a</sub> (f x)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">(id<sub>a</sub> ∘ g) x</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">= id<sub>a</sub> (g x)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">(definition composition)</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">= f x</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">= g x</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">(definition id<sub>a</sub>)</p></td>
 </tr>
 </tbody>
@@ -210,7 +295,101 @@ such that for any other object c' equipped with two injections i': a → c' and 
 </div>
 </div>
 <div class="sect2">
-<h3 id="ex-List-functor">2.2. The List Functor</h3>
+<h3 id="ex-monoid">3.2. The Monoid Category</h3>
+<div class="paragraph">
+<p>A monoid M is characterized by a set of values M, an identity value 0 and an operator + : M → M → M, such that the following conditions are met.</p>
+</div>
+<div class="olist lowerroman">
+<ol class="lowerroman" type="i">
+<li>
+<p>(Associativity) For every three values x, y and x in M,  (x + y) + z = x + (y + z).</p>
+</li>
+<li>
+<p>(Identity) For every value x in M,  x + 0 = x  and  0 + x = x.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>This structure forms a category with one object, named 1, and a morphism f<sub>x</sub>: 1 → 1 for every value x in M.
+Composition is defined as  f<sub>x</sub> ∘ f<sub>y</sub> = f<sub>x+y</sub>.</p>
+</div>
+<div class="paragraph">
+<p><em>Proof.</em></p>
+</div>
+<div class="olist lowerroman">
+<ol class="lowerroman" type="i">
+<li>
+<p>(Associativity) For any morphisms f<sub>x</sub>, f<sub>y</sub>, and f<sub>z</sub> in Mor,  (f<sub>x</sub> ∘ f<sub>y</sub>) ∘ f<sub>z</sub> = f<sub>x</sub> ∘ (f<sub>y</sub> ∘ f<sub>z</sub>).</p>
+</li>
+</ol>
+</div>
+<table class="tableblock frame-none grid-none fit-content">
+<colgroup>
+<col>
+<col>
+<col>
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">(f<sub>x</sub> ∘ f<sub>y</sub>) ∘ f<sub>z</sub></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">= f<sub>x+y</sub> ∘ f<sub>z</sub></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">= f<sub>(x+y)+z</sub></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">(definition composition)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">f<sub>x</sub> ∘ (f<sub>y</sub> ∘ f<sub>z</sub>)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">= f<sub>x</sub> ∘ (f<sub>y+z</sub>)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">= f<sub>x+(y+z)</sub></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">(definition composition)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">= f<sub>(x+y)+z</sub></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">(associativity of +)</p></td>
+</tr>
+</tbody>
+</table>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>(Identity) For any morphism f<sub>x</sub> in Mor,  f<sub>x</sub> ∘ f<sub>0</sub> = f<sub>x</sub>  and  f<sub>0</sub> ∘ f<sub>x</sub> = f<sub>x</sub>.</p>
+</li>
+</ol>
+</div>
+<table class="tableblock frame-none grid-none fit-content">
+<colgroup>
+<col>
+<col>
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">f<sub>x</sub> ∘ f<sub>0</sub></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">= f<sub>x+0</sub></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">(definition composition)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">= f<sub>x</sub></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">(definition monoid identity)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">f<sub>0</sub> ∘ f<sub>x</sub></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">= f<sub>0+x</sub></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">(definition composition)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">= f<sub>x</sub></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">(definition monoid identity)</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="ex-List-functor">3.3. The List Functor</h3>
 <div class="paragraph">
 <p>The <strong>List</strong> type constructor forms an endofunctor in the category FP.</p>
 </div>
@@ -397,6 +576,18 @@ Because it is true for xs = Nil, it follows by induction that the statement is t
 </div>
 <div class="paragraph">
 <p>∎</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="ex-cat">3.4. The Category of Categories</h3>
+<div class="paragraph">
+<p>The category <strong>Cat</strong> where objects are categories and morphisms are functors between categories, is a category.</p>
+</div>
+<div class="paragraph">
+<p><em>Proof.</em></p>
+</div>
+<div class="paragraph">
+<p>TODO</p>
 </div>
 </div>
 </div>
