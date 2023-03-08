@@ -57,6 +57,7 @@ These functions must satisfy the following two conditions:
 
 If C and D are the same category, F is called an *endofunctor*.
 
+
 [#def-product]
 === Definition Product and Coproduct
 A *product* of two objects a and b is the object c equipped with two morphisms (called projections) p: c → a and q: c → b 
@@ -186,9 +187,9 @@ The *List* type constructor forms an endofunctor in the category FP.
 
 [{eqtable}]
 |===
-| List : Obj~T~ → Obj~T~                                |
+| List : Obj~FP~ → Obj~FP~                              |
 | List a = Nil \| Cons a (List a)                       |
-| map~List~ : Mor~T~ → Mor~T~                           | Or, specialized to FP,  map~List~ : (a → b) → (List a → List b)
+| map~List~ : Mor~FP~ → Mor~FP~                         | Or, specialized to FP,  map~List~ : (a → b) → (List a → List b)
 | map~List~ f Nil = Nil                                 |
 | map~List~ f (Cons x xs) = Cons (f x) (map~List~ f xs) |
 |===
@@ -196,7 +197,7 @@ The *List* type constructor forms an endofunctor in the category FP.
 _Proof._
 
 [lowerroman]
-. For any two morphisms f and g in Mor~T~,  map~List~ (f ∘ g) = map~List~ f ∘ map~List~ g.
+. For any two morphisms f and g in Mor~FP~,  map~List~ (f ∘ g) = map~List~ f ∘ map~List~ g.
 
 We prove that these two expressions are the same for all possible inputs, namely Nil and Cons x xs.
 
@@ -223,7 +224,7 @@ All we have left to prove is that map~List~ (f ∘ g) xs = (map~List~ f ∘ map~
 Because it is true for xs = Nil, it follows by induction that the statement is true for all xs.
 
 [lowerroman,start=2]
-. For any object a in Obj~T~,  map~List~ id~a~ = id~List a~. 
+. For any object a in Obj~FP~,  map~List~ id~a~ = id~List a~. 
 
 We prove that these two expressions are the same for all possible inputs, namely Nil and Cons x xs.
 
@@ -251,7 +252,23 @@ Because it is true for xs = Nil, it follows by induction that the statement is t
 [#ex-cat]
 === The Category of Categories
 The category *Cat* where objects are categories and morphisms are functors between categories, is a category.
+Functors F and G are composable by composing the corresponding functions:
+
+ (F ∘ G) a = F (G a)
+ (map~F~ ∘ map~G~) f = map~F~ (map~G~ f)
+
+Every category C has an identity functor I to itself, which is given by
+
+ I: Obj~C~ → Obj~C~, I a = a
+ map~I~: Mor~C~ → Mor~C~, map~I~ f = f
 
 _Proof._
 
-TODO
+[lowerroman]
+. (Associativity) Composing functors is associative, because composing the underlying functions is associative.
+. (Identity) For any object C in Obj~Cat~ and any functor F going out of C and any functor G coming into a, let I be the identity functor of C. Then
+
+ F ∘ I = F 
+ I ∘ G = G
+
+because the underlying functions of I are identity functions.

@@ -451,7 +451,7 @@ Composition is defined as  f<sub>x</sub> ∘ f<sub>y</sub> = f<sub>x+y</sub>.<
 </colgroup>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">List : Obj<sub>T</sub> → Obj<sub>T</sub></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">List : Obj<sub>FP</sub> → Obj<sub>FP</sub></p></td>
 <td class="tableblock halign-left valign-top"></td>
 </tr>
 <tr>
@@ -459,7 +459,7 @@ Composition is defined as  f<sub>x</sub> ∘ f<sub>y</sub> = f<sub>x+y</sub>.<
 <td class="tableblock halign-left valign-top"></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">map<sub>List</sub> : Mor<sub>T</sub> → Mor<sub>T</sub></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">map<sub>List</sub> : Mor<sub>FP</sub> → Mor<sub>FP</sub></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Or, specialized to FP,  map<sub>List</sub> : (a → b) → (List a → List b)</p></td>
 </tr>
 <tr>
@@ -478,7 +478,7 @@ Composition is defined as  f<sub>x</sub> ∘ f<sub>y</sub> = f<sub>x+y</sub>.<
 <div class="olist lowerroman">
 <ol class="lowerroman" type="i">
 <li>
-<p>For any two morphisms f and g in Mor<sub>T</sub>,  map<sub>List</sub> (f ∘ g) = map<sub>List</sub> f ∘ map<sub>List</sub> g.</p>
+<p>For any two morphisms f and g in Mor<sub>FP</sub>,  map<sub>List</sub> (f ∘ g) = map<sub>List</sub> f ∘ map<sub>List</sub> g.</p>
 </li>
 </ol>
 </div>
@@ -565,7 +565,7 @@ Because it is true for xs = Nil, it follows by induction that the statement is t
 <div class="olist lowerroman">
 <ol class="lowerroman" type="i" start="2">
 <li>
-<p>For any object a in Obj<sub>T</sub>,  map<sub>List</sub> id<sub>a</sub> = id<sub>List a</sub>.</p>
+<p>For any object a in Obj<sub>FP</sub>,  map<sub>List</sub> id<sub>a</sub> = id<sub>List a</sub>.</p>
 </li>
 </ol>
 </div>
@@ -632,13 +632,39 @@ Because it is true for xs = Nil, it follows by induction that the statement is t
 <div class="sect2">
 <h3 id="ex-cat">3.4. The Category of Categories</h3>
 <div class="paragraph">
-<p>The category <strong>Cat</strong> where objects are categories and morphisms are functors between categories, is a category.</p>
+<p>The category <strong>Cat</strong> where objects are categories and morphisms are functors between categories, is a category.
+Functors F and G are composable by composing the corresponding functions:</p>
+</div>
+<div class="paragraph">
+<p> (F ∘ G) a = F (G a)
+ (map<sub>F</sub> ∘ map<sub>G</sub>) f = map<sub>F</sub> (map<sub>G</sub> f)</p>
+</div>
+<div class="paragraph">
+<p>Every category C has an identity functor I to itself, which is given by</p>
+</div>
+<div class="paragraph">
+<p> I: Obj<sub>C</sub> → Obj<sub>C</sub>, I a = a
+ map<sub>I</sub>: Mor<sub>C</sub> → Mor<sub>C</sub>, map<sub>I</sub> f = f</p>
 </div>
 <div class="paragraph">
 <p><em>Proof.</em></p>
 </div>
+<div class="olist lowerroman">
+<ol class="lowerroman" type="i">
+<li>
+<p>(Associativity) Composing functors is associative, because composing the underlying functions is associative.</p>
+</li>
+<li>
+<p>(Identity) For any object C in Obj<sub>Cat</sub> and any functor F going out of C and any functor G coming into a, let I be the identity functor of C. Then</p>
+</li>
+</ol>
+</div>
 <div class="paragraph">
-<p>TODO</p>
+<p> F ∘ I = F
+ I ∘ G = G</p>
+</div>
+<div class="paragraph">
+<p>because the underlying functions of I are identity functions.</p>
 </div>
 </div>
 </div>
