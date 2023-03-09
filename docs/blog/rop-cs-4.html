@@ -1,6 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
+<!DOCTYPE html><html lang="en"><head>
 <meta charset="UTF-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -30,7 +28,7 @@ In this part we will look at slightly more complex railway tracks and wrap up th
 <p>Railroad Oriented Programming is not limited to having a single straight railroad.
 As we compose functions together writing our program, a more complex railroad system will evolve, reflecting our program flow.
 It is highly recommended that one does not put too much complex railroad logic in a single function, but it is perfectly possible to construct subtracks within a railroad function.
-Let&#8217;s give an example that demonstrates having a subtrack and performing a failure recovery.</p>
+Let’s give an example that demonstrates having a subtrack and performing a failure recovery.</p>
 </div>
 <div class="paragraph">
 <p>Suppose that now the <code>SendEmail</code> function does not return a <code>string</code> on failure, but some failure object like an <code>Exception</code> instance.</p>
@@ -54,17 +52,17 @@ Suppose we want to send an email to the server, but we have a fallback server in
     .OnSuccess(email =&gt; SendEmail(email, server1)
       .OnFailure(ex =&gt; ex <span class="hljs-keyword">switch</span> {
         ServerNotFoundException =&gt;
-          <span class="hljs-comment">// Attempt server1. We don&#x27;t need to inspect the second exception,</span>
+          <span class="hljs-comment">// Attempt server1. We don't need to inspect the second exception,</span>
           <span class="hljs-comment">// and can directly transform it to an error string using OnFailure.</span>
           SendEmail(email, server2).OnFailure&lt;<span class="hljs-built_in">string</span>&gt;(ex =&gt; Result.Fail(ex.Message)),
         _ =&gt; Result.Fail(ex.Message)
       })
     )
     .Handle(
-      _ =&gt; <span class="hljs-string">&quot;Email sent&quot;</span>,
+      _ =&gt; <span class="hljs-string">"Email sent"</span>,
       error =&gt; {
         LogError(error);
-        <span class="hljs-keyword">return</span> <span class="hljs-string">&quot;Email not sent&quot;</span>;
+        <span class="hljs-keyword">return</span> <span class="hljs-string">"Email not sent"</span>;
       }
     );
 }</code></pre>
@@ -155,7 +153,7 @@ But it demonstrates having subtracks and failure recovery very well in the conte
 <div class="sectionbody">
 <div class="paragraph">
 <p>Using the <code>Result</code> type for asynchronous programming is perfectly possible, but again comes with a few hacks to account for some C# compiler limitations.
-Maybe I&#8217;ll write another article about that some time.</p>
+Maybe I’ll write another article about that some time.</p>
 </div>
 </div>
 </div>
@@ -163,7 +161,7 @@ Maybe I&#8217;ll write another article about that some time.</p>
 <h2 id="_conclusion">Conclusion</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Here follows the code for the <code>Result</code> type we&#8217;ve produced in this article series.</p>
+<p>Here follows the code for the <code>Result</code> type we’ve produced in this article series.</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -174,7 +172,7 @@ Maybe I&#8217;ll write another article about that some time.</p>
     <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">abstract</span> <span class="hljs-title">Result</span>&lt;<span class="hljs-title">TSuccess</span>, <span class="hljs-title">TNextFailure</span>&gt; <span class="hljs-title">OnFailure</span>&lt;<span class="hljs-title">TNextFailure</span>&gt;(<span class="hljs-params">
       Func&lt;TFailure, Result&lt;TSuccess, TNextFailure&gt;&gt; onFailure</span>)</span>;
     <span class="hljs-comment"><span class="hljs-doctag">///</span> <span class="hljs-doctag">&lt;summary&gt;</span></span>
-    <span class="hljs-comment"><span class="hljs-doctag">///</span> Prefer <span class="hljs-doctag">&lt;see cref=&quot;OnSuccess&quot;&gt;</span> and <span class="hljs-doctag">&lt;see cref=&quot;OnFailure&quot;&gt;</span> over this method for returning Result types.</span>
+    <span class="hljs-comment"><span class="hljs-doctag">///</span> Prefer <span class="hljs-doctag">&lt;see cref="OnSuccess"&gt;</span> and <span class="hljs-doctag">&lt;see cref="OnFailure"&gt;</span> over this method for returning Result types.</span>
     <span class="hljs-comment"><span class="hljs-doctag">///</span> <span class="hljs-doctag">&lt;/summary&gt;</span></span>
     <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">abstract</span> TReturn <span class="hljs-title">Handle</span>&lt;<span class="hljs-title">TReturn</span>&gt;(<span class="hljs-params">Func&lt;TSuccess, TReturn&gt; onSuccess, Func&lt;TFailure, TReturn&gt; onFailure</span>)</span>;
 
@@ -280,5 +278,5 @@ Maybe I&#8217;ll write another article about that some time.</p>
 </div>
 </div>
 </div>
-</body>
-</html>
+
+</body></html>

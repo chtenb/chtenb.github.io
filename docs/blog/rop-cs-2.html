@@ -1,6 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
+<!DOCTYPE html><html lang="en"><head>
 <meta charset="UTF-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -75,7 +73,7 @@ We can fix that.</p>
 <pre class="highlight"><code class="language-cs" data-lang="cs"><span class="hljs-function">Result&lt;User, <span class="hljs-built_in">string</span>&gt; <span class="hljs-title">GetUser</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> username</span>)</span> {
   <span class="hljs-keyword">var</span> user = Datastore.FindUser(username);
   <span class="hljs-keyword">if</span> (user == <span class="hljs-literal">null</span>)
-    <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> Result&lt;User, <span class="hljs-built_in">string</span>&gt;.Failure(<span class="hljs-string">&quot;User has no email&quot;</span>);
+    <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> Result&lt;User, <span class="hljs-built_in">string</span>&gt;.Failure(<span class="hljs-string">"User has no email"</span>);
   <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> Result&lt;User, <span class="hljs-built_in">string</span>&gt;.Success(user);
 }</code></pre>
 </div>
@@ -96,7 +94,7 @@ We can fix that.</p>
 </div>
 </div>
 <div class="paragraph">
-<p>As you can see we&#8217;ve achieved an explicit failure path.
+<p>As you can see we’ve achieved an explicit failure path.
 When we call <code>GetUser</code> we obtain a result object and this encourages us to consider both the success and the failure case.
 But the code leaves much to be desired.
 Even more so when we need to call more than one function.</p>
@@ -146,8 +144,8 @@ Even more so when we need to call more than one function.</p>
 <div class="sect2">
 <h3 id="_a_fluent_result_type">A fluent result type</h3>
 <div class="paragraph">
-<p>To resolve the complaints about our previous implementation, we&#8217;ll define an <code>OnSuccess</code> function and a <code>Handle</code> function.
-They will do the unwrapping for us and form a <a href="https://en.wikipedia.org/wiki/Fluent_interface">Fluent Interface</a> and thereby removing the nesting.
+<p>To resolve the complaints about our previous implementation, we’ll define an <code>OnSuccess</code> function and a <code>Handle</code> function.
+They will do the unwrapping for us and form a <a href="https://en.wikipedia.org/wiki/Fluent_interface" target="_blank">Fluent Interface</a> and thereby removing the nesting.
 Moreover, the OnSuccess function will "shortcircuit" the failure path, such that we only have to handle the failure path once.</p>
 </div>
 <div class="listingblock">
@@ -329,7 +327,7 @@ The <code>Result</code> type encapsulates two "paths" or "tracks", the success t
 </div>
 </div>
 <div class="paragraph">
-<p>If you&#8217;re wondering what that <code>Unit</code> type is, it&#8217;s a replacement for <code>void</code>, since we can&#8217;t put <code>void</code> in there.
+<p>If you’re wondering what that <code>Unit</code> type is, it’s a replacement for <code>void</code>, since we can’t put <code>void</code> in there.
 For more information refer to <a href="/?page=unit-cs">The missing C# built-in type: void</a>.</p>
 </div>
 <div class="paragraph">
@@ -344,10 +342,10 @@ For more information refer to <a href="/?page=unit-cs">The missing C# built-in t
     .OnSuccess(email =&gt; CreateEmailMessage(email, msg))
     .OnSuccess(SendEmail)
     .Handle(
-      _ =&gt; <span class="hljs-string">&quot;Email sent&quot;</span>,
+      _ =&gt; <span class="hljs-string">"Email sent"</span>,
       error =&gt; {
         Log(error);
-        <span class="hljs-keyword">return</span> <span class="hljs-string">&quot;Email not sent&quot;</span>;
+        <span class="hljs-keyword">return</span> <span class="hljs-string">"Email not sent"</span>;
       }
     );
 }</code></pre>
@@ -454,11 +452,11 @@ For more information refer to <a href="/?page=unit-cs">The missing C# built-in t
     .OnSuccess(SendEmail)
     .HandleVoid(
       _ =&gt; {
-        Console.WriteLine(<span class="hljs-string">&quot;Email sent&quot;</span>);
+        Console.WriteLine(<span class="hljs-string">"Email sent"</span>);
       },
       error =&gt; {
         Log(error);
-        Console.WriteLine(<span class="hljs-string">&quot;Email not sent&quot;</span>);
+        Console.WriteLine(<span class="hljs-string">"Email not sent"</span>);
       }
     );
 }</code></pre>
@@ -471,7 +469,7 @@ For more information refer to <a href="/?page=unit-cs">The missing C# built-in t
 <div class="sect2">
 <h3 id="_the_onfailure_method">The OnFailure method</h3>
 <div class="paragraph">
-<p>If we have a OnSuccess method, there is no reason why we couldn&#8217;t have an OnFailure method too.
+<p>If we have a OnSuccess method, there is no reason why we couldn’t have an OnFailure method too.
 This would allow us to do operations on the failure track, such as modifying the error, or recovering from the error and get back on the success track.</p>
 </div>
 <div class="imageblock kroki">
@@ -499,12 +497,12 @@ This would allow us to do operations on the failure track, such as modifying the
     .OnSuccess(GetEmailAddress)
     .OnSuccess(email =&gt; CreateEmailMessage(email, msg))
     .OnSuccess(SendEmail)
-    .OnFailure(error =&gt; <span class="hljs-keyword">new</span> Result&lt;Unit, <span class="hljs-built_in">string</span>&gt;.Failure(<span class="hljs-string">&quot;An error occurred: &quot;</span> + error))
+    .OnFailure(error =&gt; <span class="hljs-keyword">new</span> Result&lt;Unit, <span class="hljs-built_in">string</span>&gt;.Failure(<span class="hljs-string">"An error occurred: "</span> + error))
     .Handle(
-      _ =&gt; <span class="hljs-string">&quot;Email sent&quot;</span>,
+      _ =&gt; <span class="hljs-string">"Email sent"</span>,
       error =&gt; {
         Log(error);
-        <span class="hljs-keyword">return</span> <span class="hljs-string">&quot;Email not sent&quot;</span>;
+        <span class="hljs-keyword">return</span> <span class="hljs-string">"Email not sent"</span>;
       }
     );
 }</code></pre>
@@ -584,11 +582,11 @@ This would allow us to do operations on the failure track, such as modifying the
 </div>
 </div>
 <div class="paragraph">
-<p>We still need to deal with the awkward construction of <code>Result</code> instances, and we&#8217;ll do that in the <a href="/?page=rop-cs-3">next part</a>.</p>
+<p>We still need to deal with the awkward construction of <code>Result</code> instances, and we’ll do that in the <a href="/?page=rop-cs-3">next part</a>.</p>
 </div>
 </div>
 </div>
 </div>
 </div>
-</body>
-</html>
+
+</body></html>

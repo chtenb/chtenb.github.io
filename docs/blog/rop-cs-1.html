@@ -1,6 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
+<!DOCTYPE html><html lang="en"><head>
 <meta charset="UTF-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -18,9 +16,9 @@
 <div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
-<p>The term <em>Railroad Oriented Programming</em> has been <a href="https://fsharpforfunandprofit.com/rop/">popularized by Scott Wlaschin as a term for a certain programming style for handling failure</a>.
+<p>The term <em>Railroad Oriented Programming</em> has been <a href="https://fsharpforfunandprofit.com/rop/" target="_blank">popularized by Scott Wlaschin as a term for a certain programming style for handling failure</a>.
 In this article series we will look at how we can implement this style of programming in C#.
-Let&#8217;s start by talking about the problems it is trying to solve.</p>
+Let’s start by talking about the problems it is trying to solve.</p>
 </div>
 </div>
 </div>
@@ -29,7 +27,7 @@ Let&#8217;s start by talking about the problems it is trying to solve.</p>
 <div class="sectionbody">
 <div class="paragraph">
 <p>Functions are often designed for the <strong>success path</strong>: the return type only consists of the type the function will return in case of a successful execution.
-The following function definition likely wouldn&#8217;t stand out in an average code base.</p>
+The following function definition likely wouldn’t stand out in an average code base.</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -38,18 +36,18 @@ The following function definition likely wouldn&#8217;t stand out in an average 
 </div>
 <div class="paragraph">
 <p>This function is supposed to return a User object for the user with the username that is passed into the function.
-But sometimes the function isn&#8217;t able to meet this expectation.</p>
+But sometimes the function isn’t able to meet this expectation.</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p>maybe the user doesn&#8217;t exist</p>
+<p>maybe the user doesn’t exist</p>
 </li>
 <li>
 <p>maybe because it needs to do a lookup in a datastore and the datastore is temporarily unreachable</p>
 </li>
 <li>
-<p>&#8230;&#8203;</p>
+<p>…​</p>
 </li>
 </ul>
 </div>
@@ -86,11 +84,11 @@ But sometimes the function isn&#8217;t able to meet this expectation.</p>
 <p>An exception is thrown.</p>
 </li>
 <li>
-<p>A boolean or enum value is returned indicating success/failure cases while the actual result data is propagated through one or more <a href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/out-parameter-modifier"><code>out</code> parameters</a>.</p>
+<p>A boolean or enum value is returned indicating success/failure cases while the actual result data is propagated through one or more <a href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/out-parameter-modifier" target="_blank"><code>out</code> parameters</a>.</p>
 <div class="ulist">
 <ul>
 <li>
-<p>A particular variant of this pattern that is regularly encountered in .NET libraries is referred to as the <a href="https://docs.microsoft.com/en-us/dotnet/standard/design-guidelines/exceptions-and-performance#try-parse-pattern">Try-Parse Pattern in the Microsoft docs</a>.</p>
+<p>A particular variant of this pattern that is regularly encountered in .NET libraries is referred to as the <a href="https://docs.microsoft.com/en-us/dotnet/standard/design-guidelines/exceptions-and-performance#try-parse-pattern" target="_blank">Try-Parse Pattern in the Microsoft docs</a>.</p>
 </li>
 </ul>
 </div>
@@ -105,7 +103,7 @@ But sometimes the function isn&#8217;t able to meet this expectation.</p>
 <p>For <strong>value types</strong> the default value is a valid member of the value space of the type. So either there would be no way to distinguish between a success return value and a failure return value, or if there are special values reserved for failure signaling (like <code>-1</code> is often used in the case of <code>int</code>) there is no compile-time guarantee that the failure case is handled distinctly.</p>
 </li>
 <li>
-<p>For <strong>reference types</strong> the default value (<code>null</code>) is not a valid member of the value space of a class in the sense that you can&#8217;t call the class methods on it. The compiler however treats it as it <em>were</em> a valid member, leading to null-reference bugs. Since the addition of nonnullable reference types in C# 8.0 this set of problems has been diminished a great deal, but a non-negligible pool of pitfalls remains.</p>
+<p>For <strong>reference types</strong> the default value (<code>null</code>) is not a valid member of the value space of a class in the sense that you can’t call the class methods on it. The compiler however treats it as it <em>were</em> a valid member, leading to null-reference bugs. Since the addition of nonnullable reference types in C# 8.0 this set of problems has been diminished a great deal, but a non-negligible pool of pitfalls remains.</p>
 </li>
 <li>
 <p>There is no way to return any data along with the failure, such as an error message or some object indicating the reason or nature of the failure.</p>
@@ -127,7 +125,7 @@ But sometimes the function isn&#8217;t able to meet this expectation.</p>
 <div class="paragraph">
 <p>While the above paragraphs point out some problems with the respective failure-handling strategies, the main problem of these approaches is this: the <strong>failure path</strong> of <code>GetUser</code> is <strong>implicitly defined</strong>.
 It is not part of the function signature, and the compiler is not aware of it.
-As such, it doesn&#8217;t get the same amount of attention from the programmer as the success path and is quite frankly too often completely overlooked.</p>
+As such, it doesn’t get the same amount of attention from the programmer as the success path and is quite frankly too often completely overlooked.</p>
 </div>
 </div>
 <div class="sect2">
@@ -173,10 +171,10 @@ If you restrict yourself to the Try-Parse Pattern this becomes less of a problem
 </div>
 </div>
 <div class="paragraph">
-<p>Since this idea sounds so trivial, why isn&#8217;t this done traditionally?
+<p>Since this idea sounds so trivial, why isn’t this done traditionally?
 At least part of that has to do with the fact C-like languages do not make it easy to do this.
 You would need to have a return type that can be <em>either</em> the success type <em>or</em> the failure type.
-In functional programming languages such a construct <em>does</em> exist and is called a <a href="https://en.wikipedia.org/wiki/Tagged_union">Discriminated Union</a>.
+In functional programming languages such a construct <em>does</em> exist and is called a <a href="https://en.wikipedia.org/wiki/Tagged_union" target="_blank">Discriminated Union</a>.
 But C-like languages, including C#, do not have support for such a type.
 Luckily C# has had added lots of language features over the years that make it possible to emulate discriminated unions and use them in a relatively convenient and type-safe way.
 In the <a href="/?page=rop-cs-2">next part</a> of this series we will have a look at one way of implementing explicit failure in C#: a <code>Result</code> type with two subtypes, the <code>Success</code> type for the success path and the <code>Failure</code> type for the failure path.</p>
@@ -210,5 +208,5 @@ For a more elaborate discussion of when and how to use exceptions, again refer t
 </div>
 </div>
 </div>
-</body>
-</html>
+
+</body></html>

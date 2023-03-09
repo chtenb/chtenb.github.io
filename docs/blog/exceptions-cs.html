@@ -1,6 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
+<!DOCTYPE html><html lang="en"><head>
 <meta charset="UTF-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -20,7 +18,7 @@
 <div class="paragraph">
 <p>Exceptions are a well-established feature of almost every Object Oriented programming language these days.
 However, exceptions are tricky.
-Let&#8217;s discuss the tricky parts and how we can use exceptions to their strength.</p>
+Let’s discuss the tricky parts and how we can use exceptions to their strength.</p>
 </div>
 </div>
 </div>
@@ -80,8 +78,8 @@ So how should we deal with that in our code?</p>
 </div>
 <div class="paragraph">
 <p>In a complex application there is no way of telling whether you have caught all exceptions you want to catch.
-You probably don&#8217;t want to crash your application or present your user an exception with a callstack.
-In that case you should split up your application into transactional operations, or <em>transactions</em> for short, to contain how far an exception can propagate. Let&#8217;s define the term <em>transaction</em>.</p>
+You probably don’t want to crash your application or present your user an exception with a callstack.
+In that case you should split up your application into transactional operations, or <em>transactions</em> for short, to contain how far an exception can propagate. Let’s define the term <em>transaction</em>.</p>
 </div>
 <div class="ulist">
 <ul>
@@ -94,7 +92,7 @@ In that case you should split up your application into transactional operations,
 </ul>
 </div>
 <div class="paragraph">
-<p>Given that we&#8217;ve succesfully composed our code in terms of transactions, exceptions can be handled properly and safely in the following structured way.</p>
+<p>Given that we’ve succesfully composed our code in terms of transactions, exceptions can be handled properly and safely in the following structured way.</p>
 </div>
 <div class="olist arabic">
 <ol class="arabic">
@@ -114,12 +112,12 @@ In that case you should split up your application into transactional operations,
 Some programs (perhaps a CLI) may even consist of a single transaction.</p>
 </div>
 <div class="paragraph">
-<p>Let&#8217;s take a web application as an example. In a web application each request should <em>at least</em> be a separate transaction because a failure to handle a request should not bring the web application down or influence other requests in any way.
+<p>Let’s take a web application as an example. In a web application each request should <em>at least</em> be a separate transaction because a failure to handle a request should not bring the web application down or influence other requests in any way.
 If it is appropriate to split a request into more than one transaction, then do so by all means.</p>
 </div>
 <div class="paragraph">
-<p>All right. We&#8217;ve achieved that any uncaught exception only affects its containing transaction.
-However, we still don&#8217;t know if we&#8217;ve missed any exceptions that should <em>not</em> cause the transaction to be aborted.
+<p>All right. We’ve achieved that any uncaught exception only affects its containing transaction.
+However, we still don’t know if we’ve missed any exceptions that should <em>not</em> cause the transaction to be aborted.
 What can we do about that?</p>
 </div>
 <div class="olist arabic">
@@ -128,7 +126,7 @@ What can we do about that?</p>
 <p>Study any 3rd party APIs well for exceptions that could have been missed.</p>
 </li>
 <li>
-<p>Don&#8217;t throw exceptions yourself if it shouldn&#8217;t abort the transaction. Instead make the corresponding failure part of the normal code path <a href="/?page=rop-cs-1">using a <code>Result</code> type</a>.</p>
+<p>Don’t throw exceptions yourself if it shouldn’t abort the transaction. Instead make the corresponding failure part of the normal code path <a href="/?page=rop-cs-1">using a <code>Result</code> type</a>.</p>
 </li>
 </ol>
 </div>
@@ -138,5 +136,5 @@ What can we do about that?</p>
 </div>
 </div>
 </div>
-</body>
-</html>
+
+</body></html>
