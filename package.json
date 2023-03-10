@@ -33,6 +33,7 @@
     "highlight.js": "11.7.0",
     "parcel": "2.8.3",
     "purescript": "0.15.7",
+    "purs-tidy": "latest",
     "spago": "0.20.9",
     "cheerio": "^1.0.0-rc.12"
   }

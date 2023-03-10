@@ -103,3 +103,21 @@ let upstream =
         sha256:6b4540b6a3e43b579a79dcf323431e4023df6f37ee0670a6c083e07efcb537e1
 
 in  upstream
+  with html-parser-halogen =
+    { dependencies =
+      [ "arrays"
+      , "control"
+      , "dom-indexed"
+      , "foldable-traversable"
+      , "effect"
+      , "halogen"
+      , "maybe"
+      , "prelude"
+      , "psci-support"
+      , "jest"
+      ]
+    , repo =
+       "https://github.com/rnons/purescript-html-parser-halogen"
+    , version =
+        "master"
+    }

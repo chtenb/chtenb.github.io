@@ -44,6 +44,16 @@ var _setFragmentString = function (value) {
   window.history.pushState({}, '', newurl);
 };
 
+export const setHash = function (value) {
+  return function () {
+    _setHash(value);
+  }
+};
+
+var _setHash = function (value) {
+  location.hash = value;
+};
+
 
 export const getQueryString = function () {
   var result = window.location.search;

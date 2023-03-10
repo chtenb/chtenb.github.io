@@ -19,3 +19,9 @@ export const executeSiteAnalytics = function () {
 
   gtag('config', 'G-ZNEGXK8M3D');
 }
+
+export const spy = function (x) {
+  return function () {
+    console.log(x);
+  }
+}

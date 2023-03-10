@@ -2,6 +2,7 @@
 
 = Category Theory
 :sectnums:
+:sectanchors:
 :toc:
 
 == Notation

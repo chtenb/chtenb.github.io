@@ -14,6 +14,7 @@ foreign import getLocationBaseString :: Effect String
 foreign import setLocationString :: String -> Effect Unit
 foreign import getFragmentString :: Effect String
 foreign import setFragmentString :: String -> Effect Unit
+foreign import setHash :: String -> Effect Unit
 foreign import getQueryString :: Effect String
 foreign import setQueryString :: String -> Effect Unit
 
