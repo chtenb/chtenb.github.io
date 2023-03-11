@@ -22,7 +22,6 @@ to generate this file without the comments in this block.
   , "halogen"
   , "html-parser-halogen"
   , "maybe"
-  , "media-types"
   , "prelude"
   , "strings"
   , "transformers"

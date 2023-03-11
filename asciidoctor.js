@@ -73,16 +73,18 @@ if (process.argv[2]) {
 function addTargetBlankToExternalLinks(html) {
   const $ = cheerio.load(html);
 
+  // Make external links open in a new tab
   $('a').each(function () {
     const href = $(this).attr('href');
     if (href) {
       if (/^https?:\/\//i.test(href)) {
         $(this).attr('target', '_blank');
-      } else if (/^#/.test(href)) {
-        $(this).attr('target', '_self');
       }
     }
   });
+
+  // Do not include stylesheets in the documents. Style are inherited from the main page.
+  $('link').remove();
 
   return $.html();
 }

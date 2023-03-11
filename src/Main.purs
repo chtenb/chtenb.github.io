@@ -22,7 +22,6 @@ import LocationString (getFragmentString, getQueryParam, setFragmentString, setH
 import Web.HTML as WH
 import Web.HTML.HTMLDocument as HTMLDocument
 import Web.HTML.HTMLElement as HTMLElement
-import Web.HTML.HTMLIFrameElement as HTMLIFrameElement
 import Web.HTML.Window (document)
 
 foreign import executeJavascriptHacks :: Effect Unit
@@ -62,7 +61,7 @@ initialState :: forall input. input -> State
 initialState _ = { loading: false, page: "toc", pageHtml: Nothing }
 
 refContent :: H.RefLabel
-refContent = H.RefLabel "content-iframe"
+refContent = H.RefLabel "page-content"
 
 render :: forall m. State -> H.ComponentHTML Action () m
 render state = HH.div
@@ -72,18 +71,18 @@ render state = HH.div
   ]
   where
   renderContent = HH.div
-    [ classString "content" ]
+    [ classString "pageContent" ]
     case state.pageHtml of
       Just html -> [ HH.div [ HP.ref refContent ] [ RH.render_ html ] ]
       Nothing -> []
   renderHeader = HH.div
-    [ classString "header" ]
+    [ classString "pageHeader" ]
     [ renderTitle
     , renderControls
     , renderLoadingIcon
     ]
   renderTitle = HH.div
-    [ classString "title" ]
+    [ classString "pageTitle" ]
     [ HH.a
         [ HP.href "/"
         , HP.target "_parent"
@@ -126,7 +125,6 @@ handleAction action =
           H.modify_ _ { page = page }
 
       loadPageHtml
-      syncDocumentTitle
       H.liftEffect executeSiteAnalytics
       focusContent
       H.liftAff $ delay $ Milliseconds 100.0 -- It takes a while before the embedded html is fully loaded
@@ -156,38 +154,3 @@ scrollToAnchor = do
   setHash ""
   setHash hash
 
-setDocumentTitle :: String -> Effect Unit
-setDocumentTitle title = do
-  window <- WH.window
-  document <- document window
-  HTMLDocument.setTitle title document
-
-getContentIFrame :: forall output m. MonadEffect m => H.HalogenM State Action () output m (Maybe WH.HTMLIFrameElement)
-getContentIFrame = do
-  maybeHtmlElement <- H.getHTMLElementRef refContent
-  pure $ maybeHtmlElement >>= HTMLIFrameElement.fromHTMLElement
-
-getContentDocument :: forall output m. MonadEffect m => H.HalogenM State Action () output m (Maybe WH.HTMLDocument)
-getContentDocument = do
-  maybeIFrameElement <- getContentIFrame
-  case maybeIFrameElement of
-    Nothing -> pure Nothing
-    Just iframe -> H.liftEffect $ do
-      maybeDocument <- HTMLIFrameElement.contentDocument iframe
-      pure $ maybeDocument >>= HTMLDocument.fromDocument
-
-getContentTitle :: forall output m. MonadEffect m => H.HalogenM State Action () output m (Maybe String)
-getContentTitle = do
-  maybeContentDocument <- getContentDocument
-  case maybeContentDocument of
-    Nothing -> pure Nothing
-    Just doc -> H.liftEffect $ do
-      title <- HTMLDocument.title doc
-      pure $ Just title
-
-syncDocumentTitle :: forall output m. MonadEffect m => H.HalogenM State Action () output m Unit
-syncDocumentTitle = do
-  title <- getContentTitle
-  H.liftEffect $ case title of
-    Nothing -> Console.error ("Could not retrieve iframe document title")
-    Just s -> setDocumentTitle s
