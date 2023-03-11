@@ -2067,16 +2067,6 @@ p {
   display: none;
 }
 
-@media only screen and (max-width: 700px) {
-  .smallViewport {
-    display: inline;
-  }
-
-  .largeViewport {
-    display: none;
-  }
-}
-
 * {
   box-sizing: border-box;
   outline: none;
@@ -2165,16 +2155,22 @@ body {
   background-color: var(--bg);
   border: 0;
   margin: 0;
-  padding: 0;
+  padding: 30px;
   display: flex;
   overflow: auto;
 }
 
-.pageContent body {
-  width: 100%;
-  height: 100%;
-  border: 0;
-  margin: 0;
-  padding: 0;
+@media only screen and (max-width: 767px) {
+  .smallViewport {
+    display: inline;
+  }
+
+  .largeViewport {
+    display: none;
+  }
+
+  .pageContent {
+    padding: 10px;
+  }
 }
 

@@ -46041,11 +46041,6 @@ var $debe25b490bcae9a$export$b03b1c699c90a9b4 = /* #__PURE__ */ function() {
     Initialize.value = new Initialize();
     return Initialize;
 }();
-var $debe25b490bcae9a$export$b8c9d7be56deb519 = /* #__PURE__ */ function() {
-    function PostLoad() {}
-    PostLoad.value = new PostLoad();
-    return PostLoad;
-}();
 var $debe25b490bcae9a$export$ddf9502ca131a979 = function __do() {
     var hash = $ae99da4dbfa4bf1a$export$fb26b3b2bcd87ed();
     $ae99da4dbfa4bf1a$export$42c3f3255a992e7("")();
@@ -46122,7 +46117,7 @@ var $debe25b490bcae9a$export$b3890eb0ae9dca99 = function(state) {
             ])
         ];
         if (state.pageHtml instanceof $79aa3c472c57e696$export$bebe9059409a0d04) return [];
-        throw new Error("Failed pattern match at Main (line 75, column 5 - line 77, column 20): " + [
+        throw new Error("Failed pattern match at Main (line 72, column 5 - line 74, column 20): " + [
             state.pageHtml.constructor.name
         ]);
     }());
@@ -46156,7 +46151,7 @@ var $debe25b490bcae9a$export$d3af90c2e45682e0 = function(dictMonadAff) {
                 return $40;
             });
             if (eitherResponse instanceof $c0df3131477b06f3$export$37c4d04eafdc5515) return liftEffect($44f10acdea5a9c91$export$a3bc9b8ed74fc("Could not retrieve html for " + (url + (": " + $5a0e6cadd42f1240$export$55ee1551a3f962e6(eitherResponse.value0)))));
-            throw new Error("Failed pattern match at Main (line 139, column 3 - line 142, column 122): " + [
+            throw new Error("Failed pattern match at Main (line 135, column 3 - line 138, column 122): " + [
                 eitherResponse.constructor.name
             ]);
         });
@@ -46167,7 +46162,7 @@ var $debe25b490bcae9a$export$7620fddf619aafdb = function(dictMonadEffect) {
     return $debe25b490bcae9a$var$bind($367b2aca0432d4dd$export$bd6cf4e30aa8da47($debe25b490bcae9a$export$4a39d38a89151dbb))(function(maybeContentElem) {
         if (maybeContentElem instanceof $79aa3c472c57e696$export$bebe9059409a0d04) return liftEffect($44f10acdea5a9c91$export$a3bc9b8ed74fc("Could not find content"));
         if (maybeContentElem instanceof $79aa3c472c57e696$export$8a67b48435b5d073) return liftEffect($c7a1a6a09f6f88f0$export$d7ddd398f22d79ef(maybeContentElem.value0));
-        throw new Error("Failed pattern match at Main (line 147, column 3 - line 149, column 69): " + [
+        throw new Error("Failed pattern match at Main (line 143, column 3 - line 145, column 69): " + [
             maybeContentElem.constructor.name
         ]);
     });
@@ -46179,7 +46174,7 @@ var $debe25b490bcae9a$export$6c6c3f4b7541eaf1 = function(dictMonadAff) {
     var focusContent1 = $debe25b490bcae9a$export$7620fddf619aafdb(MonadEffect0);
     var liftAff = $951503055c0344a4$export$37f61af225938e0f($b8aa19c6cc645a72$export$6f4dec227404555(dictMonadAff));
     return function(action) {
-        if (action instanceof $debe25b490bcae9a$export$b03b1c699c90a9b4) return $debe25b490bcae9a$var$bind(liftEffect($85f94481b5d00f10$export$95fd5664a53dd0c5("page")))(function(maybePage) {
+        return $debe25b490bcae9a$var$bind(liftEffect($85f94481b5d00f10$export$95fd5664a53dd0c5("page")))(function(maybePage) {
             return $debe25b490bcae9a$var$discard2(function() {
                 if (maybePage instanceof $79aa3c472c57e696$export$bebe9059409a0d04) return $debe25b490bcae9a$var$pure($1afa385f663486b8$export$523c0b569236b342);
                 if (maybePage instanceof $79aa3c472c57e696$export$8a67b48435b5d073) return $debe25b490bcae9a$var$modify_(function(v) {
@@ -46188,7 +46183,7 @@ var $debe25b490bcae9a$export$6c6c3f4b7541eaf1 = function(dictMonadAff) {
                     $49.page = maybePage.value0;
                     return $49;
                 });
-                throw new Error("Failed pattern match at Main (line 122, column 7 - line 125, column 38): " + [
+                throw new Error("Failed pattern match at Main (line 119, column 7 - line 122, column 38): " + [
                     maybePage.constructor.name
                 ]);
             }())(function() {
@@ -46203,10 +46198,6 @@ var $debe25b490bcae9a$export$6c6c3f4b7541eaf1 = function(dictMonadAff) {
                 });
             });
         });
-        if (action instanceof $debe25b490bcae9a$export$b8c9d7be56deb519) return $debe25b490bcae9a$var$pure($1afa385f663486b8$export$523c0b569236b342);
-        throw new Error("Failed pattern match at Main (line 119, column 3 - line 132, column 26): " + [
-            action.constructor.name
-        ]);
     };
 };
 var $debe25b490bcae9a$export$d8556a2a8f973135 = function(dictMonadAff) {
