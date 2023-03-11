@@ -4,9 +4,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 2.0.17">
 <title>Category Theory</title>
-<link rel="stylesheet" href="/blog/cat.00d63a8d.css">
 
-<base target="_parent">
+
+<base target="_self">
 </head>
 <body class="article">
 <div id="header">
@@ -14,23 +14,23 @@
 <div id="toc" class="toc">
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel1">
-<li><a href="#_notation" target="_self">1. Notation</a></li>
-<li><a href="#_definitions" target="_self">2. Definitions</a>
+<li><a href="#_notation">1. Notation</a></li>
+<li><a href="#_definitions">2. Definitions</a>
 <ul class="sectlevel2">
-<li><a href="#def-category" target="_self">2.1. Definition Category</a></li>
-<li><a href="#def-isomorphism" target="_self">2.2. Definition Isomorphism</a></li>
-<li><a href="#def-functor" target="_self">2.3. Definition Functor</a></li>
-<li><a href="#def-product" target="_self">2.4. Definition Product and Coproduct</a></li>
-<li><a href="#def-product-category" target="_self">2.5. Definition Product Category</a></li>
-<li><a href="#def-bifunctor" target="_self">2.6. Definition Bifunctor</a></li>
+<li><a href="#def-category">2.1. Definition Category</a></li>
+<li><a href="#def-isomorphism">2.2. Definition Isomorphism</a></li>
+<li><a href="#def-functor">2.3. Definition Functor</a></li>
+<li><a href="#def-product">2.4. Definition Product and Coproduct</a></li>
+<li><a href="#def-product-category">2.5. Definition Product Category</a></li>
+<li><a href="#def-bifunctor">2.6. Definition Bifunctor</a></li>
 </ul>
 </li>
-<li><a href="#_examples" target="_self">3. Examples</a>
+<li><a href="#_examples">3. Examples</a>
 <ul class="sectlevel2">
-<li><a href="#ex-fp" target="_self">3.1. The FP Category</a></li>
-<li><a href="#ex-monoid" target="_self">3.2. The Monoid Category</a></li>
-<li><a href="#ex-List-functor" target="_self">3.3. The List Functor</a></li>
-<li><a href="#ex-cat" target="_self">3.4. The Category of Categories</a></li>
+<li><a href="#ex-fp">3.1. The FP Category</a></li>
+<li><a href="#ex-monoid">3.2. The Monoid Category</a></li>
+<li><a href="#ex-List-functor">3.3. The List Functor</a></li>
+<li><a href="#ex-cat">3.4. The Category of Categories</a></li>
 </ul>
 </li>
 </ul>
@@ -38,7 +38,7 @@
 </div>
 <div id="content">
 <div class="sect1">
-<h2 id="_notation">1. Notation</h2>
+<h2 id="_notation"><a class="anchor" href="#_notation"></a>1. Notation</h2>
 <div class="sectionbody">
 <div class="ulist">
 <ul>
@@ -53,10 +53,10 @@
 </div>
 </div>
 <div class="sect1">
-<h2 id="_definitions">2. Definitions</h2>
+<h2 id="_definitions"><a class="anchor" href="#_definitions"></a>2. Definitions</h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="def-category">2.1. Definition Category</h3>
+<h3 id="def-category"><a class="anchor" href="#def-category"></a>2.1. Definition Category</h3>
 <div class="paragraph">
 <p>A <strong>category</strong> C consists of:</p>
 </div>
@@ -98,7 +98,7 @@ In other words,  mor<sub>C</sub>: Obj<sub>C</sub> → Obj<sub>C</sub> → Mor<
 </div>
 </div>
 <div class="sect2">
-<h3 id="def-isomorphism">2.2. Definition Isomorphism</h3>
+<h3 id="def-isomorphism"><a class="anchor" href="#def-isomorphism"></a>2.2. Definition Isomorphism</h3>
 <div class="paragraph">
 <p>Given a category C, a morphism f: a → b is called an <strong>isomorphism</strong> if there exists another morphism g: b → a such that</p>
 </div>
@@ -108,7 +108,7 @@ In other words,  mor<sub>C</sub>: Obj<sub>C</sub> → Obj<sub>C</sub> → Mor<
 </div>
 </div>
 <div class="sect2">
-<h3 id="def-functor">2.3. Definition Functor</h3>
+<h3 id="def-functor"><a class="anchor" href="#def-functor"></a>2.3. Definition Functor</h3>
 <div class="paragraph">
 <p>Given two categories C and D, a <strong>functor</strong> F : C → D consists of:</p>
 </div>
@@ -140,7 +140,7 @@ In other words,  mor<sub>C</sub>: Obj<sub>C</sub> → Obj<sub>C</sub> → Mor<
 </div>
 </div>
 <div class="sect2">
-<h3 id="def-product">2.4. Definition Product and Coproduct</h3>
+<h3 id="def-product"><a class="anchor" href="#def-product"></a>2.4. Definition Product and Coproduct</h3>
 <div class="paragraph">
 <p>A <strong>product</strong> of two objects a and b is the object c equipped with two morphisms (called projections) p: c → a and q: c → b
 such that for any other object c' equipped with two projections p': c' → a and q': c' → b there is a unique morphism m: c' → c that factorizes those projections:</p>
@@ -159,7 +159,7 @@ such that for any other object c' equipped with two injections i': a → c' and 
 </div>
 </div>
 <div class="sect2">
-<h3 id="def-product-category">2.5. Definition Product Category</h3>
+<h3 id="def-product-category"><a class="anchor" href="#def-product-category"></a>2.5. Definition Product Category</h3>
 <div class="paragraph">
 <p>Given two categories C and D, the product category C ⨯ D is defined as follows.</p>
 </div>
@@ -244,7 +244,7 @@ such that for any other object c' equipped with two injections i': a → c' and 
 </div>
 </div>
 <div class="sect2">
-<h3 id="def-bifunctor">2.6. Definition Bifunctor</h3>
+<h3 id="def-bifunctor"><a class="anchor" href="#def-bifunctor"></a>2.6. Definition Bifunctor</h3>
 <div class="paragraph">
 <p>Given three categories C,D and E, a functor F: C ⨯ D → E is called a <strong>bifunctor</strong>.</p>
 </div>
@@ -252,10 +252,10 @@ such that for any other object c' equipped with two injections i': a → c' and 
 </div>
 </div>
 <div class="sect1">
-<h2 id="_examples">3. Examples</h2>
+<h2 id="_examples"><a class="anchor" href="#_examples"></a>3. Examples</h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="ex-fp">3.1. The FP Category</h3>
+<h3 id="ex-fp"><a class="anchor" href="#ex-fp"></a>3.1. The FP Category</h3>
 <div class="paragraph">
 <p>The category <strong>FP</strong>, with objects being types and morphisms being functions, forms a category.</p>
 </div>
@@ -344,7 +344,7 @@ and any morphism g coming into a  id<sub>a</sub> ∘ g = g.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="ex-monoid">3.2. The Monoid Category</h3>
+<h3 id="ex-monoid"><a class="anchor" href="#ex-monoid"></a>3.2. The Monoid Category</h3>
 <div class="paragraph">
 <p>A monoid M is characterized by a set of values M, an identity value 0 and an operator + : M → M → M, such that the following conditions are met.</p>
 </div>
@@ -438,7 +438,7 @@ Composition is defined as  f<sub>x</sub> ∘ f<sub>y</sub> = f<sub>x+y</sub>.<
 </table>
 </div>
 <div class="sect2">
-<h3 id="ex-List-functor">3.3. The List Functor</h3>
+<h3 id="ex-List-functor"><a class="anchor" href="#ex-List-functor"></a>3.3. The List Functor</h3>
 <div class="paragraph">
 <p>The <strong>List</strong> type constructor forms an endofunctor in the category FP.</p>
 </div>
@@ -628,7 +628,7 @@ Because it is true for xs = Nil, it follows by induction that the statement is t
 </div>
 </div>
 <div class="sect2">
-<h3 id="ex-cat">3.4. The Category of Categories</h3>
+<h3 id="ex-cat"><a class="anchor" href="#ex-cat"></a>3.4. The Category of Categories</h3>
 <div class="paragraph">
 <p>The category <strong>Cat</strong> where objects are categories and morphisms are functors between categories, is a category.
 Functors F and G are composable by composing the corresponding functions:</p>
