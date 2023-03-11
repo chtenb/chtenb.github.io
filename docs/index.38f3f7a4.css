@@ -2172,5 +2172,9 @@ body {
   .pageContent {
     padding: 10px 0 10px 10px;
   }
+
+  #content {
+    padding: 0;
+  }
 }
 

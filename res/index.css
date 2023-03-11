@@ -128,4 +128,8 @@ body {
   .pageContent {
     padding: 10px 0px 10px 10px;
   }
+  
+  #content {
+    padding: 0;
+  }
 }
