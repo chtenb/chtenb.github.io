@@ -18,17 +18,14 @@ import Halogen.HTML.Properties as HP
 import Halogen.VDom.Driver (runUI)
 import HalogenUtils (classString, fontAwesome, optionalText)
 import Html.Renderer.Halogen as RH
-import LocationString (getFragmentString, getQueryParam, setFragmentString, setHash)
-import Web.HTML as WH
-import Web.HTML.HTMLDocument as HTMLDocument
+import LocationString (getFragmentString, getQueryParam, setHash)
 import Web.HTML.HTMLElement as HTMLElement
-import Web.HTML.Window (document)
 
 foreign import executeJavascriptHacks :: Effect Unit
 foreign import executeSiteAnalytics :: Effect Unit
 foreign import spy :: forall a. a -> Effect Unit
 
-data Action = Initialize | PostLoad
+data Action = Initialize
 
 type State =
   { loading :: Boolean
@@ -129,7 +126,6 @@ handleAction action =
       focusContent
       H.liftAff $ delay $ Milliseconds 100.0 -- It takes a while before the embedded html is fully loaded
       H.liftEffect scrollToAnchor
-    PostLoad -> pure unit
 
 loadPageHtml :: forall output m. MonadAff m => H.HalogenM State Action () output m Unit
 loadPageHtml = do
