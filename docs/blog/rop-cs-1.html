@@ -23,7 +23,7 @@ Let’s start by talking about the problems it is trying to solve.</p>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_the_problem_implicit_function_failure">The problem: implicit function failure</h2>
+<h2 id="_the_problem_implicit_function_failure"><a class="anchor" href="#_the_problem_implicit_function_failure"></a>The problem: implicit function failure</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>Functions are often designed for the <strong>success path</strong>: the return type only consists of the type the function will return in case of a successful execution.
@@ -96,7 +96,7 @@ But sometimes the function isn’t able to meet this expectation.</p>
 </ol>
 </div>
 <div class="sect2">
-<h3 id="_problems_with_using_default_values_for_failure">Problems with using default values for failure</h3>
+<h3 id="_problems_with_using_default_values_for_failure"><a class="anchor" href="#_problems_with_using_default_values_for_failure"></a>Problems with using default values for failure</h3>
 <div class="ulist">
 <ul>
 <li>
@@ -115,13 +115,13 @@ But sometimes the function isn’t able to meet this expectation.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_problems_with_throwing_exceptions_for_failure">Problems with throwing exceptions for failure</h3>
+<h3 id="_problems_with_throwing_exceptions_for_failure"><a class="anchor" href="#_problems_with_throwing_exceptions_for_failure"></a>Problems with throwing exceptions for failure</h3>
 <div class="paragraph">
 <p><a href="/?page=exceptions-cs">This short article about exceptions goes into the pitfalls of using exceptions.</a></p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_the_general_problem_of_implicit_failure_paths">The general problem of implicit failure paths</h3>
+<h3 id="_the_general_problem_of_implicit_failure_paths"><a class="anchor" href="#_the_general_problem_of_implicit_failure_paths"></a>The general problem of implicit failure paths</h3>
 <div class="paragraph">
 <p>While the above paragraphs point out some problems with the respective failure-handling strategies, the main problem of these approaches is this: the <strong>failure path</strong> of <code>GetUser</code> is <strong>implicitly defined</strong>.
 It is not part of the function signature, and the compiler is not aware of it.
@@ -129,7 +129,7 @@ As such, it doesn’t get the same amount of attention from the programmer as th
 </div>
 </div>
 <div class="sect2">
-<h3 id="_problems_with_using_booleansenums_with_out_parameters_for_failure">Problems with using booleans/enums with <code>out</code> parameters for failure</h3>
+<h3 id="_problems_with_using_booleansenums_with_out_parameters_for_failure"><a class="anchor" href="#_problems_with_using_booleansenums_with_out_parameters_for_failure"></a>Problems with using booleans/enums with <code>out</code> parameters for failure</h3>
 <div class="paragraph">
 <p>This approach is more explicit than the other two approaches.
 However, the compiler is still unable to verify if the checks are done properly, if all cases are covered and if the right <code>out</code> parameters are used in the right cases.
@@ -139,7 +139,7 @@ If you restrict yourself to the Try-Parse Pattern this becomes less of a problem
 </div>
 </div>
 <div class="sect1">
-<h2 id="_solution_explicit_failure_paths_through_a_result_type">Solution: explicit failure paths through a <code>Result</code> type</h2>
+<h2 id="_solution_explicit_failure_paths_through_a_result_type"><a class="anchor" href="#_solution_explicit_failure_paths_through_a_result_type"></a>Solution: explicit failure paths through a <code>Result</code> type</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>The solution sounds pretty obvious: make the failure path part of the normal return type of the function.</p>
@@ -180,7 +180,7 @@ Luckily C# has had added lots of language features over the years that make it p
 In the <a href="/?page=rop-cs-2">next part</a> of this series we will have a look at one way of implementing explicit failure in C#: a <code>Result</code> type with two subtypes, the <code>Success</code> type for the success path and the <code>Failure</code> type for the failure path.</p>
 </div>
 <div class="sect2">
-<h3 id="_default_values_or_try_parse_vs_the_failure_type">Default values or Try-Parse vs the <code>Failure</code> type</h3>
+<h3 id="_default_values_or_try_parse_vs_the_failure_type"><a class="anchor" href="#_default_values_or_try_parse_vs_the_failure_type"></a>Default values or Try-Parse vs the <code>Failure</code> type</h3>
 <div class="paragraph">
 <p>If performance is critical and you need to avoid as many allocations as possible, then using default values or the Try-Parse Pattern may be a good fit.
 However, be aware of the pitfalls listed above.
@@ -189,7 +189,7 @@ Moreover, using the <code>Result</code> type as your function return type makes 
 </div>
 </div>
 <div class="sect2">
-<h3 id="_exception_throwing_vs_the_failure_type">Exception throwing vs the <code>Failure</code> type</h3>
+<h3 id="_exception_throwing_vs_the_failure_type"><a class="anchor" href="#_exception_throwing_vs_the_failure_type"></a>Exception throwing vs the <code>Failure</code> type</h3>
 <div class="paragraph">
 <p>When writing a function, a good way for deciding whether to propagate a failure by throwing an exception is by asking the following question.</p>
 </div>

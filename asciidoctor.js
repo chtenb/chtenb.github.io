@@ -15,6 +15,7 @@ const options = {
   attributes: {
     linkcss: true,
     nofooter: true,
+    sectanchors: true,
     'source-highlighter': 'highlightjs-ext',
     docinfodir: '../res/',
     docinfo: 'shared',
