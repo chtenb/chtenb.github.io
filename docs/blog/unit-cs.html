@@ -22,7 +22,7 @@ The definition is very simple.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-cs" data-lang="cs"><span class="hljs-function"><span class="hljs-keyword">async</span> <span class="hljs-title">Task</span>&lt;<span class="hljs-title">T2</span>&gt; <span class="hljs-title">Map</span>&lt;<span class="hljs-title">T1</span>, <span class="hljs-title">T2</span>&gt;(<span class="hljs-params">Task&lt;T1&gt; task, Func&lt;T1, T2&gt; f</span>)</span> =&gt; f(<span class="hljs-keyword">await</span> task);</code></pre>
+<pre class="highlight"><code class="language-cs" data-lang="cs">async Task&lt;T2&gt; Map&lt;T1, T2&gt;(Task&lt;T1&gt; task, Func&lt;T1, T2&gt; f) =&gt; f(await task);</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -30,9 +30,9 @@ The definition is very simple.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-cs" data-lang="cs"><span class="hljs-function">Task&lt;<span class="hljs-built_in">int</span>&gt; <span class="hljs-title">DoubleIntAsync</span>(<span class="hljs-params">Task&lt;<span class="hljs-built_in">int</span>&gt; task</span>)</span>
+<pre class="highlight"><code class="language-cs" data-lang="cs">Task&lt;int&gt; DoubleIntAsync(Task&lt;int&gt; task)
 {
-  <span class="hljs-keyword">return</span> Map(task, i =&gt; i * i);
+  return Map(task, i =&gt; i * i);
 }</code></pre>
 </div>
 </div>
@@ -46,19 +46,19 @@ In other words, the following functions won’t compile.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-cs" data-lang="cs"><span class="hljs-function">Task <span class="hljs-title">PrintIntAsync</span>(<span class="hljs-params">Task&lt;<span class="hljs-built_in">int</span>&gt; task</span>)</span>
+<pre class="highlight"><code class="language-cs" data-lang="cs">Task PrintIntAsync(Task&lt;int&gt; task)
 {
-  <span class="hljs-keyword">return</span> Map(task, Console.WriteLine);
+  return Map(task, Console.WriteLine);
 }
 
-<span class="hljs-function">Task&lt;<span class="hljs-built_in">string</span>&gt; <span class="hljs-title">ReturnTaskFinished</span>(<span class="hljs-params">Task task</span>)</span>
+Task&lt;string&gt; ReturnTaskFinished(Task task)
 {
-  <span class="hljs-keyword">return</span> Map(task, () =&gt; <span class="hljs-string">"task finished"</span>);
+  return Map(task, () =&gt; "task finished");
 }
 
-<span class="hljs-function">Task <span class="hljs-title">LogTaskFinished</span>(<span class="hljs-params">Task task</span>)</span>
+Task LogTaskFinished(Task task)
 {
-  <span class="hljs-keyword">return</span> Map(task, () =&gt; Console.WriteLine(<span class="hljs-string">"task finished"</span>));
+  return Map(task, () =&gt; Console.WriteLine("task finished"));
 }</code></pre>
 </div>
 </div>
@@ -67,9 +67,9 @@ In other words, the following functions won’t compile.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-cs" data-lang="cs"><span class="hljs-function"><span class="hljs-keyword">async</span> Task <span class="hljs-title">Map</span>&lt;<span class="hljs-title">T1</span>&gt;(<span class="hljs-params">Task&lt;T1&gt; task, Action&lt;T1&gt; f</span>)</span> =&gt; f(<span class="hljs-keyword">await</span> task);
-<span class="hljs-function"><span class="hljs-keyword">async</span> Task <span class="hljs-title">Map</span>(<span class="hljs-params">Task task, Action f</span>)</span> { <span class="hljs-keyword">await</span> task; f(); }
-<span class="hljs-function"><span class="hljs-keyword">async</span> <span class="hljs-title">Task</span>&lt;<span class="hljs-title">T2</span>&gt; <span class="hljs-title">Map</span>&lt;<span class="hljs-title">T2</span>&gt;(<span class="hljs-params">Task task, Func&lt;T2&gt; f</span>)</span> { <span class="hljs-keyword">await</span> task; <span class="hljs-keyword">return</span> f(); }</code></pre>
+<pre class="highlight"><code class="language-cs" data-lang="cs">async Task Map&lt;T1&gt;(Task&lt;T1&gt; task, Action&lt;T1&gt; f) =&gt; f(await task);
+async Task Map(Task task, Action f) { await task; f(); }
+async Task&lt;T2&gt; Map&lt;T2&gt;(Task task, Func&lt;T2&gt; f) { await task; return f(); }</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -91,15 +91,15 @@ We can create our own C# version of a <code>Unit</code> and use it instead of <c
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-cs" data-lang="cs"><span class="hljs-keyword">public</span> <span class="hljs-keyword">struct</span> Unit : IEquatable&lt;Unit&gt;
+<pre class="highlight"><code class="language-cs" data-lang="cs">public struct Unit : IEquatable&lt;Unit&gt;
 {
-  <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">readonly</span> Unit unit;
-  <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">override</span> <span class="hljs-built_in">bool</span> <span class="hljs-title">Equals</span>(<span class="hljs-params"><span class="hljs-built_in">object</span> obj</span>)</span> =&gt; obj <span class="hljs-keyword">is</span> Unit;
-  <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">override</span> <span class="hljs-built_in">int</span> <span class="hljs-title">GetHashCode</span>()</span> =&gt; <span class="hljs-number">0</span>;
-  <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-built_in">bool</span> <span class="hljs-keyword">operator</span> ==(Unit left, Unit right) =&gt; left.Equals(right);
-  <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-built_in">bool</span> <span class="hljs-keyword">operator</span> !=(Unit left, Unit right) =&gt; !(left == right);
-  <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-built_in">bool</span> <span class="hljs-title">Equals</span>(<span class="hljs-params">Unit other</span>)</span> =&gt; <span class="hljs-literal">true</span>;
-  <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">override</span> <span class="hljs-built_in">string</span> <span class="hljs-title">ToString</span>()</span> =&gt; <span class="hljs-string">"()"</span>;
+  public static readonly Unit unit;
+  public override bool Equals(object obj) =&gt; obj is Unit;
+  public override int GetHashCode() =&gt; 0;
+  public static bool operator ==(Unit left, Unit right) =&gt; left.Equals(right);
+  public static bool operator !=(Unit left, Unit right) =&gt; !(left == right);
+  public bool Equals(Unit other) =&gt; true;
+  public override string ToString() =&gt; "()";
 }</code></pre>
 </div>
 </div>
@@ -114,31 +114,31 @@ Luckily C# supports extension methods, which allow use to deal with this in an a
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-cs" data-lang="cs"><span class="hljs-keyword">using</span> <span class="hljs-keyword">static</span> Unit;
+<pre class="highlight"><code class="language-cs" data-lang="cs">using static Unit;
 
-<span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">class</span> <span class="hljs-title">ExtensionMethods</span>
+public static class ExtensionMethods
 {
-  <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">async</span> <span class="hljs-title">Task</span>&lt;<span class="hljs-title">Unit</span>&gt; <span class="hljs-title">AsUnitTask</span>(<span class="hljs-params"><span class="hljs-keyword">this</span> Task task</span>)</span>
+  public static async Task&lt;Unit&gt; AsUnitTask(this Task task)
   {
-    <span class="hljs-keyword">await</span> task;
-    <span class="hljs-keyword">return</span> unit;
+    await task;
+    return unit;
   }
 
-  <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-title">Func</span>&lt;<span class="hljs-title">TResult</span>, <span class="hljs-title">Unit</span>&gt; <span class="hljs-title">AsFunc</span>&lt;<span class="hljs-title">TResult</span>&gt;(<span class="hljs-params"><span class="hljs-keyword">this</span> Action&lt;TResult&gt; action</span>)</span>
+  public static Func&lt;TResult, Unit&gt; AsFunc&lt;TResult&gt;(this Action&lt;TResult&gt; action)
   {
-    <span class="hljs-keyword">return</span> result =&gt;
+    return result =&gt;
     {
       action(result);
-      <span class="hljs-keyword">return</span> unit;
+      return unit;
     };
   }
 
-  <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> Func&lt;Unit, Unit&gt; <span class="hljs-title">AsFunc</span>(<span class="hljs-params"><span class="hljs-keyword">this</span> Action action</span>)</span>
+  public static Func&lt;Unit, Unit&gt; AsFunc(this Action action)
   {
-    <span class="hljs-keyword">return</span> _ =&gt;
+    return _ =&gt;
     {
       action();
-      <span class="hljs-keyword">return</span> unit;
+      return unit;
     };
   }
 }</code></pre>
@@ -149,27 +149,27 @@ Luckily C# supports extension methods, which allow use to deal with this in an a
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-cs" data-lang="cs"><span class="hljs-function">Task&lt;<span class="hljs-built_in">int</span>&gt; <span class="hljs-title">DoubleIntAsync</span>(<span class="hljs-params">Task&lt;<span class="hljs-built_in">int</span>&gt; task</span>)</span>
+<pre class="highlight"><code class="language-cs" data-lang="cs">Task&lt;int&gt; DoubleIntAsync(Task&lt;int&gt; task)
 {
-  <span class="hljs-keyword">return</span> Map(task, i =&gt; i * i);
+  return Map(task, i =&gt; i * i);
 }
 
-<span class="hljs-function">Task&lt;Unit&gt; <span class="hljs-title">PrintIntAsync</span>(<span class="hljs-params">Task&lt;<span class="hljs-built_in">int</span>&gt; task</span>)</span>
+Task&lt;Unit&gt; PrintIntAsync(Task&lt;int&gt; task)
 {
-  <span class="hljs-comment">// C# does not allow us to call the extension method on the method group directly</span>
-  Action&lt;<span class="hljs-built_in">int</span>&gt; a = Console.WriteLine; <span class="hljs-comment">// First convert the method group to the delegate</span>
-  <span class="hljs-keyword">return</span> Map(task, a.AsFunc()); <span class="hljs-comment">// Now we can call the extension method on the delegate</span>
+  // C# does not allow us to call the extension method on the method group directly
+  Action&lt;int&gt; a = Console.WriteLine; // First convert the method group to the delegate
+  return Map(task, a.AsFunc()); // Now we can call the extension method on the delegate
 }
 
-<span class="hljs-function">Task&lt;<span class="hljs-built_in">string</span>&gt; <span class="hljs-title">ReturnTaskFinished</span>(<span class="hljs-params">Task task</span>)</span>
+Task&lt;string&gt; ReturnTaskFinished(Task task)
 {
-  <span class="hljs-keyword">return</span> Map(task.AsUnitTask(), _ =&gt; <span class="hljs-string">"task finished"</span>);
+  return Map(task.AsUnitTask(), _ =&gt; "task finished");
 }
 
-<span class="hljs-function">Task&lt;Unit&gt; <span class="hljs-title">LogTaskFinished</span>(<span class="hljs-params">Task task</span>)</span>
+Task&lt;Unit&gt; LogTaskFinished(Task task)
 {
-  Action a = () =&gt; Console.WriteLine(<span class="hljs-string">"task finished"</span>);
-  <span class="hljs-keyword">return</span> Map(task.AsUnitTask(), a.AsFunc());
+  Action a = () =&gt; Console.WriteLine("task finished");
+  return Map(task.AsUnitTask(), a.AsFunc());
 }</code></pre>
 </div>
 </div>

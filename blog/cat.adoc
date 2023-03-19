@@ -4,6 +4,8 @@
 :sectnums:
 :toc:
 
+This is an imprecise collection of notes about category theory, using an experimental notation that mixes the traditional set-theory oriented notation for functions with a more Haskell-like programming oriented notation.
+
 == Notation
 
 - Mathematical functions are often written in curried form, so f: X → Y → Z and f x y = z, instead of f: X ⨯ Y → Z and f(x,y) = z.
@@ -52,7 +54,7 @@ Given two categories C and D, a *functor* F : C → D consists of:
 These functions must satisfy the following two conditions:
 
 [lowerroman]
-. For any two morphisms f and g in Mor~C~,  map~F~ (f ∘ g) = map~F~ f ∘ map~F~ g.
+. For any two composable morphisms f and g in Mor~C~,  map~F~ (f ∘ g) = map~F~ f ∘ map~F~ g.
 . For any object a in Obj~C~,  map~F~ id~a~ = id~F a~.
 
 If C and D are the same category, F is called an *endofunctor*.
@@ -110,43 +112,6 @@ Given three categories C,D and E, a functor F: C ⨯ D → E is called a *bifunc
 
 == Examples
 
-[#ex-fp]
-=== The FP Category
-
-The category *FP*, with objects being types and morphisms being functions, forms a category.
-
-Composition of two functions f and g in Mor~FP~ is defined as  (f ∘ g) x = f (g x).
-
-For any object a in Obj~FP~, id~a~ is defined as the function  id~a~ x = x.
-
-_Proof._
-
-To prove the equivalence of two functions, it suffices to show that they yield the same output for the same input.
-
-[lowerroman]
-. (Associativity) For any morphisms f, g, and h in Mor~FP~,  (f ∘ g) ∘ h = f ∘ (g ∘ h).
-
-[{eqtable}] 
-|===
-| ((f ∘ g) ∘ h) x  | = (f ∘ g) (h x)   | (definition composition)
-|                  | = f (g (h x))     | (definition composition)
-|===
-
-[lowerroman,start=2]
-. (Identity) For any object a in Obj~FP~ and any morphism f going out of a,  f ∘ id~a~ = f 
-   and any morphism g coming into a  id~a~ ∘ g = g.
-
-[{eqtable}] 
-|===
-| (f ∘ id~a~) x  | = f (id~a~ x)  | (definition composition)
-|                | = f x          | (definition id~a~)
-|                |                |
-|(id~a~ ∘ g) x   | = id~a~ (g x)  | (definition composition)
-|                | = g x          | (definition id~a~)
-|===
-
-∎
-
 [#ex-monoid]
 === The Monoid Category 
 A monoid M is characterized by a set of values M, an identity value 0 and an operator + : M → M → M, such that the following conditions are met.
@@ -161,7 +126,7 @@ Composition is defined as  f~x~ ∘ f~y~ = f~x+y~.
 _Proof._
 
 [lowerroman]
-. (Associativity) For any morphisms f~x~, f~y~, and f~z~ in Mor,  (f~x~ ∘ f~y~) ∘ f~z~ = f~x~ ∘ (f~y~ ∘ f~z~).
+. (Associativity) To prove: for any morphisms f~x~, f~y~, and f~z~ in Mor,  (f~x~ ∘ f~y~) ∘ f~z~ = f~x~ ∘ (f~y~ ∘ f~z~).
 
 [{eqtable}]
 |===
@@ -170,7 +135,7 @@ _Proof._
 |                      |                      | = f~(x+y)+z~  | (associativity of +)
 |===
 
-. (Identity) For any morphism f~x~ in Mor,  f~x~ ∘ f~0~ = f~x~  and  f~0~ ∘ f~x~ = f~x~.
+. (Identity) To prove: for any morphism f~x~ in Mor,  f~x~ ∘ f~0~ = f~x~  and  f~0~ ∘ f~x~ = f~x~.
 
 [{eqtable}]
 |===
@@ -179,6 +144,51 @@ _Proof._
 | f~0~ ∘ f~x~ | = f~0+x~ | (definition composition)
 |             | = f~x~   | (definition monoid identity)
 |===
+
+[#ex-fp]
+=== The FP Category
+
+The category *FP*, with objects being types and morphisms being functions, forms a category.
+
+Composition of two functions f and g in Mor~FP~ is defined as  (f ∘ g) x = f (g x).
+
+For any object a in Obj~FP~, id~a~ is defined as the function  id~a~ x = x.
+
+Because the definition of id~a~ is independent of a, we usually abbreviate this function to simply id when dealing with the FP category.
+
+_Proof._
+
+To prove the equivalence of two functions, it suffices to show that they yield the same output for the same input.
+
+[lowerroman]
+. (Associativity) To prove: for any morphisms f, g, and h in Mor~FP~,  (f ∘ g) ∘ h = f ∘ (g ∘ h).
+
+[{eqtable}] 
+|===
+| ((f ∘ g) ∘ h) x  | = (f ∘ g) (h x)   | (definition composition)
+|                  | = f (g (h x))     | (definition composition)
+|===
+
+[{eqtable}] 
+|===
+| (f ∘ (g ∘ h)) x  | = f ∘ (g (h x))   | (definition composition)
+|                  | = f (g (h x))     | (definition composition)
+|===
+
+[lowerroman,start=2]
+. (Identity) To prove: for any object a in Obj~FP~ and any morphism f going out of a,  f ∘ id~a~ = f 
+   and any morphism g coming into a  id~a~ ∘ g = g.
+
+[{eqtable}] 
+|===
+| (f ∘ id~a~) x  | = f (id~a~ x)  | (definition composition)
+|                | = f x          | (definition id~a~)
+|                |                |
+|(id~a~ ∘ g) x   | = id~a~ (g x)  | (definition composition)
+|                | = g x          | (definition id~a~)
+|===
+
+∎
 
 [#ex-List-functor]
 === The List Functor
@@ -197,7 +207,7 @@ The *List* type constructor forms an endofunctor in the category FP.
 _Proof._
 
 [lowerroman]
-. For any two morphisms f and g in Mor~FP~,  map~List~ (f ∘ g) = map~List~ f ∘ map~List~ g.
+. To prove: for any two morphisms f and g in Mor~FP~,  map~List~ (f ∘ g) = map~List~ f ∘ map~List~ g.
 
 We prove that these two expressions are the same for all possible inputs, namely Nil and Cons x xs.
 
@@ -224,7 +234,7 @@ All we have left to prove is that map~List~ (f ∘ g) xs = (map~List~ f ∘ map~
 Because it is true for xs = Nil, it follows by induction that the statement is true for all xs.
 
 [lowerroman,start=2]
-. For any object a in Obj~FP~,  map~List~ id~a~ = id~List a~. 
+. To prove: for any object a in Obj~FP~,  map~List~ id~a~ = id~List a~. 
 
 We prove that these two expressions are the same for all possible inputs, namely Nil and Cons x xs.
 
@@ -248,6 +258,80 @@ Because it is true for xs = Nil, it follows by induction that the statement is t
 
 ∎
 
+[#ex-haskell-functor]
+=== Haskell Functor
+
+Any Haskell type constructor F that has an instance of the link:https://wiki.haskell.org/Functor[Haskell Functor class] forms an endofunctor in FP.
+
+_Proof._
+
+We are given a type constructor F with one argument, and a function  fmap : (a → b) → (F a → F b),
+where fmap obeys the following laws:
+
+ fmap id = id
+ fmap (f ∘ g) = fmap f ∘ fmap g
+
+This gives us
+
+[{eqtable}]
+|===
+| F : Obj~FP~ → Obj~FP~       | 
+| map~F~ : Mor~FP~ → Mor~FP~  | 
+| map~F~  = fmap              |
+|===
+
+
+[lowerroman]
+. To prove: for any two morphisms f and g in Mor~FP~,  map~F~ (f ∘ g) = map~F~ f ∘ map~F~ g.
+
+[{eqtable}]
+|===
+| map~F~ (f ∘ g) | = fmap (f ∘ g)         | (definition map~F~)
+|                | = fmap f ∘ fmap g      | (Haskell Functor Law)
+|                | = map~F~ f ∘ map~F~ g  | (definition map~F~)
+|===
+
+. To prove: for any object a in Obj~FP~,  map~F~ id~a~ = id~F a~.
+
+[{eqtable}]
+|===
+| map~F~ id~a~ | = fmap id~a~  | (definition map~F~)
+|              | = id~a~       | (Haskell Functor Law)
+|===
+
+[#ex-haskell-bifunctor]
+=== Haskell Bifunctor
+
+Any Haskell type constructor F that has an instance of the link:https://hackage.haskell.org/package/base-4.18.0.0/docs/Data-Bifunctor.html[Haskell Bifunctor class] forms a bifunctor in FP.
+
+_Proof._
+
+We are given a type constructor F taking 2 parameters, and a function 
+
+ bimap: \((a → b), (c → d)) → (F a c → F b d) 
+
+where bimap obeys the following laws:
+
+ bimap id id = id
+ bimap  (f . g) (h . i) = bimap f h . bimap g i
+
+Note that 
+[{eqtable}]
+|===
+| F : Obj~FP~ → Obj~FP~ → Obj~FP~ | = F : Obj~FP~ ⨯ Obj~FP~ → Obj~FP~  | (uncurrying)
+|                                 | = F : Obj~FP⨯FP~ → Obj~FP~         | (definition product category)
+|===
+
+Furthermore, we have that 
+[{eqtable}]
+|===
+| bimap : (a → b) → (c → d) → (F a c → F b d) | = bimap : Mor~FP~ → Mor~FP~ → Mor~FP~ |
+|                                             | = bimap : Mor~FP~ ⨯ Mor~FP~ → Mor~FP~ | (uncurrying)
+|                                             | = bimap : Mor~FP⨯FP~ → Mor~FP~        | (definition product category)
+|===
+
+which means that bimap indeed gives us a function for map~F~.
+It can be observed that map~F~ obeys the functor axioms from the bimap laws listed above.
 
 [#ex-cat]
 === The Category of Categories

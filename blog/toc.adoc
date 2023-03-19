@@ -6,3 +6,4 @@
 - link:/?page=rop-cs-2[Railroad Oriented Programming in C#: Part 2 (A `Result` type implementation)]
 - link:/?page=rop-cs-3[Railroad Oriented Programming in C#: Part 3 (Creating `Result` instances)]
 - link:/?page=rop-cs-4[Railroad Oriented Programming in C#: Part 4 (Subtracks and failure recovery)]
+- link:/?page=cat[Category Theory notes]
