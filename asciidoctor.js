@@ -6,8 +6,8 @@ const fs = require('fs');
 const cheerio = require('cheerio');
 
 const asciidoctor = Asciidoctor();
-// kroki.register(asciidoctor.Extensions);
-// highlightJsExt.register(asciidoctor.Extensions);
+kroki.register(asciidoctor.Extensions);
+highlightJsExt.register(asciidoctor.Extensions);
 
 const options = {
   safe: 'unsafe',

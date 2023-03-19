@@ -30,11 +30,11 @@ Since a class can have multiple subclasses, and any object is always just one of
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-cs" data-lang="cs">public abstract class Result {
-  public sealed class Success : Result { }
-  public sealed class Failure : Result { }
-  // Private constructor so we are certain that Success and Failure are the only subclasses
-  private Result () { }
+<pre class="highlight"><code class="language-cs" data-lang="cs"><span class="hljs-keyword">public</span> <span class="hljs-keyword">abstract</span> <span class="hljs-keyword">class</span> <span class="hljs-title">Result</span> {
+  <span class="hljs-keyword">public</span> <span class="hljs-keyword">sealed</span> <span class="hljs-keyword">class</span> <span class="hljs-title">Success</span> : <span class="hljs-title">Result</span> { }
+  <span class="hljs-keyword">public</span> <span class="hljs-keyword">sealed</span> <span class="hljs-keyword">class</span> <span class="hljs-title">Failure</span> : <span class="hljs-title">Result</span> { }
+  <span class="hljs-comment">// Private constructor so we are certain that Success and Failure are the only subclasses</span>
+  <span class="hljs-function"><span class="hljs-keyword">private</span> <span class="hljs-title">Result</span> ()</span> { }
 }</code></pre>
 </div>
 </div>
@@ -44,24 +44,24 @@ We can fix that.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-cs" data-lang="cs">public abstract class Result&lt;TSuccess, TFailure&gt; {
+<pre class="highlight"><code class="language-cs" data-lang="cs"><span class="hljs-keyword">public</span> <span class="hljs-keyword">abstract</span> <span class="hljs-keyword">class</span> <span class="hljs-title">Result</span>&lt;<span class="hljs-title">TSuccess</span>, <span class="hljs-title">TFailure</span>&gt; {
 
-  public sealed class Success : Result&lt;TSuccess, TFailure&gt; {
-    public readonly TSuccess SuccessValue;
-    public Success(TSuccess result){
+  <span class="hljs-keyword">public</span> <span class="hljs-keyword">sealed</span> <span class="hljs-keyword">class</span> <span class="hljs-title">Success</span> : <span class="hljs-title">Result</span>&lt;<span class="hljs-title">TSuccess</span>, <span class="hljs-title">TFailure</span>&gt; {
+    <span class="hljs-keyword">public</span> <span class="hljs-keyword">readonly</span> TSuccess SuccessValue;
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">Success</span>(<span class="hljs-params">TSuccess result</span>)</span>{
       SuccessValue = result;
     }
   }
 
-  public sealed class Failure : Result&lt;TSuccess, TFailure&gt; {
-    public readonly TFailure FailureValue;
-    public Failure(TFailure error){
+  <span class="hljs-keyword">public</span> <span class="hljs-keyword">sealed</span> <span class="hljs-keyword">class</span> <span class="hljs-title">Failure</span> : <span class="hljs-title">Result</span>&lt;<span class="hljs-title">TSuccess</span>, <span class="hljs-title">TFailure</span>&gt; {
+    <span class="hljs-keyword">public</span> <span class="hljs-keyword">readonly</span> TFailure FailureValue;
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">Failure</span>(<span class="hljs-params">TFailure error</span>)</span>{
       FailureValue = error;
     }
   }
 
-  // Private constructor so we are certain that Success and Failure are the only subclasses
-  private Result () { }
+  <span class="hljs-comment">// Private constructor so we are certain that Success and Failure are the only subclasses</span>
+  <span class="hljs-function"><span class="hljs-keyword">private</span> <span class="hljs-title">Result</span> ()</span> { }
 }</code></pre>
 </div>
 </div>
@@ -70,11 +70,11 @@ We can fix that.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-cs" data-lang="cs">Result&lt;User, string&gt; GetUser(string username) {
-  var user = Datastore.FindUser(username);
-  if (user == null)
-    return new Result&lt;User, string&gt;.Failure("User has no email");
-  return new Result&lt;User, string&gt;.Success(user);
+<pre class="highlight"><code class="language-cs" data-lang="cs"><span class="hljs-function">Result&lt;User, <span class="hljs-built_in">string</span>&gt; <span class="hljs-title">GetUser</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> username</span>)</span> {
+  <span class="hljs-keyword">var</span> user = Datastore.FindUser(username);
+  <span class="hljs-keyword">if</span> (user == <span class="hljs-literal">null</span>)
+    <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> Result&lt;User, <span class="hljs-built_in">string</span>&gt;.Failure(<span class="hljs-string">"User has no email"</span>);
+  <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> Result&lt;User, <span class="hljs-built_in">string</span>&gt;.Success(user);
 }</code></pre>
 </div>
 </div>
@@ -83,13 +83,13 @@ We can fix that.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-cs" data-lang="cs">var result = GetUser(username);
-if (result is Result&lt;User,string&gt;.Success) {
-  var user = ((Result&lt;User,string&gt;.Success)result).ResultValue;
-  // Do what you wanna do
-} else {
-  var error = ((Result&lt;User,string&gt;.Failure)result).ErrorValue;
-  // Handle the failure appropriately
+<pre class="highlight"><code class="language-cs" data-lang="cs"><span class="hljs-keyword">var</span> result = GetUser(username);
+<span class="hljs-keyword">if</span> (result <span class="hljs-keyword">is</span> Result&lt;User,<span class="hljs-built_in">string</span>&gt;.Success) {
+  <span class="hljs-keyword">var</span> user = ((Result&lt;User,<span class="hljs-built_in">string</span>&gt;.Success)result).ResultValue;
+  <span class="hljs-comment">// Do what you wanna do</span>
+} <span class="hljs-keyword">else</span> {
+  <span class="hljs-keyword">var</span> error = ((Result&lt;User,<span class="hljs-built_in">string</span>&gt;.Failure)result).ErrorValue;
+  <span class="hljs-comment">// Handle the failure appropriately</span>
 }</code></pre>
 </div>
 </div>
@@ -101,24 +101,24 @@ Even more so when we need to call more than one function.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-cs" data-lang="cs">Result&lt;string, string&gt; GetEmailAddress(User user);
+<pre class="highlight"><code class="language-cs" data-lang="cs"><span class="hljs-function">Result&lt;<span class="hljs-built_in">string</span>, <span class="hljs-built_in">string</span>&gt; <span class="hljs-title">GetEmailAddress</span>(<span class="hljs-params">User user</span>)</span>;
 
-// ...
+<span class="hljs-comment">// ...</span>
 
-var result = GetUser(username);
-if (result is Result&lt;User, string&gt;.Success) {
-  var user = ((Result&lt;User, string&gt;.Success)result).ResultValue;
-  var result2 = GetEmailAddress(user);
-  if (result2 is Result&lt;string, string&gt;.Success) {
-    var email = ((Result&lt;string, string&gt;.Success)result2).ResultValue;
-    // And so on...
-  } else {
-    var error2 = ((Result&lt;string, string&gt;.Failure)result2).ErrorValue;
-    // Handle the failure appropriately
+<span class="hljs-keyword">var</span> result = GetUser(username);
+<span class="hljs-keyword">if</span> (result <span class="hljs-keyword">is</span> Result&lt;User, <span class="hljs-built_in">string</span>&gt;.Success) {
+  <span class="hljs-keyword">var</span> user = ((Result&lt;User, <span class="hljs-built_in">string</span>&gt;.Success)result).ResultValue;
+  <span class="hljs-keyword">var</span> result2 = GetEmailAddress(user);
+  <span class="hljs-keyword">if</span> (result2 <span class="hljs-keyword">is</span> Result&lt;<span class="hljs-built_in">string</span>, <span class="hljs-built_in">string</span>&gt;.Success) {
+    <span class="hljs-keyword">var</span> email = ((Result&lt;<span class="hljs-built_in">string</span>, <span class="hljs-built_in">string</span>&gt;.Success)result2).ResultValue;
+    <span class="hljs-comment">// And so on...</span>
+  } <span class="hljs-keyword">else</span> {
+    <span class="hljs-keyword">var</span> error2 = ((Result&lt;<span class="hljs-built_in">string</span>, <span class="hljs-built_in">string</span>&gt;.Failure)result2).ErrorValue;
+    <span class="hljs-comment">// Handle the failure appropriately</span>
   }
-} else {
-  var error = ((Result&lt;User, string&gt;.Failure)result).ErrorValue;
-  // Handle the failure appropriately
+} <span class="hljs-keyword">else</span> {
+  <span class="hljs-keyword">var</span> error = ((Result&lt;User, <span class="hljs-built_in">string</span>&gt;.Failure)result).ErrorValue;
+  <span class="hljs-comment">// Handle the failure appropriately</span>
 }</code></pre>
 </div>
 </div>
@@ -150,39 +150,39 @@ Moreover, the OnSuccess function will "shortcircuit" the failure path, such that
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-cs" data-lang="cs">public abstract class Result&lt;TSuccess, TFailure&gt; {
+<pre class="highlight"><code class="language-cs" data-lang="cs"><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">abstract</span> <span class="hljs-keyword">class</span> <span class="hljs-title">Result</span>&lt;<span class="hljs-title">TSuccess</span>, <span class="hljs-title">TFailure</span>&gt;</span> {
 
-  public abstract Result&lt;TNextSuccess, TFailure&gt; OnSuccess&lt;TNextSuccess&gt;(
-    Func&lt;TSuccess, Result&lt;TNextSuccess, TFailure&gt;&gt; onSuccess);
-  public abstract TReturn Handle&lt;TReturn&gt;(Func&lt;TSuccess, TReturn&gt; onSuccess, Func&lt;TFailure, TReturn&gt; onFailure);
+  <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">abstract</span> <span class="hljs-title">Result</span>&lt;<span class="hljs-title">TNextSuccess</span>, <span class="hljs-title">TFailure</span>&gt; <span class="hljs-title">OnSuccess</span>&lt;<span class="hljs-title">TNextSuccess</span>&gt;(<span class="hljs-params">
+    Func&lt;TSuccess, Result&lt;TNextSuccess, TFailure&gt;&gt; onSuccess</span>)</span>;
+  <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">abstract</span> TReturn <span class="hljs-title">Handle</span>&lt;<span class="hljs-title">TReturn</span>&gt;(<span class="hljs-params">Func&lt;TSuccess, TReturn&gt; onSuccess, Func&lt;TFailure, TReturn&gt; onFailure</span>)</span>;
 
-  public sealed class Success : Result&lt;TSuccess, TFailure&gt; {
-    public TSuccess SuccessValue { get; }
+  <span class="hljs-keyword">public</span> <span class="hljs-keyword">sealed</span> <span class="hljs-keyword">class</span> <span class="hljs-title">Success</span> : <span class="hljs-title">Result</span>&lt;<span class="hljs-title">TSuccess</span>, <span class="hljs-title">TFailure</span>&gt; {
+    <span class="hljs-keyword">public</span> TSuccess SuccessValue { <span class="hljs-keyword">get</span>; }
 
-    public Success(TSuccess result) =&gt; SuccessValue = result;
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">Success</span>(<span class="hljs-params">TSuccess result</span>)</span> =&gt; SuccessValue = result;
 
-    public override Result&lt;TNextSuccess, TFailure&gt; OnSuccess&lt;TNextSuccess&gt;(
-      Func&lt;TSuccess, Result&lt;TNextSuccess, TFailure&gt;&gt; onSuccess)
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">override</span> <span class="hljs-title">Result</span>&lt;<span class="hljs-title">TNextSuccess</span>, <span class="hljs-title">TFailure</span>&gt; <span class="hljs-title">OnSuccess</span>&lt;<span class="hljs-title">TNextSuccess</span>&gt;(<span class="hljs-params">
+      Func&lt;TSuccess, Result&lt;TNextSuccess, TFailure&gt;&gt; onSuccess</span>)</span>
         =&gt; onSuccess(SuccessValue);
 
-    public override TReturn Handle&lt;TReturn&gt;(Func&lt;TSuccess, TReturn&gt; onSuccess, Func&lt;TFailure, TReturn&gt; onFailure)
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">override</span> TReturn <span class="hljs-title">Handle</span>&lt;<span class="hljs-title">TReturn</span>&gt;(<span class="hljs-params">Func&lt;TSuccess, TReturn&gt; onSuccess, Func&lt;TFailure, TReturn&gt; onFailure</span>)</span>
         =&gt; onSuccess(SuccessValue);
   }
 
-  public sealed class Failure : Result&lt;TSuccess, TFailure&gt; {
-    public TFailure FailureValue { get; }
+  <span class="hljs-keyword">public</span> <span class="hljs-keyword">sealed</span> <span class="hljs-keyword">class</span> <span class="hljs-title">Failure</span> : <span class="hljs-title">Result</span>&lt;<span class="hljs-title">TSuccess</span>, <span class="hljs-title">TFailure</span>&gt; {
+    <span class="hljs-keyword">public</span> TFailure FailureValue { <span class="hljs-keyword">get</span>; }
 
-    public Failure(TFailure error) =&gt; FailureValue = error;
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">Failure</span>(<span class="hljs-params">TFailure error</span>)</span> =&gt; FailureValue = error;
 
-    public override Result&lt;TNextSuccess, TFailure&gt; OnSuccess&lt;TNextSuccess&gt;(
-      Func&lt;TSuccess, Result&lt;TNextSuccess, TFailure&gt;&gt; onSuccess)
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">override</span> <span class="hljs-title">Result</span>&lt;<span class="hljs-title">TNextSuccess</span>, <span class="hljs-title">TFailure</span>&gt; <span class="hljs-title">OnSuccess</span>&lt;<span class="hljs-title">TNextSuccess</span>&gt;(<span class="hljs-params">
+      Func&lt;TSuccess, Result&lt;TNextSuccess, TFailure&gt;&gt; onSuccess</span>)</span>
         =&gt; Result.Fail(FailureValue);
 
-    public override TReturn Handle&lt;TReturn&gt;(Func&lt;TSuccess, TReturn&gt; onSuccess, Func&lt;TFailure, TReturn&gt; onFailure)
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">override</span> TReturn <span class="hljs-title">Handle</span>&lt;<span class="hljs-title">TReturn</span>&gt;(<span class="hljs-params">Func&lt;TSuccess, TReturn&gt; onSuccess, Func&lt;TFailure, TReturn&gt; onFailure</span>)</span>
         =&gt; onFailure(FailureValue);
   }
 
-  private Result() { }
+  <span class="hljs-function"><span class="hljs-keyword">private</span> <span class="hljs-title">Result</span>()</span> { }
 }</code></pre>
 </div>
 </div>
@@ -196,8 +196,8 @@ Compare the following with what we had in the previous section.</p>
 <pre class="highlight"><code class="language-cs" data-lang="cs">GetUser(username)
   .OnSuccess(GetEmailAddress);
   .Handle(
-    emailAddress =&gt; ..., // Do your thing
-    error =&gt; ... // Handle the failure appropriately
+    emailAddress =&gt; ..., <span class="hljs-comment">// Do your thing</span>
+    error =&gt; ... <span class="hljs-comment">// Handle the failure appropriately</span>
   );</code></pre>
 </div>
 </div>
@@ -205,281 +205,102 @@ Compare the following with what we had in the previous section.</p>
 <p>If we visualize the code flow above in a diagram, it becomes clear why this style of programming is sometimes referred to as <em>railway oriented programming</em>.
 The <code>Result</code> type encapsulates two "paths" or "tracks", the success track and the failure track.</p>
 </div>
-<div class="literalblock">
+<div class="imageblock kroki">
 <div class="content">
-<pre>scale = .8
+<svg xmlns="http://www.w3.org/2000/svg" class="pikchr" width="149" height="51" viewbox="0 0 187.43 64.8">
+<polygon points="106,17 95,21 95,12" style="fill: #add8e6"></polygon>
+<path d="M34,17L100,17" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
+<polygon points="106,47 95,51 95,43" style="fill: orange"></polygon>
+<path d="M34,47L100,47" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
+<path d="M17,47L52,47A15 15 0 0 0 67 32A15 15 0 0 0 52 17L17,17A15 15 0 0 0 2 32A15 15 0 0 0 17 47Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<text x="34" y="32" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">Result</text>
+<path d="M121,32L170,32A15 15 0 0 0 185 17A15 15 0 0 0 170 2L121,2A15 15 0 0 0 106 17A15 15 0 0 0 121 32Z" style="fill: #add8e6; stroke-width: 2.16px; stroke: #000"></path>
+<text x="145" y="17" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">Success</text>
+<path d="M121,62L163,62A15 15 0 0 0 178 47A15 15 0 0 0 163 32L121,32A15 15 0 0 0 106 47A15 15 0 0 0 121 62Z" style="fill: orange; stroke-width: 2.16px; stroke: #000"></path>
+<text x="142" y="47" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">Failure</text>
+</svg>
 
-R: oval "Result" fit
-arrow from R.n right color lightblue behind R
-oval "Success" fit fill lightblue
-arrow from R.s right color orange behind R
-oval "Failure" fit fill orange</pre>
 </div>
 </div>
 <div class="paragraph">
 <p>And the <code>OnSuccess</code> and <code>Handle</code> methods form trackpieces.</p>
 </div>
-<div class="literalblock">
+<div class="imageblock kroki">
 <div class="content">
-<pre>scale = .8
-linerad = .1
-linewid = .2
-lineht = .22
+<svg xmlns="http://www.w3.org/2000/svg" class="pikchr" width="244" height="40" viewbox="0 0 306.317 51.12">
+<path d="M133,17 L 140,17 Q 147,17 147,31 L 147,34 Q 147,48 156,48 L 165,48" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
+<path d="M133,17L162,17" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
+<path d="M288,17L304,17" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
+<polygon points="30,17 19,21 19,12" style="fill: #add8e6"></polygon>
+<path d="M2,17L25,17" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
+<path d="M30,32L133,32L133,2L30,2Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<text x="82" y="17" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">OnSuccess</text>
+<path d="M177,32L273,32A15 15 0 0 0 288 17A15 15 0 0 0 273 2L177,2A15 15 0 0 0 162 17A15 15 0 0 0 177 32Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<text x="225" y="17" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">SuccessValue</text>
+<path d="M2,48L304,48" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
+</svg>
 
-define dashes {
-  line color lightblue dashed .03
-  move from last line.w down lineht 
-  right
-  line color orange dashed .03
-  move up lineht; right
-}
-
-define newline {
-  dashes
-  move left until even with (0,0) then down then right
-  dashes
-}
-
-define startResult {
-  S0: arrow
-  B: box $1 fit
-  SF: line right linerad then down then right until even with lineht e of B.e color orange behind B
-  FR: oval $3 fit
-  F: line right lineht/2 color orange behind FR
-
-  S1: line from SF.start right color lightblue behind B
-  SR: oval $2 fit
-  S2: line right lineht/2 color lightblue behind SR
-}
-
-define onSuccess {
-  S0: arrow color lightblue
-  B: box $1 fit
-  SF: line right linerad then down then right until even with lineht e of B.e color orange behind B
-  S1: line from B.e right color lightblue behind B
-  SR: oval $2 fit
-  S2: line right lineht/2 color lightblue behind SR
-
-  move from S0.start down lineht
-  F0: line right until even with S2.end color orange
-  move up lineht; right
-}
-
-define onFailure {
-  move down lineht; right
-
-  S0: arrow color orange
-  B: box $1 fit
-  SF: line right linerad then up then right until even with lineht e of B.e color lightblue behind B
-  S1: line from B.e right color orange behind B
-  SR: oval $2 fit
-  S2: line right lineht/2 color orange behind SR
-
-  move from S0.start up lineht
-  F0: line right until even with S2.end color lightblue
-}
-
-define onFailureF {
-  move down lineht; right
-
-  S0: arrow color orange
-  B: box $1 fit
-  S1: line from B.e right color orange behind B
-  SR: oval $2 fit
-  S2: line right lineht/2 color orange behind SR
-
-  move from S0.start up lineht
-  F0: line right until even with S2.end color lightblue
-}
-
-define handle {
-  S: arrow right color lightblue
-  move from S.start down lineht
-  F: arrow right color orange
-  box $1 fit with west at 1/2 between S.end and F.end
-  line right
-  oval $2 fit
-  arrow right
-}
-
-onSuccess("OnSuccess", "SuccessValue")</pre>
 </div>
 </div>
-<div class="literalblock">
+<div class="imageblock kroki">
 <div class="content">
-<pre>scale = .8
-linerad = .1
-linewid = .2
-lineht = .22
+<svg xmlns="http://www.w3.org/2000/svg" class="pikchr" width="207" height="35" viewbox="0 0 259.776 44.64">
+<polygon points="30,6 19,10 19,2" style="fill: #add8e6"></polygon>
+<path d="M2,6L25,6" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
+<polygon points="30,38 19,42 19,33" style="fill: orange"></polygon>
+<path d="M2,38L25,38" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
+<path d="M30,37L103,37L103,7L30,7Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<text x="67" y="22" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">Handle</text>
+<path d="M103,22L132,22" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<path d="M147,37L209,37A15 15 0 0 0 224 22L224,22A15 15 0 0 0 209 7L147,7A15 15 0 0 0 132 22L132,22A15 15 0 0 0 147 37Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<text x="178" y="22" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">EndValue</text>
+<polygon points="253,22 241,26 241,18" style="fill: #000"></polygon>
+<path d="M224,22L247,22" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+</svg>
 
-define dashes {
-  line color lightblue dashed .03
-  move from last line.w down lineht 
-  right
-  line color orange dashed .03
-  move up lineht; right
-}
-
-define newline {
-  dashes
-  move left until even with (0,0) then down then right
-  dashes
-}
-
-define startResult {
-  S0: arrow
-  B: box $1 fit
-  SF: line right linerad then down then right until even with lineht e of B.e color orange behind B
-  FR: oval $3 fit
-  F: line right lineht/2 color orange behind FR
-
-  S1: line from SF.start right color lightblue behind B
-  SR: oval $2 fit
-  S2: line right lineht/2 color lightblue behind SR
-}
-
-define onSuccess {
-  S0: arrow color lightblue
-  B: box $1 fit
-  SF: line right linerad then down then right until even with lineht e of B.e color orange behind B
-  S1: line from B.e right color lightblue behind B
-  SR: oval $2 fit
-  S2: line right lineht/2 color lightblue behind SR
-
-  move from S0.start down lineht
-  F0: line right until even with S2.end color orange
-  move up lineht; right
-}
-
-define onFailure {
-  move down lineht; right
-
-  S0: arrow color orange
-  B: box $1 fit
-  SF: line right linerad then up then right until even with lineht e of B.e color lightblue behind B
-  S1: line from B.e right color orange behind B
-  SR: oval $2 fit
-  S2: line right lineht/2 color orange behind SR
-
-  move from S0.start up lineht
-  F0: line right until even with S2.end color lightblue
-}
-
-define onFailureF {
-  move down lineht; right
-
-  S0: arrow color orange
-  B: box $1 fit
-  S1: line from B.e right color orange behind B
-  SR: oval $2 fit
-  S2: line right lineht/2 color orange behind SR
-
-  move from S0.start up lineht
-  F0: line right until even with S2.end color lightblue
-}
-
-define handle {
-  S: arrow right color lightblue
-  move from S.start down lineht
-  F: arrow right color orange
-  box $1 fit with west at 1/2 between S.end and F.end
-  line right
-  oval $2 fit
-  arrow right
-}
-
-handle("Handle", "EndValue")</pre>
 </div>
 </div>
 <div class="paragraph">
 <p>The railway of the example code would look like</p>
 </div>
-<div class="literalblock">
+<div class="imageblock kroki">
 <div class="content">
-<pre>scale = .8
-linerad = .1
-linewid = .2
-lineht = .22
+<svg xmlns="http://www.w3.org/2000/svg" class="pikchr" width="580" height="52" viewbox="0 0 725.184 66.24">
+<path d="M111,17 L 118,17 Q 125,17 125,31 L 125,34 Q 125,48 134,48 L 142,48" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
+<path d="M204,48L219,48" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
+<path d="M111,17L139,17" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
+<path d="M191,17L207,17" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
+<path d="M392,17 L 399,17 Q 406,17 406,31 L 406,34 Q 406,48 415,48 L 424,48" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
+<path d="M392,17L421,17" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
+<path d="M482,17L498,17" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
+<polygon points="30,17 19,21 19,12" style="fill: #000"></polygon>
+<path d="M2,17L25,17" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<path d="M30,32L111,32L111,2L30,2Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<text x="70" y="17" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">GetUser</text>
+<path d="M157,64L188,64A15 15 0 0 0 204 48L204,48A15 15 0 0 0 188 33L157,33A15 15 0 0 0 142 48L142,48A15 15 0 0 0 157 64Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<text x="173" y="48" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">string</text>
+<path d="M154,32L176,32A15 15 0 0 0 191 17A15 15 0 0 0 176 2L154,2A15 15 0 0 0 139 17A15 15 0 0 0 154 32Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<text x="165" y="17" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">User</text>
+<polygon points="235,17 224,21 224,12" style="fill: #add8e6"></polygon>
+<path d="M207,17L230,17" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
+<path d="M235,32L392,32L392,2L235,2Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<text x="314" y="17" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">GetEmailAddress</text>
+<path d="M436,32L467,32A15 15 0 0 0 482 17A15 15 0 0 0 467 2L436,2A15 15 0 0 0 421 17A15 15 0 0 0 436 32Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<text x="452" y="17" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">string</text>
+<path d="M207,48L498,48" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
+<polygon points="527,17 515,21 515,12" style="fill: #add8e6"></polygon>
+<path d="M498,17L521,17" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
+<polygon points="527,48 515,53 515,44" style="fill: orange"></polygon>
+<path d="M498,48L521,48" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
+<path d="M527,48L599,48L599,17L527,17Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<text x="563" y="33" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">Handle</text>
+<path d="M599,33L628,33" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<path d="M643,48L674,48A15 15 0 0 0 689 33L689,33A15 15 0 0 0 674 18L643,18A15 15 0 0 0 628 33L628,33A15 15 0 0 0 643 48Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<text x="659" y="33" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">string</text>
+<polygon points="718,33 707,37 707,28" style="fill: #000"></polygon>
+<path d="M689,33L712,33" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+</svg>
 
-define dashes {
-  line color lightblue dashed .03
-  move from last line.w down lineht 
-  right
-  line color orange dashed .03
-  move up lineht; right
-}
-
-define newline {
-  dashes
-  move left until even with (0,0) then down then right
-  dashes
-}
-
-define startResult {
-  S0: arrow
-  B: box $1 fit
-  SF: line right linerad then down then right until even with lineht e of B.e color orange behind B
-  FR: oval $3 fit
-  F: line right lineht/2 color orange behind FR
-
-  S1: line from SF.start right color lightblue behind B
-  SR: oval $2 fit
-  S2: line right lineht/2 color lightblue behind SR
-}
-
-define onSuccess {
-  S0: arrow color lightblue
-  B: box $1 fit
-  SF: line right linerad then down then right until even with lineht e of B.e color orange behind B
-  S1: line from B.e right color lightblue behind B
-  SR: oval $2 fit
-  S2: line right lineht/2 color lightblue behind SR
-
-  move from S0.start down lineht
-  F0: line right until even with S2.end color orange
-  move up lineht; right
-}
-
-define onFailure {
-  move down lineht; right
-
-  S0: arrow color orange
-  B: box $1 fit
-  SF: line right linerad then up then right until even with lineht e of B.e color lightblue behind B
-  S1: line from B.e right color orange behind B
-  SR: oval $2 fit
-  S2: line right lineht/2 color orange behind SR
-
-  move from S0.start up lineht
-  F0: line right until even with S2.end color lightblue
-}
-
-define onFailureF {
-  move down lineht; right
-
-  S0: arrow color orange
-  B: box $1 fit
-  S1: line from B.e right color orange behind B
-  SR: oval $2 fit
-  S2: line right lineht/2 color orange behind SR
-
-  move from S0.start up lineht
-  F0: line right until even with S2.end color lightblue
-}
-
-define handle {
-  S: arrow right color lightblue
-  move from S.start down lineht
-  F: arrow right color orange
-  box $1 fit with west at 1/2 between S.end and F.end
-  line right
-  oval $2 fit
-  arrow right
-}
-
-startResult("GetUser","User","string")
-onSuccess("GetEmailAddress","string")
-handle("Handle","string")</pre>
 </div>
 </div>
 </div>
@@ -490,8 +311,8 @@ handle("Handle","string")</pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-cs" data-lang="cs">/// &lt;returns&gt;Message to be printed on the screen&lt;/returns&gt;
-string MailMessageToUser(string username, string msg);</code></pre>
+<pre class="highlight"><code class="language-cs" data-lang="cs"><span class="hljs-comment"><span class="hljs-doctag">///</span> <span class="hljs-doctag">&lt;returns&gt;</span>Message to be printed on the screen<span class="hljs-doctag">&lt;/returns&gt;</span></span>
+<span class="hljs-function"><span class="hljs-built_in">string</span> <span class="hljs-title">MailMessageToUser</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> username, <span class="hljs-built_in">string</span> msg</span>)</span>;</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -499,10 +320,10 @@ string MailMessageToUser(string username, string msg);</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-cs" data-lang="cs">Result&lt;User, string&gt; GetUser(string username);
-Result&lt;string, string&gt; GetEmailAddress(User user);
-Result&lt;EmailMessage, string&gt; CreateEmailMessage(string emailAddress, string msg);
-Result&lt;Unit, string&gt; SendEmail(EmailMessage email);</code></pre>
+<pre class="highlight"><code class="language-cs" data-lang="cs"><span class="hljs-function">Result&lt;User, <span class="hljs-built_in">string</span>&gt; <span class="hljs-title">GetUser</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> username</span>)</span>;
+<span class="hljs-function">Result&lt;<span class="hljs-built_in">string</span>, <span class="hljs-built_in">string</span>&gt; <span class="hljs-title">GetEmailAddress</span>(<span class="hljs-params">User user</span>)</span>;
+<span class="hljs-function">Result&lt;EmailMessage, <span class="hljs-built_in">string</span>&gt; <span class="hljs-title">CreateEmailMessage</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> emailAddress, <span class="hljs-built_in">string</span> msg</span>)</span>;
+<span class="hljs-function">Result&lt;Unit, <span class="hljs-built_in">string</span>&gt; <span class="hljs-title">SendEmail</span>(<span class="hljs-params">EmailMessage email</span>)</span>;</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -514,17 +335,17 @@ For more information refer to <a href="/?page=unit-cs">The missing C# built-in t
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-cs" data-lang="cs">/// &lt;returns&gt;Message to be printed on the screen&lt;/returns&gt;
-string MailMessageToUser(string username, string msg) {
-  return GetUser(username)
+<pre class="highlight"><code class="language-cs" data-lang="cs"><span class="hljs-comment"><span class="hljs-doctag">///</span> <span class="hljs-doctag">&lt;returns&gt;</span>Message to be printed on the screen<span class="hljs-doctag">&lt;/returns&gt;</span></span>
+<span class="hljs-function"><span class="hljs-built_in">string</span> <span class="hljs-title">MailMessageToUser</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> username, <span class="hljs-built_in">string</span> msg</span>)</span> {
+  <span class="hljs-keyword">return</span> GetUser(username)
     .OnSuccess(GetEmailAddress)
     .OnSuccess(email =&gt; CreateEmailMessage(email, msg))
     .OnSuccess(SendEmail)
     .Handle(
-      _ =&gt; "Email sent",
+      _ =&gt; <span class="hljs-string">"Email sent"</span>,
       error =&gt; {
         Log(error);
-        return "Email not sent";
+        <span class="hljs-keyword">return</span> <span class="hljs-string">"Email not sent"</span>;
       }
     );
 }</code></pre>
@@ -533,95 +354,68 @@ string MailMessageToUser(string username, string msg) {
 <div class="paragraph">
 <p>The railway of the example code would look like</p>
 </div>
-<div class="literalblock">
+<div class="imageblock kroki">
 <div class="content">
-<pre>scale = .8
-linerad = .1
-linewid = .2
-lineht = .22
+<svg xmlns="http://www.w3.org/2000/svg" class="pikchr" width="760" height="101" viewbox="0 0 951.206 127.44">
+<path d="M111,17 L 118,17 Q 125,17 125,31 L 125,34 Q 125,48 134,48 L 142,48" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
+<path d="M204,48L219,48" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
+<path d="M111,17L139,17" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
+<path d="M191,17L207,17" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
+<path d="M392,17 L 399,17 Q 406,17 406,31 L 406,34 Q 406,48 415,48 L 424,48" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
+<path d="M392,17L421,17" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
+<path d="M482,17L498,17" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
+<path d="M322,89 L 329,89 Q 337,89 337,103 L 337,106 Q 337,120 345,120 L 354,120" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
+<path d="M322,89L351,89" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
+<path d="M485,89L501,89" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
+<path d="M632,89 L 639,89 Q 646,89 646,103 L 646,106 Q 646,120 655,120 L 663,120" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
+<path d="M632,89L660,89" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
+<path d="M708,89L724,89" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
+<polygon points="30,17 19,21 19,12" style="fill: #000"></polygon>
+<path d="M2,17L25,17" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<path d="M30,32L111,32L111,2L30,2Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<text x="70" y="17" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">GetUser</text>
+<path d="M157,64L188,64A15 15 0 0 0 204 48L204,48A15 15 0 0 0 188 33L157,33A15 15 0 0 0 142 48L142,48A15 15 0 0 0 157 64Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<text x="173" y="48" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">string</text>
+<path d="M154,32L176,32A15 15 0 0 0 191 17A15 15 0 0 0 176 2L154,2A15 15 0 0 0 139 17A15 15 0 0 0 154 32Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<text x="165" y="17" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">User</text>
+<polygon points="235,17 224,21 224,12" style="fill: #add8e6"></polygon>
+<path d="M207,17L230,17" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
+<path d="M235,32L392,32L392,2L235,2Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<text x="314" y="17" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">GetEmailAddress</text>
+<path d="M436,32L467,32A15 15 0 0 0 482 17A15 15 0 0 0 467 2L436,2A15 15 0 0 0 421 17A15 15 0 0 0 436 32Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<text x="452" y="17" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">string</text>
+<path d="M207,48L498,48" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
+<path d="M498,17L527,17" style="fill: none; stroke-width: 2.16px; stroke: #add8e6; stroke-dasharray: 4.32 4.32"></path>
+<path d="M498,48L527,48" style="fill: none; stroke-width: 2.16px; stroke: orange; stroke-dasharray: 4.32 4.32"></path>
+<path d="M74,89L102,89" style="fill: none; stroke-width: 2.16px; stroke: #add8e6; stroke-dasharray: 4.32 4.32"></path>
+<path d="M74,120L102,120" style="fill: none; stroke-width: 2.16px; stroke: orange; stroke-dasharray: 4.32 4.32"></path>
+<polygon points="131,89 120,93 120,84" style="fill: #add8e6"></polygon>
+<path d="M102,89L125,89" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
+<path d="M131,104L322,104L322,74L131,74Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<text x="227" y="89" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">CreateEmailMessage</text>
+<path d="M366,104L470,104A15 15 0 0 0 485 89A15 15 0 0 0 470 74L366,74A15 15 0 0 0 351 89A15 15 0 0 0 366 104Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<text x="418" y="89" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">EmailMessage</text>
+<path d="M102,120L501,120" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
+<polygon points="530,89 518,93 518,84" style="fill: #add8e6"></polygon>
+<path d="M501,89L524,89" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
+<path d="M530,104L632,104L632,74L530,74Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<text x="581" y="89" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">SendEmail</text>
+<path d="M676,104L693,104A15 15 0 0 0 708 89A15 15 0 0 0 693 74L676,74A15 15 0 0 0 660 89A15 15 0 0 0 676 104Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<text x="684" y="89" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">Unit</text>
+<path d="M501,120L724,120" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
+<polygon points="753,89 741,93 741,84" style="fill: #add8e6"></polygon>
+<path d="M724,89L747,89" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
+<polygon points="753,120 741,125 741,116" style="fill: orange"></polygon>
+<path d="M724,120L747,120" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
+<path d="M753,120L825,120L825,89L753,89Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<text x="789" y="105" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">Handle</text>
+<path d="M825,105L854,105" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<path d="M869,120L900,120A15 15 0 0 0 915 105A15 15 0 0 0 900 90L869,90A15 15 0 0 0 854 105A15 15 0 0 0 869 120Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<text x="885" y="105" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">string</text>
+<polygon points="944,105 933,109 933,100" style="fill: #000"></polygon>
+<path d="M915,105L938,105" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+</svg>
 
-define dashes {
-  line color lightblue dashed .03
-  move from last line.w down lineht 
-  right
-  line color orange dashed .03
-  move up lineht; right
-}
-
-define newline {
-  dashes
-  move left until even with (0,0) then down then right
-  dashes
-}
-
-define startResult {
-  S0: arrow
-  B: box $1 fit
-  SF: line right linerad then down then right until even with lineht e of B.e color orange behind B
-  FR: oval $3 fit
-  F: line right lineht/2 color orange behind FR
-
-  S1: line from SF.start right color lightblue behind B
-  SR: oval $2 fit
-  S2: line right lineht/2 color lightblue behind SR
-}
-
-define onSuccess {
-  S0: arrow color lightblue
-  B: box $1 fit
-  SF: line right linerad then down then right until even with lineht e of B.e color orange behind B
-  S1: line from B.e right color lightblue behind B
-  SR: oval $2 fit
-  S2: line right lineht/2 color lightblue behind SR
-
-  move from S0.start down lineht
-  F0: line right until even with S2.end color orange
-  move up lineht; right
-}
-
-define onFailure {
-  move down lineht; right
-
-  S0: arrow color orange
-  B: box $1 fit
-  SF: line right linerad then up then right until even with lineht e of B.e color lightblue behind B
-  S1: line from B.e right color orange behind B
-  SR: oval $2 fit
-  S2: line right lineht/2 color orange behind SR
-
-  move from S0.start up lineht
-  F0: line right until even with S2.end color lightblue
-}
-
-define onFailureF {
-  move down lineht; right
-
-  S0: arrow color orange
-  B: box $1 fit
-  S1: line from B.e right color orange behind B
-  SR: oval $2 fit
-  S2: line right lineht/2 color orange behind SR
-
-  move from S0.start up lineht
-  F0: line right until even with S2.end color lightblue
-}
-
-define handle {
-  S: arrow right color lightblue
-  move from S.start down lineht
-  F: arrow right color orange
-  box $1 fit with west at 1/2 between S.end and F.end
-  line right
-  oval $2 fit
-  arrow right
-}
-
-startResult("GetUser","User","string")
-onSuccess("GetEmailAddress","string")
-newline
-onSuccess("CreateEmailMessage","EmailMessage")
-onSuccess("SendEmail","Unit")
-handle("Handle","string")</pre>
 </div>
 </div>
 </div>
@@ -632,13 +426,13 @@ handle("Handle","string")</pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-cs" data-lang="cs">public abstract class Result&lt;TSuccess, TFailure&gt; {
+<pre class="highlight"><code class="language-cs" data-lang="cs"><span class="hljs-keyword">public</span> <span class="hljs-keyword">abstract</span> <span class="hljs-keyword">class</span> <span class="hljs-title">Result</span>&lt;<span class="hljs-title">TSuccess</span>, <span class="hljs-title">TFailure</span>&gt; {
 
-  // ...
+  <span class="hljs-comment">// ...</span>
 
-  public void HandleVoid(Action&lt;TResult&gt; onSuccess, Action&lt;TError&gt; onFailure) {
-    _ = onSuccess ?? throw new ArgumentNullException(nameof(onSuccess));
-    _ = onFailure ?? throw new ArgumentNullException(nameof(onFailure));
+  <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">HandleVoid</span>(<span class="hljs-params">Action&lt;TResult&gt; onSuccess, Action&lt;TError&gt; onFailure</span>)</span> {
+    _ = onSuccess ?? <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> ArgumentNullException(<span class="hljs-keyword">nameof</span>(onSuccess));
+    _ = onFailure ?? <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> ArgumentNullException(<span class="hljs-keyword">nameof</span>(onFailure));
 
     _ = Handle(onSuccess.AsFunc(), onFailure.AsFunc());
   }
@@ -650,19 +444,19 @@ handle("Handle","string")</pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-cs" data-lang="cs">/// &lt;returns&gt;Message to be printed on the screen&lt;/returns&gt;
-string MailMessageToUser(string username, string msg) {
-  return GetUser(username)
+<pre class="highlight"><code class="language-cs" data-lang="cs"><span class="hljs-comment"><span class="hljs-doctag">///</span> <span class="hljs-doctag">&lt;returns&gt;</span>Message to be printed on the screen<span class="hljs-doctag">&lt;/returns&gt;</span></span>
+<span class="hljs-function"><span class="hljs-built_in">string</span> <span class="hljs-title">MailMessageToUser</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> username, <span class="hljs-built_in">string</span> msg</span>)</span> {
+  <span class="hljs-keyword">return</span> GetUser(username)
     .OnSuccess(GetEmailAddress)
     .OnSuccess(email =&gt; CreateEmailMessage(email, msg))
     .OnSuccess(SendEmail)
     .HandleVoid(
       _ =&gt; {
-        Console.WriteLine("Email sent");
+        Console.WriteLine(<span class="hljs-string">"Email sent"</span>);
       },
       error =&gt; {
         Log(error);
-        Console.WriteLine("Email not sent");
+        Console.WriteLine(<span class="hljs-string">"Email not sent"</span>);
       }
     );
 }</code></pre>
@@ -678,201 +472,113 @@ string MailMessageToUser(string username, string msg) {
 <p>If we have a OnSuccess method, there is no reason why we couldn’t have an OnFailure method too.
 This would allow us to do operations on the failure track, such as modifying the error, or recovering from the error and get back on the success track.</p>
 </div>
-<div class="literalblock">
+<div class="imageblock kroki">
 <div class="content">
-<pre>scale = .8
-linerad = .1
-linewid = .2
-lineht = .22
+<svg xmlns="http://www.w3.org/2000/svg" class="pikchr" width="222" height="40" viewbox="0 0 278.554 51.12">
+<path d="M126,33 L 134,33 Q 141,33 141,19 L 141,16 Q 141,2 149,2 L 158,2" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
+<path d="M126,33L155,33" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
+<path d="M260,33L276,33" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
+<polygon points="30,33 19,38 19,29" style="fill: orange"></polygon>
+<path d="M2,33L25,33" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
+<path d="M30,48L126,48L126,18L30,18Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<text x="78" y="33" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">OnFailure</text>
+<path d="M170,48L245,48A15 15 0 0 0 260 33L260,33A15 15 0 0 0 245 18L170,18A15 15 0 0 0 155 33L155,33A15 15 0 0 0 170 48Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<text x="208" y="33" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">ErrorValue</text>
+<path d="M2,2L276,2" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
+</svg>
 
-define dashes {
-  line color lightblue dashed .03
-  move from last line.w down lineht 
-  right
-  line color orange dashed .03
-  move up lineht; right
-}
-
-define newline {
-  dashes
-  move left until even with (0,0) then down then right
-  dashes
-}
-
-define startResult {
-  S0: arrow
-  B: box $1 fit
-  SF: line right linerad then down then right until even with lineht e of B.e color orange behind B
-  FR: oval $3 fit
-  F: line right lineht/2 color orange behind FR
-
-  S1: line from SF.start right color lightblue behind B
-  SR: oval $2 fit
-  S2: line right lineht/2 color lightblue behind SR
-}
-
-define onSuccess {
-  S0: arrow color lightblue
-  B: box $1 fit
-  SF: line right linerad then down then right until even with lineht e of B.e color orange behind B
-  S1: line from B.e right color lightblue behind B
-  SR: oval $2 fit
-  S2: line right lineht/2 color lightblue behind SR
-
-  move from S0.start down lineht
-  F0: line right until even with S2.end color orange
-  move up lineht; right
-}
-
-define onFailure {
-  move down lineht; right
-
-  S0: arrow color orange
-  B: box $1 fit
-  SF: line right linerad then up then right until even with lineht e of B.e color lightblue behind B
-  S1: line from B.e right color orange behind B
-  SR: oval $2 fit
-  S2: line right lineht/2 color orange behind SR
-
-  move from S0.start up lineht
-  F0: line right until even with S2.end color lightblue
-}
-
-define onFailureF {
-  move down lineht; right
-
-  S0: arrow color orange
-  B: box $1 fit
-  S1: line from B.e right color orange behind B
-  SR: oval $2 fit
-  S2: line right lineht/2 color orange behind SR
-
-  move from S0.start up lineht
-  F0: line right until even with S2.end color lightblue
-}
-
-define handle {
-  S: arrow right color lightblue
-  move from S.start down lineht
-  F: arrow right color orange
-  box $1 fit with west at 1/2 between S.end and F.end
-  line right
-  oval $2 fit
-  arrow right
-}
-
-onFailure("OnFailure","ErrorValue")</pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-cs" data-lang="cs">/// &lt;returns&gt;Message to be printed on the screen&lt;/returns&gt;
-string MailMessageToUser(string username, string msg) {
-  return GetUser(username)
+<pre class="highlight"><code class="language-cs" data-lang="cs"><span class="hljs-comment"><span class="hljs-doctag">///</span> <span class="hljs-doctag">&lt;returns&gt;</span>Message to be printed on the screen<span class="hljs-doctag">&lt;/returns&gt;</span></span>
+<span class="hljs-function"><span class="hljs-built_in">string</span> <span class="hljs-title">MailMessageToUser</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> username, <span class="hljs-built_in">string</span> msg</span>)</span> {
+  <span class="hljs-keyword">return</span> GetUser(username)
     .OnSuccess(GetEmailAddress)
     .OnSuccess(email =&gt; CreateEmailMessage(email, msg))
     .OnSuccess(SendEmail)
-    .OnFailure(error =&gt; new Result&lt;Unit, string&gt;.Failure("An error occurred: " + error))
+    .OnFailure(error =&gt; <span class="hljs-keyword">new</span> Result&lt;Unit, <span class="hljs-built_in">string</span>&gt;.Failure(<span class="hljs-string">"An error occurred: "</span> + error))
     .Handle(
-      _ =&gt; "Email sent",
+      _ =&gt; <span class="hljs-string">"Email sent"</span>,
       error =&gt; {
         Log(error);
-        return "Email not sent";
+        <span class="hljs-keyword">return</span> <span class="hljs-string">"Email not sent"</span>;
       }
     );
 }</code></pre>
 </div>
 </div>
-<div class="literalblock">
+<div class="imageblock kroki">
 <div class="content">
-<pre>scale = .8
-linerad = .1
-linewid = .2
-lineht = .22
+<svg xmlns="http://www.w3.org/2000/svg" class="pikchr" width="741" height="110" viewbox="0 0 927.936 138.24">
+<path d="M111,17 L 118,17 Q 125,17 125,31 L 125,34 Q 125,48 134,48 L 142,48" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
+<path d="M204,48L219,48" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
+<path d="M111,17L139,17" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
+<path d="M191,17L207,17" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
+<path d="M392,17 L 399,17 Q 406,17 406,31 L 406,34 Q 406,48 415,48 L 424,48" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
+<path d="M392,17L421,17" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
+<path d="M482,17L498,17" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
+<path d="M718,17 L 725,17 Q 732,17 732,31 L 732,34 Q 732,48 741,48 L 749,48" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
+<path d="M718,17L747,17" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
+<path d="M881,17L896,17" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
+<path d="M233,89 L 240,89 Q 248,89 248,103 L 248,106 Q 248,120 256,120 L 265,120" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
+<path d="M233,89L262,89" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
+<path d="M310,89L326,89" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
+<path d="M499,120L528,120" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
+<path d="M590,120L606,120" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
+<polygon points="30,17 19,21 19,12" style="fill: #000"></polygon>
+<path d="M2,17L25,17" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<path d="M30,32L111,32L111,2L30,2Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<text x="70" y="17" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">GetUser</text>
+<path d="M157,64L188,64A15 15 0 0 0 204 48L204,48A15 15 0 0 0 188 33L157,33A15 15 0 0 0 142 48L142,48A15 15 0 0 0 157 64Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<text x="173" y="48" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">string</text>
+<path d="M154,32L176,32A15 15 0 0 0 191 17A15 15 0 0 0 176 2L154,2A15 15 0 0 0 139 17A15 15 0 0 0 154 32Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<text x="165" y="17" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">User</text>
+<polygon points="235,17 224,21 224,12" style="fill: #add8e6"></polygon>
+<path d="M207,17L230,17" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
+<path d="M235,32L392,32L392,2L235,2Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<text x="314" y="17" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">GetEmailAddress</text>
+<path d="M436,32L467,32A15 15 0 0 0 482 17A15 15 0 0 0 467 2L436,2A15 15 0 0 0 421 17A15 15 0 0 0 436 32Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<text x="452" y="17" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">string</text>
+<path d="M207,48L498,48" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
+<polygon points="527,17 515,21 515,12" style="fill: #add8e6"></polygon>
+<path d="M498,17L521,17" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
+<path d="M527,32L718,32L718,2L527,2Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<text x="622" y="17" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">CreateEmailMessage</text>
+<path d="M762,32L866,32A15 15 0 0 0 881 17A15 15 0 0 0 866 2L762,2A15 15 0 0 0 747 17A15 15 0 0 0 762 32Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<text x="814" y="17" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">EmailMessage</text>
+<path d="M498,48L896,48" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
+<path d="M896,17L925,17" style="fill: none; stroke-width: 2.16px; stroke: #add8e6; stroke-dasharray: 4.32 4.32"></path>
+<path d="M896,48L925,48" style="fill: none; stroke-width: 2.16px; stroke: orange; stroke-dasharray: 4.32 4.32"></path>
+<path d="M74,89L102,89" style="fill: none; stroke-width: 2.16px; stroke: #add8e6; stroke-dasharray: 4.32 4.32"></path>
+<path d="M74,120L102,120" style="fill: none; stroke-width: 2.16px; stroke: orange; stroke-dasharray: 4.32 4.32"></path>
+<polygon points="131,89 120,93 120,84" style="fill: #add8e6"></polygon>
+<path d="M102,89L125,89" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
+<path d="M131,104L233,104L233,74L131,74Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<text x="182" y="89" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">SendEmail</text>
+<path d="M277,104L295,104A15 15 0 0 0 310 89A15 15 0 0 0 295 74L277,74A15 15 0 0 0 262 89A15 15 0 0 0 277 104Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<text x="286" y="89" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">Unit</text>
+<path d="M102,120L326,120" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
+<polygon points="354,120 343,125 343,116" style="fill: orange"></polygon>
+<path d="M326,120L349,120" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
+<path d="M354,136L499,136L499,105L354,105Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<text x="427" y="120" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">TransformError</text>
+<path d="M543,136L575,136A15 15 0 0 0 590 120A15 15 0 0 0 575 105L543,105A15 15 0 0 0 528 120A15 15 0 0 0 543 136Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<text x="559" y="120" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">string</text>
+<path d="M326,89L606,89" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
+<polygon points="634,89 623,93 623,84" style="fill: #add8e6"></polygon>
+<path d="M606,89L629,89" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
+<polygon points="634,120 623,125 623,116" style="fill: orange"></polygon>
+<path d="M606,120L629,120" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
+<path d="M634,120L707,120L707,89L634,89Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<text x="671" y="105" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">Handle</text>
+<path d="M707,105L735,105" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<path d="M751,120L782,120A15 15 0 0 0 797 105A15 15 0 0 0 782 90L751,90A15 15 0 0 0 735 105A15 15 0 0 0 751 120Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<text x="766" y="105" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">string</text>
+<polygon points="826,105 814,109 814,100" style="fill: #000"></polygon>
+<path d="M797,105L820,105" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+</svg>
 
-define dashes {
-  line color lightblue dashed .03
-  move from last line.w down lineht 
-  right
-  line color orange dashed .03
-  move up lineht; right
-}
-
-define newline {
-  dashes
-  move left until even with (0,0) then down then right
-  dashes
-}
-
-define startResult {
-  S0: arrow
-  B: box $1 fit
-  SF: line right linerad then down then right until even with lineht e of B.e color orange behind B
-  FR: oval $3 fit
-  F: line right lineht/2 color orange behind FR
-
-  S1: line from SF.start right color lightblue behind B
-  SR: oval $2 fit
-  S2: line right lineht/2 color lightblue behind SR
-}
-
-define onSuccess {
-  S0: arrow color lightblue
-  B: box $1 fit
-  SF: line right linerad then down then right until even with lineht e of B.e color orange behind B
-  S1: line from B.e right color lightblue behind B
-  SR: oval $2 fit
-  S2: line right lineht/2 color lightblue behind SR
-
-  move from S0.start down lineht
-  F0: line right until even with S2.end color orange
-  move up lineht; right
-}
-
-define onFailure {
-  move down lineht; right
-
-  S0: arrow color orange
-  B: box $1 fit
-  SF: line right linerad then up then right until even with lineht e of B.e color lightblue behind B
-  S1: line from B.e right color orange behind B
-  SR: oval $2 fit
-  S2: line right lineht/2 color orange behind SR
-
-  move from S0.start up lineht
-  F0: line right until even with S2.end color lightblue
-}
-
-define onFailureF {
-  move down lineht; right
-
-  S0: arrow color orange
-  B: box $1 fit
-  S1: line from B.e right color orange behind B
-  SR: oval $2 fit
-  S2: line right lineht/2 color orange behind SR
-
-  move from S0.start up lineht
-  F0: line right until even with S2.end color lightblue
-}
-
-define handle {
-  S: arrow right color lightblue
-  move from S.start down lineht
-  F: arrow right color orange
-  box $1 fit with west at 1/2 between S.end and F.end
-  line right
-  oval $2 fit
-  arrow right
-}
-
-startResult("GetUser","User","string")
-onSuccess("GetEmailAddress","string")
-onSuccess("CreateEmailMessage","EmailMessage")
-newline
-onSuccess("SendEmail","Unit")
-onFailureF("TransformError","string")
-handle("Handle","string")</pre>
 </div>
 </div>
 <div class="paragraph">
