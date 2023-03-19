@@ -8,7 +8,7 @@ This is an imprecise collection of notes about category theory, using an experim
 
 == Notation
 
-- Mathematical functions are often written in curried form, so f: X → Y → Z and f x y = z, instead of f: X ⨯ Y → Z and f(x,y) = z.
+- Functions are often written in curried form, so f: X → Y → Z and f x y = z, instead of f: X ⨯ Y → Z and f(x,y) = z.
 - Subscripts are often used for denoting a specialization. When they are clear from the context, they can be omitted.
 
 == Definitions
@@ -51,7 +51,7 @@ Given two categories C and D, a *functor* F : C → D consists of:
 * A function  F : Obj~C~ → Obj~D~
 * A function  map~F~ : Mor~C~ → Mor~D~
 
-These functions must satisfy the following two conditions:
+These functions must satisfy the following two laws:
 
 [lowerroman]
 . For any two composable morphisms f and g in Mor~C~,  map~F~ (f ∘ g) = map~F~ f ∘ map~F~ g.
@@ -94,10 +94,10 @@ _Proof._
 [{eqtable}]
 |===
 | \((f, f') ∘ (g, g')) ∘ (h, h') | = (f ∘ g, f' ∘ g') ∘ (h, h')    | (definition composition)
-|                               | = ((f ∘ g) ∘ h, (f' ∘ g') ∘ h') | (definition composition)
-|                               |                                 |
+|                                | = ((f ∘ g) ∘ h, (f' ∘ g') ∘ h') | (definition composition)
+|                                |                                 |
 | (f, f') ∘ \((g, g') ∘ (h, h')) | = (f ∘ (g ∘ h), f' ∘ (g' ∘ h')) | (definition composition)
-|                               | = ((f ∘ g) ∘ h, (f' ∘ g') ∘ h') | (associativity composition)
+|                                | = ((f ∘ g) ∘ h, (f' ∘ g') ∘ h') | (associativity composition)
 |===
 
 . (Identity) For any object (a, b) in Obj~C⨯D~ and any morphism (f, f') going out of (a, b) and any morphism (g, g') coming into (a, b),
@@ -291,6 +291,7 @@ This gives us
 |                | = map~F~ f ∘ map~F~ g  | (definition map~F~)
 |===
 
+[lowerroman,start=2]
 . To prove: for any object a in Obj~FP~,  map~F~ id~a~ = id~F a~.
 
 [{eqtable}]
@@ -308,12 +309,12 @@ _Proof._
 
 We are given a type constructor F taking 2 parameters, and a function 
 
- bimap: \((a → b), (c → d)) → (F a c → F b d) 
+ bimap: (a → b) → (c → d) → (F a c → F b d) 
 
 where bimap obeys the following laws:
 
  bimap id id = id
- bimap  (f . g) (h . i) = bimap f h . bimap g i
+ bimap  (f ∘ g) (h ∘ i) = bimap f h ∘ bimap g i
 
 Note that 
 [{eqtable}]
@@ -332,6 +333,60 @@ Furthermore, we have that
 
 which means that bimap indeed gives us a function for map~F~.
 It can be observed that map~F~ obeys the functor axioms from the bimap laws listed above.
+
+[#ex-prelist]
+=== The PreList Bifunctor
+The PreList type constructor given below forms a bifunctor from FP ⨯ FP to FP.
+
+ PreList : Obj~FP~ → Obj~FP~ → Obj~FP~
+ PreList a b = Nil | Cons a b
+
+_Proof._
+
+Note that by uncurrying we have
+
+ PreList : Obj~FP⨯FP~ → Obj~FP~.
+
+which gives us the required object mapping.
+Furthermore, define map~PreList~ : Mor~FP⨯FP~ → Mor~FP~ as
+
+ map~PreList~ (f, g) Nil = Nil
+ map~PreList~ (f, g) (Cons a b) = Cons (f a) (g b)
+
+[lowerroman]
+. To prove: for any two morphisms f and g in Mor~FP⨯FP~,  map~PreList~ (f ∘ g) = map~PreList~ f ∘ map~PreList~ g.
+
+[{eqtable}]
+|===
+| map (f ∘ g) Nil     | = Nil                | (definition map~PreList~)
+| (map f ∘ map g) Nil | = map f (map g Nil)  | (definition composition)
+|                     | = map f Nil          | (definition map~PreList~)
+|                     | = Nil                | (definition map~PreList~)
+|===
+
+[{eqtable}]
+|===
+| map \((f, f') ∘ (g, g')) (Cons x y)    | = map (f ∘ g, f' ∘ g') (Cons x y)      | (definition product category)
+|                                        | = Cons ((f ∘ g) x) ((f' ∘ g') y)       | (definition map~PreList~)
+|                                        | = Cons (f (g x)) (f' (g' y))           | (definition composition)
+|                                        |                                        |
+| (map (f, f') ∘ map (g, g')) (Cons x y) | = map (f, f') (map (g, g') (Cons x y)) | (definition composition)
+|                                        | = map (f, f') (Cons (g x) (g' y))      | (definition map~PreList~)
+|                                        | = Cons (f (g x)) (f' (g' y))           | (definition map~PreList~)
+|===
+
+[lowerroman,start=2]
+. To prove: for any object (a, b) in Obj~FP⨯FP~,  map~PreList~ id~(a,b)~ = id~PreList (a,b)~.
+
+[{eqtable}]
+|===
+| map id Nil        | = Nil                 | (definition map~PreList~)
+| map id (Cons x y) | = Cons (id x) (id y)  | (definition map~PreList~)
+|                   | = Cons x y            | (definition id)
+|===
+
+∎
+
 
 [#ex-cat]
 === The Category of Categories

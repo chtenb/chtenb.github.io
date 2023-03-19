@@ -32,7 +32,8 @@
 <li><a href="#ex-List-functor">3.3. The List Functor</a></li>
 <li><a href="#ex-haskell-functor">3.4. Haskell Functor</a></li>
 <li><a href="#ex-haskell-bifunctor">3.5. Haskell Bifunctor</a></li>
-<li><a href="#ex-cat">3.6. The Category of Categories</a></li>
+<li><a href="#ex-prelist">3.6. The PreList Bifunctor</a></li>
+<li><a href="#ex-cat">3.7. The Category of Categories</a></li>
 </ul>
 </li>
 </ul>
@@ -52,7 +53,7 @@
 <div class="ulist">
 <ul>
 <li>
-<p>Mathematical functions are often written in curried form, so f: X → Y → Z and f x y = z, instead of f: X ⨯ Y → Z and f(x,y) = z.</p>
+<p>Functions are often written in curried form, so f: X → Y → Z and f x y = z, instead of f: X ⨯ Y → Z and f(x,y) = z.</p>
 </li>
 <li>
 <p>Subscripts are often used for denoting a specialization. When they are clear from the context, they can be omitted.</p>
@@ -132,7 +133,7 @@ In other words,  mor<sub>C</sub>: Obj<sub>C</sub> → Obj<sub>C</sub> → Mor<
 </ul>
 </div>
 <div class="paragraph">
-<p>These functions must satisfy the following two conditions:</p>
+<p>These functions must satisfy the following two laws:</p>
 </div>
 <div class="olist lowerroman">
 <ol class="lowerroman" type="i">
@@ -728,8 +729,8 @@ where fmap obeys the following laws:</p>
 </tr>
 </tbody>
 </table>
-<div class="olist arabic">
-<ol class="arabic">
+<div class="olist lowerroman">
+<ol class="lowerroman" type="i" start="2">
 <li>
 <p>To prove: for any object a in Obj<sub>FP</sub>,  map<sub>F</sub> id<sub>a</sub> = id<sub>F&nbsp;a</sub>.</p>
 </li>
@@ -767,14 +768,14 @@ where fmap obeys the following laws:</p>
 <p>We are given a type constructor F taking 2 parameters, and a function</p>
 </div>
 <div class="paragraph">
-<p> bimap: ((a → b), (c → d)) → (F a c → F b d)</p>
+<p> bimap: (a → b) → (c → d) → (F a c → F b d)</p>
 </div>
 <div class="paragraph">
 <p>where bimap obeys the following laws:</p>
 </div>
 <div class="paragraph">
 <p> bimap id id = id
- bimap  (f . g) (h . i) = bimap f h . bimap g i</p>
+ bimap  (f ∘ g) (h ∘ i) = bimap f h ∘ bimap g i</p>
 </div>
 <div class="paragraph">
 <p>Note that</p>
@@ -831,7 +832,148 @@ It can be observed that map<sub>F</sub> obeys the functor axioms from the bimap 
 </div>
 </div>
 <div class="sect2">
-<h3 id="ex-cat"><a class="anchor" href="#ex-cat"></a>3.6. The Category of Categories</h3>
+<h3 id="ex-prelist"><a class="anchor" href="#ex-prelist"></a>3.6. The PreList Bifunctor</h3>
+<div class="paragraph">
+<p>The PreList type constructor given below forms a bifunctor from FP ⨯ FP to FP.</p>
+</div>
+<div class="paragraph">
+<p> PreList : Obj<sub>FP</sub> → Obj<sub>FP</sub> → Obj<sub>FP</sub>
+ PreList a b = Nil | Cons a b</p>
+</div>
+<div class="paragraph">
+<p><em>Proof.</em></p>
+</div>
+<div class="paragraph">
+<p>Note that by uncurrying we have</p>
+</div>
+<div class="paragraph">
+<p> PreList : Obj<sub>FP⨯FP</sub> → Obj<sub>FP</sub>.</p>
+</div>
+<div class="paragraph">
+<p>which gives us the required object mapping.
+Furthermore, define map<sub>PreList</sub> : Mor<sub>FP⨯FP</sub> → Mor<sub>FP</sub> as</p>
+</div>
+<div class="paragraph">
+<p> map<sub>PreList</sub> (f, g) Nil = Nil
+ map<sub>PreList</sub> (f, g) (Cons a b) = Cons (f a) (g b)</p>
+</div>
+<div class="olist lowerroman">
+<ol class="lowerroman" type="i">
+<li>
+<p>To prove: for any two morphisms f and g in Mor<sub>FP⨯FP</sub>,  map<sub>PreList</sub> (f ∘ g) = map<sub>PreList</sub> f ∘ map<sub>PreList</sub> g.</p>
+</li>
+</ol>
+</div>
+<table class="tableblock frame-none grid-none fit-content">
+<colgroup>
+<col>
+<col>
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">map (f ∘ g) Nil</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">= Nil</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">(definition map<sub>PreList</sub>)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">(map f ∘ map g) Nil</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">= map f (map g Nil)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">(definition composition)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">= map f Nil</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">(definition map<sub>PreList</sub>)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">= Nil</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">(definition map<sub>PreList</sub>)</p></td>
+</tr>
+</tbody>
+</table>
+<table class="tableblock frame-none grid-none fit-content">
+<colgroup>
+<col>
+<col>
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">map ((f, f') ∘ (g, g')) (Cons x y)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">= map (f ∘ g, f' ∘ g') (Cons x y)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">(definition product category)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">= Cons ((f ∘ g) x) ((f' ∘ g') y)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">(definition map<sub>PreList</sub>)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">= Cons (f (g x)) (f' (g' y))</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">(definition composition)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">(map (f, f') ∘ map (g, g')) (Cons x y)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">= map (f, f') (map (g, g') (Cons x y))</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">(definition composition)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">= map (f, f') (Cons (g x) (g' y))</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">(definition map<sub>PreList</sub>)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">= Cons (f (g x)) (f' (g' y))</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">(definition map<sub>PreList</sub>)</p></td>
+</tr>
+</tbody>
+</table>
+<div class="olist lowerroman">
+<ol class="lowerroman" type="i" start="2">
+<li>
+<p>To prove: for any object (a, b) in Obj<sub>FP⨯FP</sub>,  map<sub>PreList</sub> id<sub>(a,b)</sub> = id<sub>PreList&nbsp;(a,b)</sub>.</p>
+</li>
+</ol>
+</div>
+<table class="tableblock frame-none grid-none fit-content">
+<colgroup>
+<col>
+<col>
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">map id Nil</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">= Nil</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">(definition map<sub>PreList</sub>)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">map id (Cons x y)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">= Cons (id x) (id y)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">(definition map<sub>PreList</sub>)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">= Cons x y</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">(definition id)</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>∎</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="ex-cat"><a class="anchor" href="#ex-cat"></a>3.7. The Category of Categories</h3>
 <div class="paragraph">
 <p>The category <strong>Cat</strong> where objects are categories and morphisms are functors between categories, is a category.
 Functors F and G are composable by composing the corresponding functions:</p>

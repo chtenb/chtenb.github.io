@@ -123,10 +123,10 @@ What can we do about that?</p>
 <div class="olist arabic">
 <ol class="arabic">
 <li>
-<p>Study any 3rd party APIs well for exceptions that could have been missed.</p>
+<p>Don’t throw exceptions in your code if it shouldn’t abort the transaction. Instead make the corresponding failure part of the normal code path <a href="/?page=rop-cs-1">using a <code>Result</code> type</a>.</p>
 </li>
 <li>
-<p>Don’t throw exceptions yourself if it shouldn’t abort the transaction. Instead make the corresponding failure part of the normal code path <a href="/?page=rop-cs-1">using a <code>Result</code> type</a>.</p>
+<p>For exceptions thrown by 3rd party APIs, make sure to study the documentation to find any uncaught exceptions that you could have missed, or be on the safe side and place catch-all clauses around 3rd party API calls.</p>
 </li>
 </ol>
 </div>
