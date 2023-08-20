@@ -53,7 +53,7 @@ if (process.argv[2]) {
         }
 
         const html = asciidoctor
-          .convert(asciiDocSource.replace(/ /g, 'ツ'), options)
+          .convert(asciiDocSource.replace(/ /g, 'ツ').replace(/[\u2028]/g, '<br>'), options)
           .replace(/ツ/g, ' ');
 
         fs.writeFile(

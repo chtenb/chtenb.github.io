@@ -110,6 +110,18 @@ _Proof._
 === Definition Bifunctor
 Given three categories C,D and E, a functor F: C ⨯ D → E is called a *bifunctor*.
 
+[#def-dual-category]
+=== Dual Category
+Every category C induces a dual category C^op^, which has the same objects, but all morphisms reversed.
+
+[#def-contravariant-functor]
+=== Contravariant Functor
+Given categories C and D, a functor F: C^op^ → D is called a *contravariant functor*.
+
+[#def-profunctor]
+=== Profunctor
+Given categories C and D, a functor F: C^op^ ⨯ D → Set is called a *profunctor*.
+
 == Examples
 
 [#ex-monoid]
@@ -144,6 +156,37 @@ _Proof._
 | f~0~ ∘ f~x~ | = f~0+x~ | (definition composition)
 |             | = f~x~   | (definition monoid identity)
 |===
+
+
+[#ex-cat]
+=== The Category of Categories
+The category *Cat* where objects are categories and morphisms are functors between categories, is a category.
+Functors F and G are composable by composing the corresponding functions:
+
+ (F ∘ G) a = F (G a)
+ (map~F~ ∘ map~G~) f = map~F~ (map~G~ f)
+
+Every category C has an identity functor I to itself, which is given by
+
+ I: Obj~C~ → Obj~C~, I a = a
+ map~I~: Mor~C~ → Mor~C~, map~I~ f = f
+
+_Proof._
+
+[lowerroman]
+. (Associativity) Composing functors is associative, because composing the underlying functions is associative.
+. (Identity) For any object C in Obj~Cat~ and any functor F going out of C and any functor G coming into a, let I be the identity functor of C. Then
+
+ F ∘ I = F 
+ I ∘ G = G
+
+because the underlying functions of I are identity functions.
+
+
+[#ex-set]
+=== The Set Category
+The category *Set* is the category where objects are sets and morphisms are functions between sets.
+
 
 [#ex-fp]
 === The FP Category
@@ -387,27 +430,50 @@ Furthermore, define map~PreList~ : Mor~FP⨯FP~ → Mor~FP~ as
 
 ∎
 
+[#ex-product-functor-fp]
+=== The Product Functor in FP
+The type constructor
 
-[#ex-cat]
-=== The Category of Categories
-The category *Cat* where objects are categories and morphisms are functors between categories, is a category.
-Functors F and G are composable by composing the corresponding functions:
+ Pair: FP ⨯ FP → FP
+ Pair a b = Pair a b
 
- (F ∘ G) a = F (G a)
- (map~F~ ∘ map~G~) f = map~F~ (map~G~ f)
+forms a bifunctor under
 
-Every category C has an identity functor I to itself, which is given by
+ map~Pair~ (f, g) (Pair a b) = Pair (f a) (g b)
 
- I: Obj~C~ → Obj~C~, I a = a
- map~I~: Mor~C~ → Mor~C~, map~I~ f = f
+[#ex-sum-functor-fp]
+=== The Sum Functor in FP
+The type constructor
 
-_Proof._
+ Either: FP ⨯ FP → FP
+ Either a b = Left a | Right b
 
-[lowerroman]
-. (Associativity) Composing functors is associative, because composing the underlying functions is associative.
-. (Identity) For any object C in Obj~Cat~ and any functor F going out of C and any functor G coming into a, let I be the identity functor of C. Then
+forms a bifunctor under
 
- F ∘ I = F 
- I ∘ G = G
+ map~Either~ (f, g) (Left a) = Left (f a)
+ map~Either~ (f, g) (Right b) = Right (g b)
 
-because the underlying functions of I are identity functions.
+[#ex-haskell-contravariant-functor]
+=== Haskell Contravariant Functor
+Any type constructor that has an instance of link:https://hackage.haskell.org/package/base-4.18.0.0/docs/Data-Functor-Contravariant.html[Contravariant]
+forms a contravariant endofunctor in FP.
+
+_Proof._ TODO
+
+[#ex-haskell-profunctor]
+=== Haskell Profunctor
+Any type constructor that has an instance of link:https://hackage.haskell.org/package/profunctors-5.6.2/docs/Data-Profunctor.html[Profunctor]
+forms a profunctor in FP.
+
+_Proof._ TODO
+
+[#ex-hom-functor]
+=== Hom-functor
+Given a category C, the Hom-functor F: C^op^ ⨯ C → C is given by 
+
+ F: Obj~C^op^~ ⨯ Obj~C~ → Obj~Set~  
+ F (a, b) = Mor~C~ a b
+
+ map~F~: Mor~C^op^~ ⨯ Mor~C~ → Mor~Set~  
+ map~F~: ((a' → a), (b → b')) → mor~C~ a b → Mor~C~ a' b'  
+ map~F~ (f, g) h = g ∘ h ∘ f
