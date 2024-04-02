@@ -1,0 +1,27 @@
+# A configuration file for pandoc, in YAML format.  See
+# https://pandoc.org/MANUAL.html#default-files
+
+from: markdown
+to: html
+
+standalone: true
+self-contained: true
+# table-of-contents: true
+# toc-depth: 4
+number-sections: false
+
+# html-math-method:
+#   method: mathjax
+#   url: "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
+
+css:
+- "${.}/overrides.css"
+# - "${.}/theorems.css"
+
+filters: 
+  - "${.}/diagrams.lua"
+  - "${.}/theorems.lua"
+  - "${.}/toc.lua"
+  - "${.}/header-anchor-links.lua"
+  - "${.}/adoc-compat.lua"
+

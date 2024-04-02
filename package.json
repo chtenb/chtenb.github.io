@@ -6,8 +6,10 @@
   },
   "scripts": {
     "restore": "npm install && spago install",
+    "pandoc": "pandoc blog/cat.md -o blog/cat.html -d pandoc/pandoc.yaml",
+    "pandocw": "watchexec -w . -e md,js,css,pikchr,lua,yaml npm run pandoc",
     "adoc": "node asciidoctor.js",
-    "build": "spago build && npm run adoc && echo Ctrl-f5 your browser if non-purescript changes were made!",
+    "build": "spago build && npm run adoc && npm run pandoc && echo Ctrl-f5 your browser if non-purescript changes were made!",
     "test": "spago test",
     "adocw": "watchexec -w blog/ -e adoc,pikchr npm run adoc",
     "serve": "npm run build && parcel serve index.html blog/*.html",

@@ -133,3 +133,13 @@ body {
     padding: 0;
   }
 }
+
+@media print {
+  .pageHeader {
+    display: none;
+  }
+}
+
+.hidden {
+  display: none
+}
