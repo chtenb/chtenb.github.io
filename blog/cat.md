@@ -15,7 +15,7 @@ This is an imprecise collection of notes about category theory, using an experim
 A **category** `𝓒` consists of the following components:
 
 1. **Objects**: Denoted by uppercase letters, e.g., `A`, `B`, `C`. The set of all objects of `𝓒` is written `Obj(𝓒)`.
-2. **Morphisms**: Denoted by lowercase letters. A morphism `f` from object `A` to object `B` is written as `f: A → B`.  The set of all morphisms of `𝓒` is written `Mor(𝓒)`. Morphisms are also called **arrows**.
+2. **Morphisms**: Denoted by lowercase letters. A morphism `f` from object `A` to object `B` is written as `f: A → B`.  The set of all morphisms of `𝓒` is written `Mor(𝓒)` or `Hom(𝓒)`. Morphisms are also called **arrows**.
 3. **Composition**: Given morphisms `f: A → B` and `g: B → C`, their composition is another morphism, denoted `g ∘ f: A → C`. The composition operator satisfies associativity, meaning for any morphism `h: C → D` it holds true that `(h ∘ g) ∘ f = h ∘ (g ∘ f)`. Alternatively, composition can be written using forward composition, `f ▹ g: A → C`.
 4. **Identity morphism**: For each object `A`, there exists an identity morphism `id<A>` such that for any morphism `f: A → B`, we have `f ▹ id<B> = f = id<A> ▹ f`.
 :::
@@ -53,14 +53,16 @@ If `𝓒` and `𝓓` are the same category, `F` is called an **endofunctor**.
 
 ::: Definition :::
 # Natural Transformations
-Given functors `F, G: 𝓒 → 𝓓`, a **natural transformation** `η: F ⇒ G` assigns to each object `A` in `𝓒` a morphism `η<A>: F<A> → G<A>` in `𝓓` such that for every morphism `m: A → B` in `𝓒`, the following naturality square commutes:
+Given functors `F, G: 𝓒 → 𝓓`, a natural transformation `η: F ⇒ G` assigns to each object `A` in `𝓒` a morphism `η<A>: F<A> → G<A>` in `𝓓` such that for every morphism `m: A → B` in `𝓒`, the following 
+equation holds: `η<A> ▹ G(m) = F(m) ▹ η<B>`.
+This is often described visually as that this square 'commutes':
 ```
-F<A> ---F<m>---> F<B>
+F<A> ---F(m)---> F<B>
  |                |
 η<A>             η<B>
  |                |
  v                v
-G<A> ---G<m>---> G<B>
+G<A> ---G(m)---> G<B>
 ```
 
 Natural transformations are denoted with greek letters.
@@ -139,39 +141,36 @@ Given categories C and D, a functor F: C⁻ ⨯ D → Set is called a *profuncto
 
 ## Examples
 
-[#ex-monoid]
+::: Definition :::
 # The Monoid Category 
 A monoid M is characterized by a set of values M, an identity value 0 and an operator + : M → M → M, such that the following conditions are met.
 
-[lowerroman]
-. (Associativity) For every three values x, y and x in M,  (x + y) + z = x + (y + z).
-. (Identity) For every value x in M,  x + 0 = x  and  0 + x = x.
+* (Associativity) For every three values x, y and x in M,  (x + y) + z = x + (y + z).
+* (Identity) For every value x in M,  x + 0 = x  and  0 + x = x.
 
-This structure forms a category with one object, named 1, and a morphism f~x~: 1 → 1 for every value x in M.
-Composition is defined as  f~x~ ∘ f~y~ = f~x+y~.
+This structure forms a category with one object, named 1, and a morphism x: 1 → 1 for every value x in M.
+Composition is defined as  x ∘ y = x+y.
 
 _Proof._
 
-[lowerroman]
-. (Associativity) To prove: for any morphisms f~x~, f~y~, and f~z~ in Mor,  (f~x~ ∘ f~y~) ∘ f~z~ = f~x~ ∘ (f~y~ ∘ f~z~).
+* (Associativity) To prove: for any morphisms x, y, and z in Mor,  (x ∘ y) ∘ z = x ∘ (y ∘ z).
 
-[{eqtable}]
-|#
-| (f~x~ ∘ f~y~) ∘ f~z~ | = f~x+y~ ∘ f~z~      | = f~(x+y)+z~  | (definition composition)
-| f~x~ ∘ (f~y~ ∘ f~z~) | = f~x~ ∘ (f~y+z~)    | = f~x+(y+z)~  | (definition composition)
-|                      |                      | = f~(x+y)+z~  | (associativity of +)
-|#
+```
+ (x ∘ y) ∘ z  = x+y ∘ z   = (x+y)+z   (definition composition)
+ x ∘ (y ∘ z)  = x ∘ (y+z) = x+(y+z)   (definition composition)
+                          = (x+y)+z   (associativity of +)
+```
 
-. (Identity) To prove: for any morphism f~x~ in Mor,  f~x~ ∘ f~0~ = f~x~  and  f~0~ ∘ f~x~ = f~x~.
+* (Identity) To prove: for any morphism x in Mor,  x ∘ 0 = x  and  0 ∘ x = x.
 
-[{eqtable}]
-|#
-| f~x~ ∘ f~0~ | = f~x+0~ | (definition composition)
-|             | = f~x~   | (definition monoid identity)
-| f~0~ ∘ f~x~ | = f~0+x~ | (definition composition)
-|             | = f~x~   | (definition monoid identity)
-|#
+```
+ x ∘ 0  = x+0  (definition composition)
+        = x    (definition monoid identity)
+ 0 ∘ x  = 0+x  (definition composition)
+        = x    (definition monoid identity)
+```
 
+:::
 
 [#ex-cat]
 # The Category of Categories
