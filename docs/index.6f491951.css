@@ -2178,3 +2178,13 @@ body {
   }
 }
 
+@media print {
+  .pageHeader {
+    display: none;
+  }
+}
+
+.hidden {
+  display: none;
+}
+

@@ -1,1017 +1,585 @@
-<!DOCTYPE html><html lang="en"><head>
-<meta charset="UTF-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="generator" content="Asciidoctor 2.0.17">
-<title>Category Theory</title>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Category Theory</title>
+  <style>code {
+  white-space: pre-wrap;
+}
 
+span.smallcaps {
+  font-variant: small-caps;
+}
 
-<base target="_self">
+div.columns {
+  gap: min(4vw, 1.5em);
+  display: flex;
+}
+
+div.column {
+  flex: auto;
+  overflow-x: auto;
+}
+
+div.hanging-indent {
+  text-indent: -1.5em;
+  margin-left: 1.5em;
+}
+
+ul.task-list[class] {
+  list-style: none;
+}
+
+ul.task-list li input[type="checkbox"] {
+  font-size: inherit;
+  width: .8em;
+  vertical-align: middle;
+  margin: 0 .8em .2em -1.6em;
+}
+
+.display.math {
+  text-align: center;
+  margin: .5rem auto;
+  display: block;
+}
+
+</style>
+  <style type="text/css"></style>
 </head>
-<body class="article">
-<div id="header">
-<h1>Category Theory</h1>
-<div id="toc" class="toc">
-<div id="toctitle">Table of Contents</div>
-<ul class="sectlevel1">
-<li><a href="#_notation">1. Notation</a></li>
-<li><a href="#_definitions">2. Definitions</a>
-<ul class="sectlevel2">
-<li><a href="#def-category">2.1. Definition Category</a></li>
-<li><a href="#def-isomorphism">2.2. Definition Isomorphism</a></li>
-<li><a href="#def-functor">2.3. Definition Functor</a></li>
-<li><a href="#def-product">2.4. Definition Product and Coproduct</a></li>
-<li><a href="#def-product-category">2.5. Definition Product Category</a></li>
-<li><a href="#def-bifunctor">2.6. Definition Bifunctor</a></li>
-</ul>
-</li>
-<li><a href="#_examples">3. Examples</a>
-<ul class="sectlevel2">
-<li><a href="#ex-monoid">3.1. The Monoid Category</a></li>
-<li><a href="#ex-fp">3.2. The FP Category</a></li>
-<li><a href="#ex-List-functor">3.3. The List Functor</a></li>
-<li><a href="#ex-haskell-functor">3.4. Haskell Functor</a></li>
-<li><a href="#ex-haskell-bifunctor">3.5. Haskell Bifunctor</a></li>
-<li><a href="#ex-prelist">3.6. The PreList Bifunctor</a></li>
-<li><a href="#ex-cat">3.7. The Category of Categories</a></li>
-</ul>
-</li>
-</ul>
-</div>
-</div>
+<body>
+<header id="title-block-header">
+<h1 class="title">Category Theory</h1>
+</header>
 <div id="content">
-<div id="preamble">
-<div class="sectionbody">
-<div class="paragraph">
-<p>This is an imprecise collection of notes about category theory, using an experimental notation that mixes the traditional set-theory oriented notation for functions with a more Haskell-like programming oriented notation.</p>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_notation"><a class="anchor" href="#_notation"></a>1. Notation</h2>
-<div class="sectionbody">
-<div class="ulist">
+<p>This is an imprecise collection of notes about category theory, using
+an experimental notation that mixes the traditional set-theory oriented
+notation for functions with a more programming language oriented
+notation.</p>
 <ul>
-<li>
-<p>Functions are often written in curried form, so f: X → Y → Z and f x y = z, instead of f: X ⨯ Y → Z and f(x,y) = z.</p>
-</li>
-<li>
-<p>Subscripts are often used for denoting a specialization. When they are clear from the context, they can be omitted.</p>
-</li>
+<li><a href="#notation">Notation</a></li>
+<li><a href="#definitions">Definitions</a></li>
+<li><a href="#category">Definition 1. (Category)</a></li>
+<li><a href="#homset">Definition 2. (Homset)</a></li>
+<li><a href="#isomorphism">Definition 3. (Isomorphism)</a></li>
+<li><a href="#functor">Definition 4. (Functor)</a></li>
+<li><a href="#natural-transformations">Definition 5. (Natural
+Transformations)</a></li>
+<li><a href="#product-category">Definition 6. (Product
+Category)</a></li>
+<li><a href="#bifunctor">Definition 7. (Bifunctor)</a></li>
+<li><a href="#dual-category-or-opposite-category">Definition 8. (Dual
+Category or Opposite Category)</a></li>
+<li><a href="#contravariant-functor">Definition 9. (Contravariant
+Functor)</a></li>
+<li><a href="#homsetsarrowsets">Definition 10.
+(Homsets/Arrowsets)</a></li>
+<li><a href="#covariant-homfunctor">Definition 11. (Covariant
+Homfunctor)</a></li>
+<li><a href="#contravariant-homfunctor">Definition 12. (Contravariant
+Homfunctor)</a></li>
+<li><a href="#homfunctor">Definition 13. (Homfunctor)</a></li>
+<li><a href="#profunctor">Definition 14. (Profunctor)</a></li>
+<li><a href="#product-and-coproduct">Definition 15. (Product and
+Coproduct)</a></li>
+<li><a href="#examples">Examples</a></li>
+<li><a href="#the-monoid-category">Example 16. (The Monoid
+Category)</a></li>
+<li><a href="#the-category-of-categories">Example 17. (The Category of
+Categories)</a></li>
+<li><a href="#the-set-category">Example 18. (The Set Category)</a></li>
+<li><a href="#the-product-functor-in-set">Example 19. (The Product
+Functor in Set)</a></li>
+<li><a href="#the-sum-functor-in-set">Example 20. (The Sum Functor in
+Set)</a></li>
+<li><a href="#the-list-functor">Example 21. (The List Functor)</a></li>
+<li><a href="#haskell-functor">Example 22. (Haskell Functor)</a></li>
 </ul>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_definitions"><a class="anchor" href="#_definitions"></a>2. Definitions</h2>
-<div class="sectionbody">
-<div class="sect2">
-<h3 id="def-category"><a class="anchor" href="#def-category"></a>2.1. Definition Category</h3>
-<div class="paragraph">
-<p>A <strong>category</strong> C consists of:</p>
-</div>
-<div class="ulist">
+<h2 id="notation"><a class="anchor" href="#notation"></a>Notation</h2>
 <ul>
-<li>
-<p>A collection of <strong>objects</strong>, denoted by Obj<sub>C</sub>.</p>
-</li>
-<li>
-<p>A collection of <strong>morphisms</strong> (arrows) between objects, denoted by Mor<sub>C</sub>.
-A morphism f from an object a to an object b can be written as f: a → b.
-The collection of morphisms from a to b is denoted by mor<sub>C</sub> a b.
-In other words,  mor<sub>C</sub>: Obj<sub>C</sub> → Obj<sub>C</sub> → Mor<sub>C</sub>.</p>
-</li>
-<li>
-<p>For each triple of objects a, b and c, a <strong>composition</strong> operation, denoted by  ∘ : mor<sub>C</sub> b c → mor<sub>C</sub> a b → mor<sub>C</sub> a c.</p>
-</li>
-<li>
-<p>For each object a in Obj<sub>C</sub>, an <strong>identity morphism</strong> id<sub>a</sub>: a → a in Mor<sub>C</sub>.</p>
-</li>
+<li>Objects are mapped using angled brackets, morphisms are mapped using
+parentheses</li>
 </ul>
-</div>
-<div class="paragraph">
-<p>The composition operation satisfies the following two axioms:</p>
-</div>
-<div class="olist lowerroman">
-<ol class="lowerroman" type="i">
-<li>
-<p>(Associativity) For any morphisms f, g, and h in Mor<sub>C</sub>,  (f ∘ g) ∘ h = f ∘ (g ∘ h).</p>
-</li>
-<li>
-<p>(Identity) For any object a in Obj<sub>C</sub> and any morphism f going out of a and any morphism g coming into a,</p>
-</li>
+<h2 id="definitions"><a class="anchor" href="#definitions"></a>Definitions</h2>
+<section id="category" class="Definition">
+<h4><a class="anchor" href="#category"></a>Definition 1. (Category)</h4>
+<p>A <strong>category</strong> <code>𝓒</code> consists of the following
+components:</p>
+<ol type="1">
+<li><strong>Objects</strong>: Denoted by uppercase letters, e.g.,
+<code>A</code>, <code>B</code>, <code>C</code>. The set of all objects
+of <code>𝓒</code> is written <code>Obj(𝓒)</code>.</li>
+<li><strong>Morphisms</strong>: Denoted by lowercase letters. A morphism
+<code>f</code> from object <code>A</code> to object <code>B</code> is
+written as <code>f: A → B</code>. The set of all morphisms of
+<code>𝓒</code> is written <code>Mor(𝓒)</code> or <code>Hom(𝓒)</code>.
+Morphisms are also called <strong>arrows</strong>.</li>
+<li><strong>Composition</strong>: Given morphisms <code>f: A → B</code>
+and <code>g: B → C</code>, their composition is another morphism,
+denoted <code>g ∘ f: A → C</code>. The composition operator satisfies
+associativity, meaning for any morphism <code>h: C → D</code> it holds
+true that <code>(h ∘ g) ∘ f = h ∘ (g ∘ f)</code>. Alternatively,
+composition can be written using forward composition,
+<code>f ▹ g: A → C</code>.</li>
+<li><strong>Identity morphism</strong>: For each object <code>A</code>,
+there exists an identity morphism <code>id&lt;A&gt;</code> such that for
+any morphism <code>f: A → B</code>, we have
+<code>f ▹ id&lt;B&gt; = f = id&lt;A&gt; ▹ f</code>.</li>
 </ol>
-</div>
-<div class="paragraph">
-<p> f ∘ id<sub>a</sub> = f
- id<sub>a</sub> ∘ g = g.</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="def-isomorphism"><a class="anchor" href="#def-isomorphism"></a>2.2. Definition Isomorphism</h3>
-<div class="paragraph">
-<p>Given a category C, a morphism f: a → b is called an <strong>isomorphism</strong> if there exists another morphism g: b → a such that</p>
-</div>
-<div class="paragraph">
-<p> f ∘ g = id<sub>a</sub>
- g ∘ f = id<sub>b</sub></p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="def-functor"><a class="anchor" href="#def-functor"></a>2.3. Definition Functor</h3>
-<div class="paragraph">
-<p>Given two categories C and D, a <strong>functor</strong> F : C → D consists of:</p>
-</div>
-<div class="ulist">
+</section>
+<section id="homset" class="Definition">
+<h4><a class="anchor" href="#homset"></a>Definition 2. (Homset)</h4>
+<p>For two objects <code>A,B</code> in a category <code>𝓒</code>, the
+set of morphisms from <code>A</code> to <code>B</code> is called the
+homset (or arrowset) from <code>A</code> to <code>B</code>. We denote
+this set by <code>A→B</code>. In other words, the following two ways of
+denoting a morphism are equivalent:
+<code>m ∈ A→B  ≡  m: A → B</code>.</p>
+</section>
+<section id="isomorphism" class="Definition">
+<h4><a class="anchor" href="#isomorphism"></a>Definition 3.
+(Isomorphism)</h4>
+<p>Given a category <code>𝓒</code>, a morphism <code>f: A → B</code> is
+called an <strong>isomorphism</strong> if there exists another morphism
+<code>g: B → A</code> such that</p>
+<pre><code> f ▹ g = id&lt;A&gt;
+ g ▹ f = id&lt;B&gt;</code></pre>
+</section>
+<section id="functor" class="Definition">
+<h4><a class="anchor" href="#functor"></a>Definition 4. (Functor)</h4>
+<p>A <strong>functor</strong> <code>F</code> from category
+<code>𝓒</code> to category <code>𝓓</code>, denoted
+<code>F: 𝓒 → 𝓓</code>, consists of two mappings:</p>
+<ol type="1">
+<li><strong>On Objects</strong>: For each object <code>A</code> in
+<code>𝓒</code>, there is an object <code>F&lt;A&gt;</code> in
+<code>𝓓</code>.</li>
+<li><strong>On Morphisms</strong>: For each morphism
+<code>f: A → B</code> in <code>𝓒</code>, there is a morphism
+<code>F(f): F&lt;A&gt; → F&lt;B&gt;</code> in <code>𝓓</code> such that:
 <ul>
-<li>
-<p>A function  F : Obj<sub>C</sub> → Obj<sub>D</sub></p>
-</li>
-<li>
-<p>A function  map<sub>F</sub> : Mor<sub>C</sub> → Mor<sub>D</sub></p>
-</li>
-</ul>
-</div>
-<div class="paragraph">
-<p>These functions must satisfy the following two laws:</p>
-</div>
-<div class="olist lowerroman">
-<ol class="lowerroman" type="i">
-<li>
-<p>For any two composable morphisms f and g in Mor<sub>C</sub>,  map<sub>F</sub> (f ∘ g) = map<sub>F</sub> f ∘ map<sub>F</sub> g.</p>
-</li>
-<li>
-<p>For any object a in Obj<sub>C</sub>,  map<sub>F</sub> id<sub>a</sub> = id<sub>F&nbsp;a</sub>.</p>
-</li>
+<li><strong>Preserves Identity</strong>:
+<code>F(id&lt;A&gt;) = id&lt;F&lt;A&gt;&gt;</code>.</li>
+<li><strong>Preserves Composition</strong>: For morphisms
+<code>f: A → B</code> and <code>g: B → C</code> in <code>C</code>,
+<code>F&lt;g ∘ f&gt; = F&lt;g&gt; ∘ F&lt;f&gt;</code>.</li>
+</ul></li>
 </ol>
-</div>
-<div class="paragraph">
-<p>If C and D are the same category, F is called an <strong>endofunctor</strong>.</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="def-product"><a class="anchor" href="#def-product"></a>2.4. Definition Product and Coproduct</h3>
-<div class="paragraph">
-<p>A <strong>product</strong> of two objects a and b is the object c equipped with two morphisms (called projections) p: c → a and q: c → b
-such that for any other object c' equipped with two projections p': c' → a and q': c' → b there is a unique morphism m: c' → c that factorizes those projections:</p>
-</div>
-<div class="paragraph">
-<p> p' = p ∘ m
- q' = q ∘ m</p>
-</div>
-<div class="paragraph">
-<p>Dually, a <strong>coproduct</strong> of two objects a and b is the object c equipped with two morphisms (called injections) i: a → c and j: b → c
-such that for any other object c' equipped with two injections i': a → c' and j': b → c' there is a unique morphism m: c → c' that factorizes those injections:</p>
-</div>
-<div class="paragraph">
-<p> i' = m ∘ i
- j' = m ∘ j</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="def-product-category"><a class="anchor" href="#def-product-category"></a>2.5. Definition Product Category</h3>
-<div class="paragraph">
-<p>Given two categories C and D, the product category C ⨯ D is defined as follows.</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>Obj<sub>C⨯D</sub> = Obj<sub>C</sub> ⨯ Obj<sub>D</sub></p>
-</li>
-<li>
-<p>For every two objects (a,b) and (c,d),  mor<sub>C⨯D</sub> (a,b) (c,d) = mor<sub>C</sub> a c ⨯ mor<sub>D</sub> b d</p>
-</li>
-<li>
-<p>For every two morphisms (f,g) and (h,i),  (f,g) ∘ (h,i) = (f ∘ h, g ∘ i)</p>
-</li>
-<li>
-<p>For every object (a,b),  id<sub>(a,b)</sub> = (id<sub>a</sub>, id<sub>b</sub>)</p>
-</li>
-</ul>
-</div>
-<div class="paragraph">
+<p>If <code>𝓒</code> and <code>𝓓</code> are the same category,
+<code>F</code> is called an <strong>endofunctor</strong>.</p>
+</section>
+<section id="natural-transformations" class="Definition">
+<h4><a class="anchor" href="#natural-transformations"></a>Definition 5.
+(Natural Transformations)</h4>
+<p>Natural transformations are denoted with greek letters. Given
+functors <code>F, G: 𝓒 → 𝓓</code>, a natural transformation
+<code>η: F ⇒ G</code> assigns to each object <code>A</code> in
+<code>𝓒</code> a morphism
+<code>η&lt;A&gt;: F&lt;A&gt; → G&lt;A&gt;</code> in <code>𝓓</code> such
+that for every morphism <code>m: A → B</code> in <code>𝓒</code>, the
+following equation holds
+<code>η&lt;A&gt; ▹ G(m) = F(m) ▹ η&lt;B&gt;</code>. This is often
+described visually as that this square ‘commutes’:</p>
+<pre><code>F&lt;A&gt; ---F(m)---&gt; F&lt;B&gt;
+ |                |
+η&lt;A&gt;             η&lt;B&gt;
+ |                |
+ v                v
+G&lt;A&gt; ---G(m)---&gt; G&lt;B&gt;</code></pre>
+<p>If <code>η&lt;A&gt;</code> is an isomorphism in <code>𝓓</code> for
+every <code>A</code> in <code>𝓒</code>, <code>η</code> is called a
+<em>natural isomorphism</em>.</p>
+</section>
+<section id="product-category" class="Definition">
+<h4><a class="anchor" href="#product-category"></a>Definition 6.
+(Product Category)</h4>
+<p>Given two categories <code>𝓒</code> and <code>𝓓</code>, the product
+category <code>𝓒 ⨯ 𝓓</code> is defined as follows.</p>
+<ol type="1">
+<li><strong>Objects</strong>:
+<code>Obj(𝓒⨯𝓓) = Obj(𝓒) ⨯ Obj(𝓓)</code></li>
+<li><strong>Morphisms</strong>: For every two objects <code>(A,B)</code>
+and <code>(C,D)</code>,  <code>(A,B)→(C,D) = A→C ⨯ B→D</code></li>
+<li><strong>Composition</strong>: For every two morphisms
+<code>(f,g)</code> and <code>(h,i)</code>,
+ <code>(f,g) ▹ (h,i) = (f ▹ h, g ▹ i)</code></li>
+<li><strong>Identity morphisms</strong>: For every object
+<code>(A,B)</code>,
+ <code>id&lt;A,B&gt; = (id&lt;A&gt;, id&lt;A&gt;)</code></li>
+</ol>
 <p>This forms a category.</p>
-</div>
-<div class="paragraph">
 <p><em>Proof.</em></p>
-</div>
-<div class="olist arabic">
-<ol class="arabic">
-<li>
-<p>(Associativity) For any morphisms (f, f'), (g, g'), and (h, h') in Mor<sub>C⨯D</sub>,</p>
-</li>
-</ol>
-</div>
-<div class="paragraph">
-<p> ((f, f') ∘ (g, g')) ∘ (h, h') = (f, f') ∘ ((g, g') ∘ (h, h')).</p>
-</div>
-<table class="tableblock frame-none grid-none fit-content">
-<colgroup>
-<col>
-<col>
-<col>
-</colgroup>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">((f, f') ∘ (g, g')) ∘ (h, h')</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">= (f ∘ g, f' ∘ g') ∘ (h, h')</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">(definition composition)</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">= ((f ∘ g) ∘ h, (f' ∘ g') ∘ h')</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">(definition composition)</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top"></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">(f, f') ∘ ((g, g') ∘ (h, h'))</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">= (f ∘ (g ∘ h), f' ∘ (g' ∘ h'))</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">(definition composition)</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">= ((f ∘ g) ∘ h, (f' ∘ g') ∘ h')</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">(associativity composition)</p></td>
-</tr>
-</tbody>
-</table>
-<div class="olist arabic">
-<ol class="arabic">
-<li>
-<p>(Identity) For any object (a, b) in Obj<sub>C⨯D</sub> and any morphism (f, f') going out of (a, b) and any morphism (g, g') coming into (a, b),</p>
-</li>
-</ol>
-</div>
-<div class="paragraph">
-<p> (f, f') ∘ id<sub>(a,b)</sub> = (f, f') ∘ (id<sub>a</sub>, id<sub>b</sub>) = (f ∘ id<sub>a</sub>, f' ∘ id<sub>b</sub>) = (f, f')</p>
-</div>
-<div class="paragraph">
-<p> id<sub>(a,b)</sub> ∘ (g, g') = (id<sub>a</sub>, id<sub>b</sub>) ∘ (g, g') = (id<sub>a</sub> ∘ g, id<sub>b</sub> ∘ g') = (g, g')</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="def-bifunctor"><a class="anchor" href="#def-bifunctor"></a>2.6. Definition Bifunctor</h3>
-<div class="paragraph">
-<p>Given three categories C,D and E, a functor F: C ⨯ D → E is called a <strong>bifunctor</strong>.</p>
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_examples"><a class="anchor" href="#_examples"></a>3. Examples</h2>
-<div class="sectionbody">
-<div class="sect2">
-<h3 id="ex-monoid"><a class="anchor" href="#ex-monoid"></a>3.1. The Monoid Category</h3>
-<div class="paragraph">
-<p>A monoid M is characterized by a set of values M, an identity value 0 and an operator + : M → M → M, such that the following conditions are met.</p>
-</div>
-<div class="olist lowerroman">
-<ol class="lowerroman" type="i">
-<li>
-<p>(Associativity) For every three values x, y and x in M,  (x + y) + z = x + (y + z).</p>
-</li>
-<li>
-<p>(Identity) For every value x in M,  x + 0 = x  and  0 + x = x.</p>
-</li>
-</ol>
-</div>
-<div class="paragraph">
-<p>This structure forms a category with one object, named 1, and a morphism f<sub>x</sub>: 1 → 1 for every value x in M.
-Composition is defined as  f<sub>x</sub> ∘ f<sub>y</sub> = f<sub>x+y</sub>.</p>
-</div>
-<div class="paragraph">
-<p><em>Proof.</em></p>
-</div>
-<div class="olist lowerroman">
-<ol class="lowerroman" type="i">
-<li>
-<p>(Associativity) To prove: for any morphisms f<sub>x</sub>, f<sub>y</sub>, and f<sub>z</sub> in Mor,  (f<sub>x</sub> ∘ f<sub>y</sub>) ∘ f<sub>z</sub> = f<sub>x</sub> ∘ (f<sub>y</sub> ∘ f<sub>z</sub>).</p>
-</li>
-</ol>
-</div>
-<table class="tableblock frame-none grid-none fit-content">
-<colgroup>
-<col>
-<col>
-<col>
-<col>
-</colgroup>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">(f<sub>x</sub> ∘ f<sub>y</sub>) ∘ f<sub>z</sub></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">= f<sub>x+y</sub> ∘ f<sub>z</sub></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">= f<sub>(x+y)+z</sub></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">(definition composition)</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">f<sub>x</sub> ∘ (f<sub>y</sub> ∘ f<sub>z</sub>)</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">= f<sub>x</sub> ∘ (f<sub>y+z</sub>)</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">= f<sub>x+(y+z)</sub></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">(definition composition)</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">= f<sub>(x+y)+z</sub></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">(associativity of +)</p></td>
-</tr>
-</tbody>
-</table>
-<div class="olist arabic">
-<ol class="arabic">
-<li>
-<p>(Identity) To prove: for any morphism f<sub>x</sub> in Mor,  f<sub>x</sub> ∘ f<sub>0</sub> = f<sub>x</sub>  and  f<sub>0</sub> ∘ f<sub>x</sub> = f<sub>x</sub>.</p>
-</li>
-</ol>
-</div>
-<table class="tableblock frame-none grid-none fit-content">
-<colgroup>
-<col>
-<col>
-<col>
-</colgroup>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">f<sub>x</sub> ∘ f<sub>0</sub></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">= f<sub>x+0</sub></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">(definition composition)</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">= f<sub>x</sub></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">(definition monoid identity)</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">f<sub>0</sub> ∘ f<sub>x</sub></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">= f<sub>0+x</sub></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">(definition composition)</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">= f<sub>x</sub></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">(definition monoid identity)</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="sect2">
-<h3 id="ex-fp"><a class="anchor" href="#ex-fp"></a>3.2. The FP Category</h3>
-<div class="paragraph">
-<p>The category <strong>FP</strong>, with objects being types and morphisms being functions, forms a category.</p>
-</div>
-<div class="paragraph">
-<p>Composition of two functions f and g in Mor<sub>FP</sub> is defined as  (f ∘ g) x = f (g x).</p>
-</div>
-<div class="paragraph">
-<p>For any object a in Obj<sub>FP</sub>, id<sub>a</sub> is defined as the function  id<sub>a</sub> x = x.</p>
-</div>
-<div class="paragraph">
-<p>Because the definition of id<sub>a</sub> is independent of a, we usually abbreviate this function to simply id when dealing with the FP category.</p>
-</div>
-<div class="paragraph">
-<p><em>Proof.</em></p>
-</div>
-<div class="paragraph">
-<p>To prove the equivalence of two functions, it suffices to show that they yield the same output for the same input.</p>
-</div>
-<div class="olist lowerroman">
-<ol class="lowerroman" type="i">
-<li>
-<p>(Associativity) To prove: for any morphisms f, g, and h in Mor<sub>FP</sub>,  (f ∘ g) ∘ h = f ∘ (g ∘ h).</p>
-</li>
-</ol>
-</div>
-<table class="tableblock frame-none grid-none fit-content">
-<colgroup>
-<col>
-<col>
-<col>
-</colgroup>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">((f ∘ g) ∘ h) x</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">= (f ∘ g) (h x)</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">(definition composition)</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">= f (g (h x))</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">(definition composition)</p></td>
-</tr>
-</tbody>
-</table>
-<table class="tableblock frame-none grid-none fit-content">
-<colgroup>
-<col>
-<col>
-<col>
-</colgroup>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">(f ∘ (g ∘ h)) x</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">= f ∘ (g (h x))</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">(definition composition)</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">= f (g (h x))</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">(definition composition)</p></td>
-</tr>
-</tbody>
-</table>
-<div class="olist lowerroman">
-<ol class="lowerroman" type="i" start="2">
-<li>
-<p>(Identity) To prove: for any object a in Obj<sub>FP</sub> and any morphism f going out of a,  f ∘ id<sub>a</sub> = f
-and any morphism g coming into a  id<sub>a</sub> ∘ g = g.</p>
-</li>
-</ol>
-</div>
-<table class="tableblock frame-none grid-none fit-content">
-<colgroup>
-<col>
-<col>
-<col>
-</colgroup>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">(f ∘ id<sub>a</sub>) x</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">= f (id<sub>a</sub> x)</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">(definition composition)</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">= f x</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">(definition id<sub>a</sub>)</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top"></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">(id<sub>a</sub> ∘ g) x</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">= id<sub>a</sub> (g x)</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">(definition composition)</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">= g x</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">(definition id<sub>a</sub>)</p></td>
-</tr>
-</tbody>
-</table>
-<div class="paragraph">
+<p>(Associativity) For any morphisms <code>(f, f&#39;)</code>,
+<code>(g, g&#39;)</code>, and <code>(h, h&#39;)</code> in
+<code>𝓒 ⨯ 𝓓</code>,</p>
+<pre><code>((f, f&#39;) ▹ (g, g&#39;)) ▹ (h, h&#39;) = (f, f&#39;) ▹ ((g, g&#39;) ▹ (h, h&#39;)).
+((f, f&#39;) ▹ (g, g&#39;)) ▹ (h, h&#39;) = (f ▹ g, f&#39; ▹ g&#39;) ▹ (h, h&#39;)     (definition composition)
+                              = ((f ▹ g) ▹ h, (f&#39; ▹ g&#39;) ▹ h&#39;)  (definition composition)
+(f, f&#39;) ▹ ((g, g&#39;) ▹ (h, h&#39;)) = (f ▹ (g ▹ h), f&#39; ▹ (g&#39; ▹ h&#39;))  (definition composition)
+                              = ((f ▹ g) ▹ h, (f&#39; ▹ g&#39;) ▹ h&#39;)  (associativity composition)</code></pre>
+<p>(Identity) For any object <code>(A, B)</code> in <code>𝓒 ⨯ 𝓓</code>
+and any morphism <code>(f, f&#39;)</code> coming into <code>(A, B)</code>
+and any morphism <code>(g, g&#39;)</code> going out of
+<code>(A, B)</code>,</p>
+<pre><code>(f, f&#39;) ▹ id&lt;A,B&gt; = (f, f&#39;) ▹ (id&lt;A&gt;, id&lt;B&gt;) = (f ▹ id&lt;A&gt;, f&#39; ▹ id&lt;B&gt;) = (f, f&#39;)
+id&lt;A,B&gt; ▹ (g, g&#39;) = (id&lt;A&gt;, id&lt;B&gt;) ▹ (g, g&#39;) = (id&lt;A&gt; ▹ g, id&lt;B&gt; ▹ g&#39;) = (g, g&#39;)</code></pre>
 <p>∎</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="ex-List-functor"><a class="anchor" href="#ex-List-functor"></a>3.3. The List Functor</h3>
-<div class="paragraph">
-<p>The <strong>List</strong> type constructor forms an endofunctor in the category FP.</p>
-</div>
-<table class="tableblock frame-none grid-none fit-content">
-<colgroup>
-<col>
-<col>
-</colgroup>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">List : Obj<sub>FP</sub> → Obj<sub>FP</sub></p></td>
-<td class="tableblock halign-left valign-top"></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">List a = Nil | Cons a (List a)</p></td>
-<td class="tableblock halign-left valign-top"></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">map<sub>List</sub> : Mor<sub>FP</sub> → Mor<sub>FP</sub></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Or, specialized to FP,  map<sub>List</sub> : (a → b) → (List a → List b)</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">map<sub>List</sub> f Nil = Nil</p></td>
-<td class="tableblock halign-left valign-top"></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">map<sub>List</sub> f (Cons x xs) = Cons (f x) (map<sub>List</sub> f xs)</p></td>
-<td class="tableblock halign-left valign-top"></td>
-</tr>
-</tbody>
-</table>
-<div class="paragraph">
+</section>
+<section id="bifunctor" class="Definition">
+<h4><a class="anchor" href="#bifunctor"></a>Definition 7.
+(Bifunctor)</h4>
+<p>Given three categories <code>𝓒</code>, <code>𝓓</code> and
+<code>𝓔</code>, a functor <code>F: 𝓒 ⨯ 𝓓 → 𝓔</code> is called a
+<em>bifunctor</em>.</p>
+</section>
+<section id="dual-category-or-opposite-category" class="Definition">
+<h4><a class="anchor" href="#dual-category-or-opposite-category"></a>Definition
+8. (Dual Category or Opposite Category)</h4>
+<p>Every category <code>𝓒</code> has an opposite category, denoted
+<code>𝓒⁻</code>, which has the same objects as <code>𝓒</code>, but has
+the arrows reversed.</p>
+<ol type="1">
+<li><strong>Objects</strong>: every object <code>A</code> in
+<code>𝓒⁻</code> is an object in <code>𝓒</code></li>
+<li><strong>Morphisms</strong>: a morphism <code>f⁻: A → B</code> in
+<code>𝓒⁻</code> is a morphism <code>f: B → A</code> in <code>𝓒</code>.
+Composition <code>▹⁻</code> between <code>f⁻</code> and
+<code>g⁻: B → C</code> is defined <code>f⁻ ▹⁻ g⁻ = (g▹f)⁻</code>.</li>
+</ol>
+</section>
+<section id="contravariant-functor" class="Definition">
+<h4><a class="anchor" href="#contravariant-functor"></a>Definition 9.
+(Contravariant Functor)</h4>
+<p>Given categories <code>𝓒</code> and <code>𝓓</code>, a functor
+<code>F: 𝓒⁻ → 𝓓</code> is called a <em>contravariant functor</em>.</p>
+</section>
+<section id="homsetsarrowsets" class="Definition">
+<h4><a class="anchor" href="#homsetsarrowsets"></a>Definition 10.
+(Homsets/Arrowsets)</h4>
+<p>For two objects <code>A,B</code> in a category <code>𝓒</code>, the
+set of morphisms from <code>A</code> to <code>B</code> is called the
+homset (or arrowset) from <code>A</code> to <code>B</code>. We denote
+this set by <code>A→B</code>. In other words, the following two ways of
+denoting a morphism are equivalent:
+<code>m ∈ A→B   ≡   m: A → B</code>.</p>
+</section>
+<section id="covariant-homfunctor" class="Definition">
+<h4><a class="anchor" href="#covariant-homfunctor"></a>Definition 11.
+(Covariant Homfunctor)</h4>
+<p>For a fixed object <code>A</code> in a category <code>𝓒</code>, the
+covariant Homfunctor on <code>A</code>, <code>A→: 𝓒 → Set</code>, is
+defined as follows.</p>
+<ol type="1">
+<li><strong>On Objects</strong>: For each object <code>B</code> in
+<code>𝓒</code>, <code>A→&lt;B&gt; = A→B</code>.</li>
+<li><strong>On Morphisms</strong>: Each morphism <code>f: B → C</code>
+in <code>𝓒</code>, is mapped to a function between homsets
+<code>A→(f): (A→B) → (A→C)</code>, <code>m ↦ m ▹ f</code>.</li>
+</ol>
+</section>
+<section id="contravariant-homfunctor" class="Definition">
+<h4><a class="anchor" href="#contravariant-homfunctor"></a>Definition
+12. (Contravariant Homfunctor)</h4>
+<p>For a fixed object <code>A</code> in a category <code>𝓒</code>, the
+contravariant Homfunctor on <code>A</code>, <code>→A: 𝓒 → Set</code>, is
+defined as follows.</p>
+<ol type="1">
+<li><strong>On Objects</strong>: For each object <code>B</code> in
+<code>𝓒</code>, <code>→A&lt;B&gt; = B→A</code>.</li>
+<li><strong>On Morphisms</strong>: Each morphism <code>f: B → C</code>
+in <code>𝓒</code>, is mapped to a function between homsets
+<code>A→(f): (C→A) → (B→A)</code>, <code>m ↦ f ▹ m</code>.</li>
+</ol>
+</section>
+<section id="homfunctor" class="Definition">
+<h4><a class="anchor" href="#homfunctor"></a>Definition 13.
+(Homfunctor)</h4>
+<p>For a category <code>𝓒</code>, it’s Homfunctor
+<code>→: 𝓒⁻ × 𝓒 → Set</code> is defined as follows.</p>
+<ol type="1">
+<li><strong>On Objects</strong>: For each object
+<code>&lt;A₁,A₂&gt;</code> in <code>𝓒⁻ × 𝓒</code>,
+<code>→&lt;A₁,A₂&gt; = A₁→A₂</code>.</li>
+<li><strong>On Morphisms</strong>: Each morphism
+<code>(f₁⁻,f₂): &lt;A₁,A₂&gt; → &lt;B₁,B₂&gt;</code> in
+<code>𝓒⁻ × 𝓒</code>, is mapped to a function between homsets,
+<code>→(f₁⁻,f₂): (A₁→A₂) → (B₁→B₂)</code>,
+<code>m ↦ f₁ ▹ m ▹ f₂</code>.</li>
+</ol>
 <p><em>Proof.</em></p>
-</div>
-<div class="olist lowerroman">
-<ol class="lowerroman" type="i">
-<li>
-<p>To prove: for any two morphisms f and g in Mor<sub>FP</sub>,  map<sub>List</sub> (f ∘ g) = map<sub>List</sub> f ∘ map<sub>List</sub> g.</p>
-</li>
-</ol>
-</div>
-<div class="paragraph">
-<p>We prove that these two expressions are the same for all possible inputs, namely Nil and Cons x xs.</p>
-</div>
-<table class="tableblock frame-none grid-none fit-content">
-<colgroup>
-<col>
-<col>
-<col>
-</colgroup>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">map<sub>List</sub> (f ∘ g) Nil</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">= Nil</p></td>
-<td class="tableblock halign-left valign-top"></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top"></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">(map<sub>List</sub> f ∘ map<sub>List</sub> g) Nil</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">= map<sub>List</sub> f (map<sub>List</sub> g Nil)</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">(definition composition)</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">= map<sub>List</sub> f Nil</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">(definition map<sub>List</sub>)</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">= Nil</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">(definition map<sub>List</sub>)</p></td>
-</tr>
-</tbody>
-</table>
-<table class="tableblock frame-none grid-none fit-content">
-<colgroup>
-<col>
-<col>
-<col>
-</colgroup>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">map<sub>List</sub> (f ∘ g) (Cons x xs)</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">= Cons ((f ∘ g) x) (map<sub>List</sub> (f ∘ g) xs)</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">(definition map<sub>List</sub>)</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top"></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">(map<sub>List</sub> f ∘ map<sub>List</sub> g) (Cons x xs)</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">= map<sub>List</sub> f (map<sub>List</sub> g (Cons x xs))</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">(definition composition)</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">= map<sub>List</sub> f (Cons (g x) (map<sub>List</sub> g xs))</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">(definition map<sub>List</sub>)</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">= Cons (f (g x)) (map<sub>List</sub> f (map<sub>List</sub> g xs))</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">(definition map<sub>List</sub>)</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">= Cons ((f ∘ g) x) ((map<sub>List</sub> f ∘ map<sub>List</sub> g) xs)</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">(definition composition)</p></td>
-</tr>
-</tbody>
-</table>
-<div class="paragraph">
-<p>All we have left to prove is that map<sub>List</sub> (f ∘ g) xs = (map<sub>List</sub> f ∘ map<sub>List</sub> g) xs.
-Because it is true for xs = Nil, it follows by induction that the statement is true for all xs.</p>
-</div>
-<div class="olist lowerroman">
-<ol class="lowerroman" type="i" start="2">
-<li>
-<p>To prove: for any object a in Obj<sub>FP</sub>,  map<sub>List</sub> id<sub>a</sub> = id<sub>List&nbsp;a</sub>.</p>
-</li>
-</ol>
-</div>
-<div class="paragraph">
-<p>We prove that these two expressions are the same for all possible inputs, namely Nil and Cons x xs.</p>
-</div>
-<table class="tableblock frame-none grid-none fit-content">
-<colgroup>
-<col>
-<col>
-</colgroup>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">map<sub>List</sub> id<sub>a</sub> Nil = Nil</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">(definition map<sub>List</sub>)</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top"></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">id<sub>List&nbsp;a</sub> Nil = Nil</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">(definition id<sub>List&nbsp;a</sub>)</p></td>
-</tr>
-</tbody>
-</table>
-<table class="tableblock frame-none grid-none fit-content">
-<colgroup>
-<col>
-<col>
-<col>
-</colgroup>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">map<sub>List</sub> id<sub>a</sub> (Cons x xs)</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">= Cons (id<sub>a</sub> x) (map<sub>List</sub> id<sub>a</sub> xs)</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">(definition map<sub>List</sub>)</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">= Cons x (map<sub>List</sub> id<sub>a</sub> xs)</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">(definition id<sub>a</sub>)</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top"></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">id<sub>List&nbsp;a</sub> (Cons x xs)</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">= Cons x xs</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">(definition id<sub>List&nbsp;a</sub>)</p></td>
-</tr>
-</tbody>
-</table>
-<div class="paragraph">
-<p>All we have left to prove is that map<sub>List</sub> id<sub>a</sub> xs = xs.
-Because it is true for xs = Nil, it follows by induction that the statement is true for all xs.</p>
-</div>
-<div class="paragraph">
-<p>∎</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="ex-haskell-functor"><a class="anchor" href="#ex-haskell-functor"></a>3.4. Haskell Functor</h3>
-<div class="paragraph">
-<p>Any Haskell type constructor F that has an instance of the <a href="https://wiki.haskell.org/Functor" target="_blank">Haskell Functor class</a> forms an endofunctor in FP.</p>
-</div>
-<div class="paragraph">
-<p><em>Proof.</em></p>
-</div>
-<div class="paragraph">
-<p>We are given a type constructor F with one argument, and a function  fmap : (a → b) → (F a → F b),
-where fmap obeys the following laws:</p>
-</div>
-<div class="paragraph">
-<p> fmap id = id
- fmap (f ∘ g) = fmap f ∘ fmap g</p>
-</div>
-<div class="paragraph">
-<p>This gives us</p>
-</div>
-<table class="tableblock frame-none grid-none fit-content">
-<colgroup>
-<col>
-<col>
-</colgroup>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">F : Obj<sub>FP</sub> → Obj<sub>FP</sub></p></td>
-<td class="tableblock halign-left valign-top"></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">map<sub>F</sub> : Mor<sub>FP</sub> → Mor<sub>FP</sub></p></td>
-<td class="tableblock halign-left valign-top"></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">map<sub>F</sub>  = fmap</p></td>
-<td class="tableblock halign-left valign-top"></td>
-</tr>
-</tbody>
-</table>
-<div class="olist lowerroman">
-<ol class="lowerroman" type="i">
-<li>
-<p>To prove: for any two morphisms f and g in Mor<sub>FP</sub>,  map<sub>F</sub> (f ∘ g) = map<sub>F</sub> f ∘ map<sub>F</sub> g.</p>
-</li>
-</ol>
-</div>
-<table class="tableblock frame-none grid-none fit-content">
-<colgroup>
-<col>
-<col>
-<col>
-</colgroup>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">map<sub>F</sub> (f ∘ g)</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">= fmap (f ∘ g)</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">(definition map<sub>F</sub>)</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">= fmap f ∘ fmap g</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">(Haskell Functor Law)</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">= map<sub>F</sub> f ∘ map<sub>F</sub> g</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">(definition map<sub>F</sub>)</p></td>
-</tr>
-</tbody>
-</table>
-<div class="olist lowerroman">
-<ol class="lowerroman" type="i" start="2">
-<li>
-<p>To prove: for any object a in Obj<sub>FP</sub>,  map<sub>F</sub> id<sub>a</sub> = id<sub>F&nbsp;a</sub>.</p>
-</li>
-</ol>
-</div>
-<table class="tableblock frame-none grid-none fit-content">
-<colgroup>
-<col>
-<col>
-<col>
-</colgroup>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">map<sub>F</sub> id<sub>a</sub></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">= fmap id<sub>a</sub></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">(definition map<sub>F</sub>)</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">= id<sub>a</sub></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">(Haskell Functor Law)</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="sect2">
-<h3 id="ex-haskell-bifunctor"><a class="anchor" href="#ex-haskell-bifunctor"></a>3.5. Haskell Bifunctor</h3>
-<div class="paragraph">
-<p>Any Haskell type constructor F that has an instance of the <a href="https://hackage.haskell.org/package/base-4.18.0.0/docs/Data-Bifunctor.html" target="_blank">Haskell Bifunctor class</a> forms a bifunctor in FP.</p>
-</div>
-<div class="paragraph">
-<p><em>Proof.</em></p>
-</div>
-<div class="paragraph">
-<p>We are given a type constructor F taking 2 parameters, and a function</p>
-</div>
-<div class="paragraph">
-<p> bimap: (a → b) → (c → d) → (F a c → F b d)</p>
-</div>
-<div class="paragraph">
-<p>where bimap obeys the following laws:</p>
-</div>
-<div class="paragraph">
-<p> bimap id id = id
- bimap  (f ∘ g) (h ∘ i) = bimap f h ∘ bimap g i</p>
-</div>
-<div class="paragraph">
-<p>Note that</p>
-</div>
-<table class="tableblock frame-none grid-none fit-content">
-<colgroup>
-<col>
-<col>
-<col>
-</colgroup>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">F : Obj<sub>FP</sub> → Obj<sub>FP</sub> → Obj<sub>FP</sub></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">= F : Obj<sub>FP</sub> ⨯ Obj<sub>FP</sub> → Obj<sub>FP</sub></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">(uncurrying)</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">= F : Obj<sub>FP⨯FP</sub> → Obj<sub>FP</sub></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">(definition product category)</p></td>
-</tr>
-</tbody>
-</table>
-<div class="paragraph">
-<p>Furthermore, we have that</p>
-</div>
-<table class="tableblock frame-none grid-none fit-content">
-<colgroup>
-<col>
-<col>
-<col>
-</colgroup>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">bimap : (a → b) → (c → d) → (F a c → F b d)</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">= bimap : Mor<sub>FP</sub> → Mor<sub>FP</sub> → Mor<sub>FP</sub></p></td>
-<td class="tableblock halign-left valign-top"></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">= bimap : Mor<sub>FP</sub> ⨯ Mor<sub>FP</sub> → Mor<sub>FP</sub></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">(uncurrying)</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">= bimap : Mor<sub>FP⨯FP</sub> → Mor<sub>FP</sub></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">(definition product category)</p></td>
-</tr>
-</tbody>
-</table>
-<div class="paragraph">
-<p>which means that bimap indeed gives us a function for map<sub>F</sub>.
-It can be observed that map<sub>F</sub> obeys the functor axioms from the bimap laws listed above.</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="ex-prelist"><a class="anchor" href="#ex-prelist"></a>3.6. The PreList Bifunctor</h3>
-<div class="paragraph">
-<p>The PreList type constructor given below forms a bifunctor from FP ⨯ FP to FP.</p>
-</div>
-<div class="paragraph">
-<p> PreList : Obj<sub>FP</sub> → Obj<sub>FP</sub> → Obj<sub>FP</sub>
- PreList a b = Nil | Cons a b</p>
-</div>
-<div class="paragraph">
-<p><em>Proof.</em></p>
-</div>
-<div class="paragraph">
-<p>Note that by uncurrying we have</p>
-</div>
-<div class="paragraph">
-<p> PreList : Obj<sub>FP⨯FP</sub> → Obj<sub>FP</sub>.</p>
-</div>
-<div class="paragraph">
-<p>which gives us the required object mapping.
-Furthermore, define map<sub>PreList</sub> : Mor<sub>FP⨯FP</sub> → Mor<sub>FP</sub> as</p>
-</div>
-<div class="paragraph">
-<p> map<sub>PreList</sub> (f, g) Nil = Nil
- map<sub>PreList</sub> (f, g) (Cons a b) = Cons (f a) (g b)</p>
-</div>
-<div class="olist lowerroman">
-<ol class="lowerroman" type="i">
-<li>
-<p>To prove: for any two morphisms f and g in Mor<sub>FP⨯FP</sub>,  map<sub>PreList</sub> (f ∘ g) = map<sub>PreList</sub> f ∘ map<sub>PreList</sub> g.</p>
-</li>
-</ol>
-</div>
-<table class="tableblock frame-none grid-none fit-content">
-<colgroup>
-<col>
-<col>
-<col>
-</colgroup>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">map (f ∘ g) Nil</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">= Nil</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">(definition map<sub>PreList</sub>)</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">(map f ∘ map g) Nil</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">= map f (map g Nil)</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">(definition composition)</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">= map f Nil</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">(definition map<sub>PreList</sub>)</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">= Nil</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">(definition map<sub>PreList</sub>)</p></td>
-</tr>
-</tbody>
-</table>
-<table class="tableblock frame-none grid-none fit-content">
-<colgroup>
-<col>
-<col>
-<col>
-</colgroup>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">map ((f, f') ∘ (g, g')) (Cons x y)</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">= map (f ∘ g, f' ∘ g') (Cons x y)</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">(definition product category)</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">= Cons ((f ∘ g) x) ((f' ∘ g') y)</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">(definition map<sub>PreList</sub>)</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">= Cons (f (g x)) (f' (g' y))</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">(definition composition)</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top"></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">(map (f, f') ∘ map (g, g')) (Cons x y)</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">= map (f, f') (map (g, g') (Cons x y))</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">(definition composition)</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">= map (f, f') (Cons (g x) (g' y))</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">(definition map<sub>PreList</sub>)</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">= Cons (f (g x)) (f' (g' y))</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">(definition map<sub>PreList</sub>)</p></td>
-</tr>
-</tbody>
-</table>
-<div class="olist lowerroman">
-<ol class="lowerroman" type="i" start="2">
-<li>
-<p>To prove: for any object (a, b) in Obj<sub>FP⨯FP</sub>,  map<sub>PreList</sub> id<sub>(a,b)</sub> = id<sub>PreList&nbsp;(a,b)</sub>.</p>
-</li>
-</ol>
-</div>
-<table class="tableblock frame-none grid-none fit-content">
-<colgroup>
-<col>
-<col>
-<col>
-</colgroup>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">map id Nil</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">= Nil</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">(definition map<sub>PreList</sub>)</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">map id (Cons x y)</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">= Cons (id x) (id y)</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">(definition map<sub>PreList</sub>)</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">= Cons x y</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">(definition id)</p></td>
-</tr>
-</tbody>
-</table>
-<div class="paragraph">
-<p>∎</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="ex-cat"><a class="anchor" href="#ex-cat"></a>3.7. The Category of Categories</h3>
-<div class="paragraph">
-<p>The category <strong>Cat</strong> where objects are categories and morphisms are functors between categories, is a category.
-Functors F and G are composable by composing the corresponding functions:</p>
-</div>
-<div class="paragraph">
-<p> (F ∘ G) a = F (G a)
- (map<sub>F</sub> ∘ map<sub>G</sub>) f = map<sub>F</sub> (map<sub>G</sub> f)</p>
-</div>
-<div class="paragraph">
-<p>Every category C has an identity functor I to itself, which is given by</p>
-</div>
-<div class="paragraph">
-<p> I: Obj<sub>C</sub> → Obj<sub>C</sub>, I a = a
- map<sub>I</sub>: Mor<sub>C</sub> → Mor<sub>C</sub>, map<sub>I</sub> f = f</p>
-</div>
-<div class="paragraph">
-<p><em>Proof.</em></p>
-</div>
-<div class="olist lowerroman">
-<ol class="lowerroman" type="i">
-<li>
-<p>(Associativity) Composing functors is associative, because composing the underlying functions is associative.</p>
-</li>
-<li>
-<p>(Identity) For any object C in Obj<sub>Cat</sub> and any functor F going out of C and any functor G coming into a, let I be the identity functor of C. Then</p>
-</li>
-</ol>
-</div>
-<div class="paragraph">
-<p> F ∘ I = F
- I ∘ G = G</p>
-</div>
-<div class="paragraph">
-<p>because the underlying functions of I are identity functions.</p>
-</div>
-</div>
-</div>
-</div>
-</div>
+<pre><code>i) Prove that →(id&lt;A₁,A₂&gt;) = id(→&lt;A₁,A₂&gt;).
 
-</body></html>
+→(id&lt;A₁,A₂&gt;) 
+ = →(id&lt;A₁&gt;,id&lt;A₂&gt;)                         (def prod cat)
+ = (m: A₁ → A₂) ↦ id&lt;A₁&gt; ▹ m ▹ id&lt;A₂&gt;     (def hom functor)
+ = (m: A₁ → A₂) ↦ m                        (def id)
+ = id&lt;A₁→A₂&gt;                                (def id in Set)
+ = id(→&lt;A₁,A₂&gt;)                             (def hom functor)
+
+ii) Let (f₁⁻,f₂) : &lt;A₁,A₂&gt; → &lt;B₁,B₂&gt; and (g₁⁻,g₂) : &lt;B₁,B₂&gt; → &lt;C₁,C₂&gt; two morphisms in C⁻ × C. Prove that →((f₁⁻,f₂) ▹ (g₁⁻,g₂)) = →(f₁⁻,f₂) ▹ →(g₁⁻,g₂).
+
+→((f₁⁻,f₂) ▹ (g₁⁻,g₂)) 
+ = →(f₁⁻▹⁻g₁⁻, f₂▹g₂)                                  (def prod cat)
+ = →((g₁▹f₁)⁻, f₂▹g₂)                                  (def op cat)
+ = (m:A₁→A₂) ↦ (g₁ ▹ f₁) ▹ m ▹ (f₂ ▹ g₂)             (def hom functor)
+ = (m:A₁→A₂) ↦ g₁ ▹ (f₁ ▹ m ▹ f₂) ▹ g₂               (assoc)
+ = (m:A₁→A₂) ↦ g₁ ▹ (n ↦ f₁ ▹ n ▹ f₂)(m) ▹ g₂       (eta expansion)
+ = (m:A₁→A₂) ↦ g₁ ▹ →(f₁⁻,f₂)(m) ▹ g₂                 (def hom functor)
+ = (m:A₁→A₂) ↦ (n ↦ g₁ ▹ n ▹ g₂)(→(f₁⁻,f₂)(m))        (eta expansion)
+ = (m:A₁→A₂) ↦ (→(f₁⁻,f₂) ▹ (n ↦ g₁ ▹ n ▹ g₂))(m)    (def function composition)
+ = (m:A₁→A₂) ↦ (→(f₁⁻,f₂) ▹ →(g₁⁻,g₂))(m)              (def hom functor)
+ = →(f₁⁻,f₂) ▹ →(g₁⁻,g₂)                                (eta reduction)</code></pre>
+<p>∎</p>
+</section>
+<section id="profunctor" class="Definition">
+<h4><a class="anchor" href="#profunctor"></a>Definition 14.
+(Profunctor)</h4>
+<p>Given categories <code>𝓒</code> and <code>𝓓</code>, a functor
+<code>F: 𝓒⁻ ⨯ 𝓓 → Set</code> is called a <em>profunctor</em>.</p>
+</section>
+<section id="product-and-coproduct" class="Definition">
+<h4><a class="anchor" href="#product-and-coproduct"></a>Definition 15.
+(Product and Coproduct)</h4>
+<p>A <strong>product</strong> of two objects <code>A</code> and
+<code>B</code> is the object <code>C</code> equipped with two morphisms
+(called projections) <code>p: C → A</code> and <code>q: C → B</code>
+such that for any other object <code>C&#39;</code> equipped with two
+projections <code>p&#39;: C&#39; → A</code> and <code>q&#39;: C&#39; → B</code> there is
+a unique morphism <code>m: C&#39; → C</code> that factorizes those
+projections:</p>
+<pre><code> p&#39; = m ▹ p
+ q&#39; = m ▹ q</code></pre>
+<p>Dually, a <strong>coproduct</strong> of two objects <code>A</code>
+and <code>B</code> is the object <code>C</code> equipped with two
+morphisms (called injections) <code>i: A → C</code> and
+<code>j: B → C</code> such that for any other object <code>C&#39;</code>
+equipped with two injections <code>i&#39;: A → C&#39;</code> and
+<code>j&#39;: B → C&#39;</code> there is a unique morphism
+<code>m: C → C&#39;</code> that factorizes those injections:</p>
+<pre><code> i&#39; = i ▹ m
+ j&#39; = j ▹ m</code></pre>
+</section>
+<h2 id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+<section id="the-monoid-category" class="Example">
+<h4><a class="anchor" href="#the-monoid-category"></a>Example 16. (The
+Monoid Category)</h4>
+<p>A monoid <code>M</code> is characterized by a set of values
+<code>M</code>, an identity value <code>0</code> and an operator
+<code>+ : M → M → M</code>, such that the following conditions are
+met.</p>
+<ol type="1">
+<li>(Associativity) For every three values <code>x, y</code> and
+<code>z</code> in <code>M</code>,
+ <code>(x + y) + z = x + (y + z)</code>.</li>
+<li>(Identity) For every value <code>x</code> in <code>M</code>,
+ <code>x + 0 = x</code>  and  <code>0 + x = x</code>.</li>
+</ol>
+<p>This structure forms a category with one object, named
+<code>1</code>, and a morphism <code>x: 1 → 1</code> for every value
+<code>x</code> in <code>M</code>. Composition is defined as
+ <code>x ∘ y = x + y</code>.</p>
+<p><em>Proof.</em></p>
+<p>(Associativity) To prove: for any morphisms <code>x, y</code>, and
+<code>z</code>,  <code>(x ∘ y) ∘ z = x ∘ (y ∘ z)</code>.</p>
+<pre><code> (x ∘ y) ∘ z  = x + y ∘ z   = (x + y) + z   (definition composition)
+ x ∘ (y ∘ z)  = x ∘ (y + z) = x + (y + z)   (definition composition)
+                            = (x + y) + z   (associativity of +)</code></pre>
+<p>(Identity) To prove: for any morphism <code>x</code>,
+ <code>x ∘ 0 = x</code>  and  <code>0 ∘ x = x</code>.</p>
+<pre><code> x ∘ 0  = x + 0  (definition composition)
+        = x      (definition monoid identity)
+ 0 ∘ x  = 0 + x  (definition composition)
+        = x      (definition monoid identity)</code></pre>
+<p>∎</p>
+</section>
+<section id="the-category-of-categories" class="Example">
+<h4><a class="anchor" href="#the-category-of-categories"></a>Example 17.
+(The Category of Categories)</h4>
+<p>The category <em>Cat</em> where objects are categories and morphisms
+are functors between categories, is a category. Functors <code>F</code>
+and <code>G</code> are composable by composing the corresponding
+functions:</p>
+<pre><code> (G ▹ F)&lt;A&gt; = F&lt;G&lt;A&gt;&gt;
+ (G ▹ F)(m) = F(G(m))</code></pre>
+<p>Every category <code>𝓒</code> has an identity functor <code>I</code>
+to itself, which is given by</p>
+<pre><code> I: Obj(𝓒) → Obj(𝓒), I&lt;A&gt; = A
+ I: Mor(𝓒) → Mor(𝓒), I(m) = m</code></pre>
+<p><em>Proof.</em></p>
+<p>(Associativity) Composing functors is associative, because composing
+the underlying functions is associative. (Identity) For any object
+<code>𝓒</code> in Obj(Cat) and any functor <code>F</code> going out of
+<code>𝓒</code> and any functor <code>G</code> coming into
+<code>𝓒</code>, let <code>I</code> be the identity functor of
+<code>𝓒</code>. Then</p>
+<pre><code> F ∘ I = F 
+ I ∘ G = G</code></pre>
+<p>because the underlying functions of <code>I</code> are identity
+functions. ∎</p>
+</section>
+<section id="the-set-category" class="Example">
+<h4><a class="anchor" href="#the-set-category"></a>Example 18. (The Set
+Category)</h4>
+<p>The category <em>Set</em> is the category where objects are sets and
+morphisms are functions between sets. When programming with total
+(non-throwing, terminating) functions, this is the category you operate
+in. Types can be seen as the set of all possible values they hold, and
+functions map types to other types. For example, <code>Bool</code> and
+<code>Int</code> are objects, and <code>isOdd : Int → Bool</code> is a
+morphism.</p>
+</section>
+<section id="the-product-functor-in-set" class="Example">
+<h4><a class="anchor" href="#the-product-functor-in-set"></a>Example 19.
+(The Product Functor in Set)</h4>
+<p>The type constructor</p>
+<pre><code> Pair: Set ⨯ Set → Set
+ Pair&lt;A,B&gt; = Pair(A,B)</code></pre>
+<p>forms a bifunctor under</p>
+<pre><code> Pair(f,g) Pair(x,y) = Pair(f(x),g(y))</code></pre>
+<p><em>Proof.</em> TODO</p>
+</section>
+<section id="the-sum-functor-in-set" class="Example">
+<h4><a class="anchor" href="#the-sum-functor-in-set"></a>Example 20.
+(The Sum Functor in Set)</h4>
+<p>The type constructor</p>
+<pre><code> Either: Set ⨯ Set → Set
+ Either&lt;A,B&gt; = Left(A) | Right(B)</code></pre>
+<p>forms a bifunctor under</p>
+<pre><code> Either(f,g) Left(x) = Left(f(x))
+ Either(f,g) Right(y) = Right(g(y))</code></pre>
+<p><em>Proof.</em> TODO</p>
+</section>
+<section id="the-list-functor" class="Example">
+<h4><a class="anchor" href="#the-list-functor"></a>Example 21. (The List
+Functor)</h4>
+<p>The <em>List</em> type constructor forms an endofunctor in the
+category Set.</p>
+<pre><code> List : Set → Set
+ List&lt;A&gt; = Nil | Cons(A, List&lt;A&gt;)
+ List : (A → B) → (List&lt;A&gt; → List&lt;B&gt;)
+ List(f) = Nil ↦ Nil                                 
+         | Cons(x, xs) ↦ Cons(f(x), List(f)(xs))</code></pre>
+<p><em>Proof.</em></p>
+<p>(Associativity) To prove: For any morphisms <code>f: A → B</code> and
+<code>g: B → C</code>, <code>List(f ▹ g) = List(f) ▹ List(g)</code>. We
+prove that these two expressions are the same for all possible inputs,
+namely <code>Nil</code> and <code>Cons(x,xs)</code>.</p>
+<p>Case <code>Nil</code>:</p>
+<pre><code>List(f ▹ g)(Nil) = Nil                           (List functor definition on Nil)
+(List(f) ▹ List(g))(Nil) = List(g)(List(f)(Nil)) (Definition composition)
+                         = List(g)(Nil)          (List functor definition on Nil)
+                         = Nil                   (List functor definition on Nil)</code></pre>
+<p>Both expressions evaluate to <code>Nil</code>.</p>
+<p>Case <code>Cons(x, xs)</code>:</p>
+<pre><code>List(f ▹ g)(Cons(x, xs)) = Cons((f ▹ g)(x), List(f ▹ g)(xs))     (List functor definition on Cons)
+                         = Cons(g(f(x)), List(f ▹ g)(xs)))       (Definition composition)
+
+(List(f) ▹ List(g))(Cons(x, xs)) = List(g)(List(f)(Cons(x, xs)))             (Definition composition)
+                                 = List(g)(Cons(f(x), List(f)(xs)))          (List functor definition on Cons)
+                                 = Cons(g(f(x)), List(g)(List(f)(xs)))       (List functor definition on Cons)
+                                 = Cons(g(f(x)), (List(f) ▹ List(g))(xs))    (Definition composition)
+                                 = Cons(g(f(x)), (List(f ▹ g))(xs))          (Induction)</code></pre>
+<p>Both expressions simplify to
+<code>Cons(g(f(x)), (List(f ▹ g))(xs))</code>.</p>
+<p>(Identity) To prove: For any object <code>A</code> in Set,
+<code>List(id&lt;A&gt;) = id&lt;List&lt;A&gt;&gt;</code>.</p>
+<p>Case <code>Nil</code>:</p>
+<pre><code>id&lt;List&lt;A&gt;&gt;(Nil) = Nil          (Identity function on List&lt;A&gt;)
+List(id&lt;A&gt;)(Nil) = Nil          (List functor definition on Nil)</code></pre>
+<p>Case <code>Cons(x, xs)</code>:</p>
+<pre><code>id&lt;List&lt;A&gt;&gt;(Cons(x, xs)) = Cons(x, xs)                      (Identity definition on List&lt;A&gt;)
+List(id&lt;A&gt;)(Cons(x, xs)) = Cons(id&lt;A&gt;(x), List(id&lt;A&gt;)(xs))  (List functor definition on Cons)
+                         = Cons(x, List(id&lt;A&gt;)(xs))         (Identity morphism definition)
+                         = Cons(x, id&lt;List&lt;A&gt;&gt;(xs))         (Induction)
+                         = Cons(x, xs)                      (Identity definition on List&lt;A&gt;)</code></pre>
+<p>Both expressions simplify to <code>Cons(x, xs)</code>. ∎</p>
+</section>
+<section id="haskell-functor" class="Example">
+<h4><a class="anchor" href="#haskell-functor"></a>Example 22. (Haskell
+Functor)</h4>
+<p>Any Haskell type constructor <code>F</code> that has an instance of
+the <a href="https://wiki.haskell.org/Functor">Haskell Functor class</a>
+forms an endofunctor in Set (ignoring exceptions and
+non-termination).</p>
+<p><em>Proof.</em></p>
+<p>We are given a type constructor <code>F</code> with one argument, and
+a function <code>fmap : (a → b) → (F a → F b)</code>, where fmap obeys
+the following laws:</p>
+<pre><code> fmap id = id
+ fmap (f ∘ g) = fmap f ∘ fmap g</code></pre>
+<p>This gives us</p>
+<pre><code> F : Obj(Set) → Obj(Set)
+ F&lt;A&gt; = F A
+ F : Mor(Set) → Mor(Set)
+ F(f) = fmap f</code></pre>
+<p>(Associativity) To prove: for any two morphisms <code>f</code> and
+<code>g</code> in Set, <code>F(f ∘ g) = F(f) ∘ F(g)</code>.</p>
+<pre><code> F(f ∘ g) = fmap (f ∘ g)    (definition F)
+          = fmap f ∘ fmap g (Haskell Functor Law)
+          = F(f) ∘ F(g)     (definition F)</code></pre>
+<p>(Identity) To prove: for any object <code>A</code> in Set,
+<code>F(id&lt;A&gt;) = id&lt;F&lt;A&gt;&gt;</code>.</p>
+<pre><code> id&lt;F&lt;A&gt;&gt; = id          (definition Haskell id)
+ F(id&lt;A&gt;) = fmap id&lt;A&gt;  (definition F)
+          = fmap id     (definition Haskell id)
+          = id          (Haskell Functor Law)</code></pre>
+</section>
+<!--
+::: Example :::
+# The PreList Bifunctor
+The PreList type constructor given below forms a bifunctor from FP ⨯ FP to FP.
+
+ PreList : Obj~FP~ → Obj~FP~ → Obj~FP~
+ PreList a b = Nil | Cons a b
+
+_Proof._
+
+Note that by uncurrying we have
+
+ PreList : Obj~FP⨯FP~ → Obj~FP~.
+
+which gives us the required object mapping.
+Furthermore, define map~PreList~ : Mor~FP⨯FP~ → Mor~FP~ as
+
+ map~PreList~ (f, g) Nil = Nil
+ map~PreList~ (f, g) (Cons a b) = Cons (f a) (g b)
+
+[lowerroman]
+. To prove: for any two morphisms f and g in Mor~FP⨯FP~,  map~PreList~ (f ∘ g) = map~PreList~ f ∘ map~PreList~ g.
+
+[{eqtable}]
+|#
+| map (f ∘ g) Nil     | = Nil                | (definition map~PreList~)
+| (map f ∘ map g) Nil | = map f (map g Nil)  | (definition composition)
+|                     | = map f Nil          | (definition map~PreList~)
+|                     | = Nil                | (definition map~PreList~)
+|#
+
+[{eqtable}]
+|#
+| map ((f, f') ∘ (g, g')) (Cons x y)    | = map (f ∘ g, f' ∘ g') (Cons x y)      | (definition product category)
+|                                        | = Cons ((f ∘ g) x) ((f' ∘ g') y)       | (definition map~PreList~)
+|                                        | = Cons (f (g x)) (f' (g' y))           | (definition composition)
+|                                        |                                        |
+| (map (f, f') ∘ map (g, g')) (Cons x y) | = map (f, f') (map (g, g') (Cons x y)) | (definition composition)
+|                                        | = map (f, f') (Cons (g x) (g' y))      | (definition map~PreList~)
+|                                        | = Cons (f (g x)) (f' (g' y))           | (definition map~PreList~)
+|#
+
+[lowerroman,start=2]
+. To prove: for any object (a, b) in Obj~FP⨯FP~,  map~PreList~ id~(a,b)~ = id~PreList (a,b)~.
+
+[{eqtable}]
+|#
+| map id Nil        | = Nil                 | (definition map~PreList~)
+| map id (Cons x y) | = Cons (id x) (id y)  | (definition map~PreList~)
+|                   | = Cons x y            | (definition id)
+|#
+
+∎
+:::
+-->
+</div>
+</body>
+</html>
