@@ -53,8 +53,9 @@ If `𝓒` and `𝓓` are the same category, `F` is called an **endofunctor**.
 
 ::: Definition :::
 # Natural Transformations
+Natural transformations are denoted with greek letters.
 Given functors `F, G: 𝓒 → 𝓓`, a natural transformation `η: F ⇒ G` assigns to each object `A` in `𝓒` a morphism `η<A>: F<A> → G<A>` in `𝓓` such that for every morphism `m: A → B` in `𝓒`, the following 
-equation holds: `η<A> ▹ G(m) = F(m) ▹ η<B>`.
+equation holds `η<A> ▹ G(m) = F(m) ▹ η<B>`.
 This is often described visually as that this square 'commutes':
 ```
 F<A> ---F(m)---> F<B>
@@ -64,39 +65,23 @@ F<A> ---F(m)---> F<B>
  v                v
 G<A> ---G(m)---> G<B>
 ```
-
-Natural transformations are denoted with greek letters.
-:::
-
-::: Definition :::
-# Product and Coproduct
-A **product** of two objects A and B is the object C equipped with two morphisms (called projections) p: C → A and q: C → B 
-such that for any other object C' equipped with two projections p': C' → A and q': C' → B there is a unique morphism m: C' → C that factorizes those projections: 
-
- p' = p ∘ m
- q' = q ∘ m
-
-Dually, a **coproduct** of two objects A and B is the object C equipped with two morphisms (called injections) i: A → C and j: B → C 
-such that for any other object C' equipped with two injections i': A → C' and j': B → C' there is a unique morphism m: C → C' that factorizes those injections: 
-
- i' = m ∘ i
- j' = m ∘ j
+If `η<A>` is an isomorphism in `𝓓` for every `A` in `𝓒`, `η` is called a *natural isomorphism*.
 :::
 
 ::: Definition :::
 # Product Category
 Given two categories `𝓒` and `𝓓`, the product category `𝓒 ⨯ 𝓓` is defined as follows.
 
-* **Objects**: `Obj(𝓒⨯𝓓) = Obj(𝓒) ⨯ Obj(𝓓)`
-* **Morphisms**: For every two objects (A,B) and (C,D),  `(A,B)→(C,D) = A→C ⨯ B→D`
-* **Composition**: For every two morphisms (f,g) and (h,i),  `(f,g) ▹ (h,i) = (f ▹ h, g ▹ i)`
-* **Identity morphisms**: For every object (A,B),  `id<A,B> = (id<A>, id<A>)`
+1. **Objects**: `Obj(𝓒⨯𝓓) = Obj(𝓒) ⨯ Obj(𝓓)`
+2. **Morphisms**: For every two objects `(A,B)` and `(C,D)`,  `(A,B)→(C,D) = A→C ⨯ B→D`
+3. **Composition**: For every two morphisms `(f,g)` and `(h,i)`,  `(f,g) ▹ (h,i) = (f ▹ h, g ▹ i)`
+4. **Identity morphisms**: For every object `(A,B)`,  `id<A,B> = (id<A>, id<A>)`
 
 This forms a category.
 
 _Proof._
 
-. (Associativity) For any morphisms (f, f'), (g, g'), and (h, h') in 𝓒 ⨯ 𝓓, 
+(Associativity) For any morphisms `(f, f')`, `(g, g')`, and `(h, h')` in `𝓒 ⨯ 𝓓`, 
 
 ```
 ((f, f') ▹ (g, g')) ▹ (h, h') = (f, f') ▹ ((g, g') ▹ (h, h')).
@@ -106,292 +91,333 @@ _Proof._
                               = ((f ▹ g) ▹ h, (f' ▹ g') ▹ h')  (associativity composition)
 ```
 
-. (Identity) For any object (A, B) in 𝓒 ⨯ 𝓓 and any morphism (f, f') coming into (A, B) and any morphism (g, g') going out of (A, B),
+(Identity) For any object `(A, B)` in `𝓒 ⨯ 𝓓` and any morphism `(f, f')` coming into `(A, B)` and any morphism `(g, g')` going out of `(A, B)`,
 
 
 ```
 (f, f') ▹ id<A,B> = (f, f') ▹ (id<A>, id<B>) = (f ▹ id<A>, f' ▹ id<B>) = (f, f')
 id<A,B> ▹ (g, g') = (id<A>, id<B>) ▹ (g, g') = (id<A> ▹ g, id<B> ▹ g') = (g, g')
 ```
+∎
 :::
 
 ::: Definition :::
 # Bifunctor
-Given three categories 𝓒, 𝓓 and 𝓔, a functor F: 𝓒 ⨯ 𝓓 → 𝓔 is called a *bifunctor*.
+Given three categories `𝓒`, `𝓓` and `𝓔`, a functor `F: 𝓒 ⨯ 𝓓 → 𝓔` is called a *bifunctor*.
 :::
 
 ::: Definition :::
 # Dual Category or Opposite Category
-Every category 𝓒 has an opposite category, denoted 𝓒⁻, which has the same objects as 𝓒, but has the arrows reversed.
+Every category `𝓒` has an opposite category, denoted `𝓒⁻`, which has the same objects as `𝓒`, but has the arrows reversed.
 
-1. **Objects**: every object A in 𝓒⁻ is an object in 𝓒
-2. **Morphisms**: a morphism `f⁻: A → B` in 𝓒⁻ is a morphism `f: B → A` in 𝓒. Composition `▹⁻` between `f⁻` and `g⁻: B → C` is defined `f⁻ ▹⁻ g⁻ = (g▹f)⁻`.
+1. **Objects**: every object `A` in `𝓒⁻` is an object in `𝓒`
+2. **Morphisms**: a morphism `f⁻: A → B` in `𝓒⁻` is a morphism `f: B → A` in `𝓒`. Composition `▹⁻` between `f⁻` and `g⁻: B → C` is defined `f⁻ ▹⁻ g⁻ = (g▹f)⁻`.
 :::
-
 
 ::: Definition :::
 # Contravariant Functor
-Given categories C and D, a functor F: C⁻ → D is called a *contravariant functor*.
+Given categories `𝓒` and `𝓓`, a functor `F: 𝓒⁻ → 𝓓` is called a *contravariant functor*.
 :::
 
 ::: Definition :::
+# Homsets/Arrowsets
+For two objects `A,B` in a category `𝓒`, the set of morphisms from `A` to `B` is called the homset (or arrowset) from `A` to `B`. We denote this set by `A→B`.
+In other words, the following two ways of denoting a morphism are equivalent: `m ∈ A→B   ≡   m: A → B`.
+:::
+
+::: Definition :::
+# Covariant Homfunctor
+For a fixed object `A` in a category `𝓒`, the covariant Homfunctor on `A`, `A→: 𝓒 → Set`, is defined as follows.
+
+1. **On Objects**: For each object `B` in `𝓒`, `A→<B> = A→B`.
+2. **On Morphisms**: Each morphism `f: B → C` in `𝓒`, is mapped to a function between homsets `A→(f): (A→B) → (A→C)`, `m ↦ m ▹ f`.
+:::
+
+::: Definition :::
+# Contravariant Homfunctor
+For a fixed object `A` in a category `𝓒`, the contravariant Homfunctor on `A`, `→A: 𝓒 → Set`, is defined as follows.
+
+1. **On Objects**: For each object `B` in `𝓒`, `→A<B> = B→A`.
+2. **On Morphisms**: Each morphism `f: B → C` in `𝓒`, is mapped to a function between homsets `A→(f): (C→A) → (B→A)`, `m ↦ f ▹ m`.
+:::
+
+::: Definition :::
+# Homfunctor
+For a category `𝓒`, it's Homfunctor `→: 𝓒⁻ × 𝓒 → Set` is defined as follows.
+
+1. **On Objects**: For each object `<A₁,A₂>` in `𝓒⁻ × 𝓒`, `→<A₁,A₂> = A₁→A₂`.
+2. **On Morphisms**: Each morphism `(f₁⁻,f₂): <A₁,A₂> → <B₁,B₂>` in `𝓒⁻ × 𝓒`, is mapped to a function between homsets,  `→(f₁⁻,f₂): (A₁→A₂) → (B₁→B₂)`, `m ↦ f₁ ▹ m ▹ f₂`.
+
+_Proof._
+```
+i) Prove that →(id<A₁,A₂>) = id(→<A₁,A₂>).
+
+→(id<A₁,A₂>) 
+ = →(id<A₁>,id<A₂>)                         (def prod cat)
+ = (m: A₁ → A₂) ↦ id<A₁> ▹ m ▹ id<A₂>     (def hom functor)
+ = (m: A₁ → A₂) ↦ m                        (def id)
+ = id<A₁→A₂>                                (def id in Set)
+ = id(→<A₁,A₂>)                             (def hom functor)
+
+ii) Let (f₁⁻,f₂) : <A₁,A₂> → <B₁,B₂> and (g₁⁻,g₂) : <B₁,B₂> → <C₁,C₂> two morphisms in C⁻ × C. Prove that →((f₁⁻,f₂) ▹ (g₁⁻,g₂)) = →(f₁⁻,f₂) ▹ →(g₁⁻,g₂).
+
+→((f₁⁻,f₂) ▹ (g₁⁻,g₂)) 
+ = →(f₁⁻▹⁻g₁⁻, f₂▹g₂)                                  (def prod cat)
+ = →((g₁▹f₁)⁻, f₂▹g₂)                                  (def op cat)
+ = (m:A₁→A₂) ↦ (g₁ ▹ f₁) ▹ m ▹ (f₂ ▹ g₂)             (def hom functor)
+ = (m:A₁→A₂) ↦ g₁ ▹ (f₁ ▹ m ▹ f₂) ▹ g₂               (assoc)
+ = (m:A₁→A₂) ↦ g₁ ▹ (n ↦ f₁ ▹ n ▹ f₂)(m) ▹ g₂       (eta expansion)
+ = (m:A₁→A₂) ↦ g₁ ▹ →(f₁⁻,f₂)(m) ▹ g₂                 (def hom functor)
+ = (m:A₁→A₂) ↦ (n ↦ g₁ ▹ n ▹ g₂)(→(f₁⁻,f₂)(m))        (eta expansion)
+ = (m:A₁→A₂) ↦ (→(f₁⁻,f₂) ▹ (n ↦ g₁ ▹ n ▹ g₂))(m)    (def function composition)
+ = (m:A₁→A₂) ↦ (→(f₁⁻,f₂) ▹ →(g₁⁻,g₂))(m)              (def hom functor)
+ = →(f₁⁻,f₂) ▹ →(g₁⁻,g₂)                                (eta reduction)
+```
+∎
+:::
+
+
+::: Definition :::
 # Profunctor
-Given categories C and D, a functor F: C⁻ ⨯ D → Set is called a *profunctor*.
+Given categories `𝓒` and `𝓓`, a functor `F: 𝓒⁻ ⨯ 𝓓 → Set` is called a *profunctor*.
+:::
+
+::: Definition :::
+# Product and Coproduct
+A **product** of two objects `A` and `B` is the object `C` equipped with two morphisms (called projections) `p: C → A` and `q: C → B` 
+such that for any other object `C'` equipped with two projections `p': C' → A` and `q': C' → B` there is a unique morphism `m: C' → C` that factorizes those projections: 
+
+```
+ p' = m ▹ p
+ q' = m ▹ q
+```
+
+Dually, a **coproduct** of two objects `A` and `B` is the object `C` equipped with two morphisms (called injections) `i: A → C` and `j: B → C` 
+such that for any other object `C'` equipped with two injections `i': A → C'` and `j': B → C'` there is a unique morphism `m: C → C'` that factorizes those injections: 
+
+```
+ i' = i ▹ m
+ j' = j ▹ m
+```
 :::
 
 ## Examples
 
-::: Definition :::
+::: Example :::
 # The Monoid Category 
-A monoid M is characterized by a set of values M, an identity value 0 and an operator + : M → M → M, such that the following conditions are met.
+A monoid `M` is characterized by a set of values `M`, an identity value `0` and an operator `+ : M → M → M`, such that the following conditions are met.
 
-* (Associativity) For every three values x, y and x in M,  (x + y) + z = x + (y + z).
-* (Identity) For every value x in M,  x + 0 = x  and  0 + x = x.
+1. (Associativity) For every three values `x, y` and `z` in `M`,  `(x + y) + z = x + (y + z)`.
+2. (Identity) For every value `x` in `M`,  `x + 0 = x`  and  `0 + x = x`.
 
-This structure forms a category with one object, named 1, and a morphism x: 1 → 1 for every value x in M.
-Composition is defined as  x ∘ y = x+y.
+This structure forms a category with one object, named `1`, and a morphism `x: 1 → 1` for every value `x` in `M`.
+Composition is defined as  `x ∘ y = x + y`.
 
 _Proof._
 
-* (Associativity) To prove: for any morphisms x, y, and z in Mor,  (x ∘ y) ∘ z = x ∘ (y ∘ z).
+(Associativity) To prove: for any morphisms `x, y`, and `z`,  `(x ∘ y) ∘ z = x ∘ (y ∘ z)`.
 
 ```
- (x ∘ y) ∘ z  = x+y ∘ z   = (x+y)+z   (definition composition)
- x ∘ (y ∘ z)  = x ∘ (y+z) = x+(y+z)   (definition composition)
-                          = (x+y)+z   (associativity of +)
+ (x ∘ y) ∘ z  = x + y ∘ z   = (x + y) + z   (definition composition)
+ x ∘ (y ∘ z)  = x ∘ (y + z) = x + (y + z)   (definition composition)
+                            = (x + y) + z   (associativity of +)
 ```
 
-* (Identity) To prove: for any morphism x in Mor,  x ∘ 0 = x  and  0 ∘ x = x.
+(Identity) To prove: for any morphism `x`,  `x ∘ 0 = x`  and  `0 ∘ x = x`.
 
 ```
- x ∘ 0  = x+0  (definition composition)
-        = x    (definition monoid identity)
- 0 ∘ x  = 0+x  (definition composition)
-        = x    (definition monoid identity)
+ x ∘ 0  = x + 0  (definition composition)
+        = x      (definition monoid identity)
+ 0 ∘ x  = 0 + x  (definition composition)
+        = x      (definition monoid identity)
 ```
+∎
 
 :::
 
-[#ex-cat]
+::: Example :::
 # The Category of Categories
 The category *Cat* where objects are categories and morphisms are functors between categories, is a category.
-Functors F and G are composable by composing the corresponding functions:
+Functors `F` and `G` are composable by composing the corresponding functions:
 
- (F ∘ G) a = F (G a)
- (map~F~ ∘ map~G~) f = map~F~ (map~G~ f)
+```
+ (G ▹ F)<A> = F<G<A>>
+ (G ▹ F)(m) = F(G(m))
+```
 
-Every category C has an identity functor I to itself, which is given by
+Every category `𝓒` has an identity functor `I` to itself, which is given by
 
- I: Obj~C~ → Obj~C~, I a = a
- map~I~: Mor~C~ → Mor~C~, map~I~ f = f
+```
+ I: Obj(𝓒) → Obj(𝓒), I<A> = A
+ I: Mor(𝓒) → Mor(𝓒), I(m) = m
+```
 
 _Proof._
 
-[lowerroman]
-. (Associativity) Composing functors is associative, because composing the underlying functions is associative.
-. (Identity) For any object C in Obj~Cat~ and any functor F going out of C and any functor G coming into a, let I be the identity functor of C. Then
+(Associativity) Composing functors is associative, because composing the underlying functions is associative.
+(Identity) For any object `𝓒` in Obj(Cat) and any functor `F` going out of `𝓒` and any functor `G` coming into `𝓒`, let `I` be the identity functor of `𝓒`. Then
 
+```
  F ∘ I = F 
  I ∘ G = G
+```
 
-because the underlying functions of I are identity functions.
+because the underlying functions of `I` are identity functions.
+∎
+:::
 
 
-[#ex-set]
+::: Example :::
 # The Set Category
 The category *Set* is the category where objects are sets and morphisms are functions between sets.
+When programming with total (non-throwing, terminating) functions, this is the category you operate in.
+Types can be seen as the set of all possible values they hold, and functions map types to other types.
+For example, `Bool` and `Int` are objects, and `isOdd : Int → Bool` is a morphism.
+:::
 
+::: Example :::
+# The Product Functor in Set
+The type constructor
 
-[#ex-fp]
-# The FP Category
+```
+ Pair: Set ⨯ Set → Set
+ Pair<A,B> = Pair(A,B)
+```
 
-The category *FP*, with objects being types and morphisms being functions, forms a category.
+forms a bifunctor under
 
-Composition of two functions f and g in Mor~FP~ is defined as  (f ∘ g) x = f (g x).
+```
+ Pair(f,g) Pair(x,y) = Pair(f(x),g(y))
+```
+_Proof._
+TODO
+:::
 
-For any object a in Obj~FP~, id~a~ is defined as the function  id~a~ x = x.
+::: Example :::
+# The Sum Functor in Set
+The type constructor
 
-Because the definition of id~a~ is independent of a, we usually abbreviate this function to simply id when dealing with the FP category.
+```
+ Either: Set ⨯ Set → Set
+ Either<A,B> = Left(A) | Right(B)
+```
+
+forms a bifunctor under
+
+```
+ Either(f,g) Left(x) = Left(f(x))
+ Either(f,g) Right(y) = Right(g(y))
+```
 
 _Proof._
+TODO
+:::
 
-To prove the equivalence of two functions, it suffices to show that they yield the same output for the same input.
-
-[lowerroman]
-. (Associativity) To prove: for any morphisms f, g, and h in Mor~FP~,  (f ∘ g) ∘ h = f ∘ (g ∘ h).
-
-[{eqtable}] 
-|#
-| ((f ∘ g) ∘ h) x  | = (f ∘ g) (h x)   | (definition composition)
-|                  | = f (g (h x))     | (definition composition)
-|#
-
-[{eqtable}] 
-|#
-| (f ∘ (g ∘ h)) x  | = f ∘ (g (h x))   | (definition composition)
-|                  | = f (g (h x))     | (definition composition)
-|#
-
-[lowerroman,start=2]
-. (Identity) To prove: for any object a in Obj~FP~ and any morphism f going out of a,  f ∘ id~a~ = f 
-   and any morphism g coming into a  id~a~ ∘ g = g.
-
-[{eqtable}] 
-|#
-| (f ∘ id~a~) x  | = f (id~a~ x)  | (definition composition)
-|                | = f x          | (definition id~a~)
-|                |                |
-|(id~a~ ∘ g) x   | = id~a~ (g x)  | (definition composition)
-|                | = g x          | (definition id~a~)
-|#
-
-∎
-
-[#ex-List-functor]
+::: Example :::
 # The List Functor
 
-The *List* type constructor forms an endofunctor in the category FP.
+The *List* type constructor forms an endofunctor in the category Set.
 
-[{eqtable}]
-|#
-| List : Obj~FP~ → Obj~FP~                              |
-| List a = Nil \| Cons a (List a)                       |
-| map~List~ : Mor~FP~ → Mor~FP~                         | Or, specialized to FP,  map~List~ : (a → b) → (List a → List b)
-| map~List~ f Nil = Nil                                 |
-| map~List~ f (Cons x xs) = Cons (f x) (map~List~ f xs) |
-|#
+```
+ List : Set → Set
+ List<A> = Nil | Cons(A, List<A>)
+ List : (A → B) → (List<A> → List<B>)
+ List(f) = Nil ↦ Nil                                 
+         | Cons(x, xs) ↦ Cons(f(x), List(f)(xs))
+```
 
 _Proof._
 
-[lowerroman]
-. To prove: for any two morphisms f and g in Mor~FP~,  map~List~ (f ∘ g) = map~List~ f ∘ map~List~ g.
+(Associativity) To prove: For any morphisms `f: A → B` and `g: B → C`, `List(f ▹ g) = List(f) ▹ List(g)`.
+We prove that these two expressions are the same for all possible inputs, namely `Nil` and `Cons(x,xs)`.
 
-We prove that these two expressions are the same for all possible inputs, namely Nil and Cons x xs.
+Case `Nil`:
+```
+List(f ▹ g)(Nil) = Nil                           (List functor definition on Nil)
+(List(f) ▹ List(g))(Nil) = List(g)(List(f)(Nil)) (Definition composition)
+                         = List(g)(Nil)          (List functor definition on Nil)
+                         = Nil                   (List functor definition on Nil)
+```
+Both expressions evaluate to `Nil`.
 
-[{eqtable}]
-|#
-| map~List~ (f ∘ g) Nil            | = Nil                            |
-|                                  |                                  |
-| (map~List~ f ∘ map~List~ g) Nil  | = map~List~ f (map~List~ g Nil)  | (definition composition)
-|                                  | = map~List~ f Nil                | (definition map~List~)
-|                                  | = Nil                            | (definition map~List~)
-|#
-  
-[{eqtable}]
-|#
-| map~List~ (f ∘ g) (Cons x xs)           | = Cons ((f ∘ g) x) (map~List~ (f ∘ g) xs)            | (definition map~List~)
-|                                         |                                                      |
-| (map~List~ f ∘ map~List~ g) (Cons x xs) | = map~List~ f (map~List~ g (Cons x xs))              | (definition composition)
-|                                         | = map~List~ f (Cons (g x) (map~List~ g xs))          | (definition map~List~)
-|                                         | = Cons (f (g x)) (map~List~ f (map~List~ g xs))      | (definition map~List~)
-|                                         | = Cons ((f ∘ g) x) ((map~List~ f ∘ map~List~ g) xs)  | (definition composition)
-|#
+Case `Cons(x, xs)`:
+```
+List(f ▹ g)(Cons(x, xs)) = Cons((f ▹ g)(x), List(f ▹ g)(xs))     (List functor definition on Cons)
+                         = Cons(g(f(x)), List(f ▹ g)(xs)))       (Definition composition)
 
-All we have left to prove is that map~List~ (f ∘ g) xs = (map~List~ f ∘ map~List~ g) xs.
-Because it is true for xs = Nil, it follows by induction that the statement is true for all xs.
+(List(f) ▹ List(g))(Cons(x, xs)) = List(g)(List(f)(Cons(x, xs)))             (Definition composition)
+                                 = List(g)(Cons(f(x), List(f)(xs)))          (List functor definition on Cons)
+                                 = Cons(g(f(x)), List(g)(List(f)(xs)))       (List functor definition on Cons)
+                                 = Cons(g(f(x)), (List(f) ▹ List(g))(xs))    (Definition composition)
+                                 = Cons(g(f(x)), (List(f ▹ g))(xs))          (Induction)
+```
+Both expressions simplify to `Cons(g(f(x)), (List(f ▹ g))(xs))`.
 
-[lowerroman,start=2]
-. To prove: for any object a in Obj~FP~,  map~List~ id~a~ = id~List a~. 
+(Identity) To prove: For any object `A` in Set, `List(id<A>) = id<List<A>>`.
 
-We prove that these two expressions are the same for all possible inputs, namely Nil and Cons x xs.
+Case `Nil`:
+```
+id<List<A>>(Nil) = Nil          (Identity function on List<A>)
+List(id<A>)(Nil) = Nil          (List functor definition on Nil)
+```
 
-[{eqtable}]
-|#
-| map~List~ id~a~ Nil = Nil  | (definition map~List~)
-|                            |
-| id~List a~ Nil = Nil       | (definition id~List a~)
-|#
-
-[{eqtable}]
-|#
-| map~List~ id~a~ (Cons x xs)  | = Cons (id~a~ x) (map~List~ id~a~ xs)  | (definition map~List~)
-|                              | = Cons x (map~List~ id~a~ xs)          | (definition id~a~)
-|                              |                                        |
-| id~List a~ (Cons x xs)       | = Cons x xs                            | (definition id~List a~)
-|#
-
-All we have left to prove is that map~List~ id~a~ xs = xs.
-Because it is true for xs = Nil, it follows by induction that the statement is true for all xs.
-
+Case `Cons(x, xs)`:
+```
+id<List<A>>(Cons(x, xs)) = Cons(x, xs)                      (Identity definition on List<A>)
+List(id<A>)(Cons(x, xs)) = Cons(id<A>(x), List(id<A>)(xs))  (List functor definition on Cons)
+                         = Cons(x, List(id<A>)(xs))         (Identity morphism definition)
+                         = Cons(x, id<List<A>>(xs))         (Induction)
+                         = Cons(x, xs)                      (Identity definition on List<A>)
+```
+Both expressions simplify to `Cons(x, xs)`.
 ∎
+:::
 
-[#ex-haskell-functor]
+::: Example :::
 # Haskell Functor
 
-Any Haskell type constructor F that has an instance of the link:https://wiki.haskell.org/Functor[Haskell Functor class] forms an endofunctor in FP.
+Any Haskell type constructor `F` that has an instance of the [Haskell Functor class](https://wiki.haskell.org/Functor) forms an endofunctor in Set (ignoring exceptions and non-termination).
 
 _Proof._
 
-We are given a type constructor F with one argument, and a function  fmap : (a → b) → (F a → F b),
+We are given a type constructor `F` with one argument, and a function `fmap : (a → b) → (F a → F b)`,
 where fmap obeys the following laws:
 
+```
  fmap id = id
  fmap (f ∘ g) = fmap f ∘ fmap g
+```
 
 This gives us
 
-[{eqtable}]
-|#
-| F : Obj~FP~ → Obj~FP~       | 
-| map~F~ : Mor~FP~ → Mor~FP~  | 
-| map~F~  = fmap              |
-|#
+```
+ F : Obj(Set) → Obj(Set)
+ F<A> = F A
+ F : Mor(Set) → Mor(Set)
+ F(f) = fmap f
+```
+
+(Associativity) To prove: for any two morphisms `f` and `g` in Set, `F(f ∘ g) = F(f) ∘ F(g)`.
+
+```
+ F(f ∘ g) = fmap (f ∘ g)    (definition F)
+          = fmap f ∘ fmap g (Haskell Functor Law)
+          = F(f) ∘ F(g)     (definition F)
+```
+
+(Identity) To prove: for any object `A` in Set, `F(id<A>) = id<F<A>>`.
+
+```
+ id<F<A>> = id          (definition Haskell id)
+ F(id<A>) = fmap id<A>  (definition F)
+          = fmap id     (definition Haskell id)
+          = id          (Haskell Functor Law)
+```
+:::
 
 
-[lowerroman]
-. To prove: for any two morphisms f and g in Mor~FP~,  map~F~ (f ∘ g) = map~F~ f ∘ map~F~ g.
-
-[{eqtable}]
-|#
-| map~F~ (f ∘ g) | = fmap (f ∘ g)         | (definition map~F~)
-|                | = fmap f ∘ fmap g      | (Haskell Functor Law)
-|                | = map~F~ f ∘ map~F~ g  | (definition map~F~)
-|#
-
-[lowerroman,start=2]
-. To prove: for any object a in Obj~FP~,  map~F~ id~a~ = id~F a~.
-
-[{eqtable}]
-|#
-| map~F~ id~a~ | = fmap id~a~  | (definition map~F~)
-|              | = id~a~       | (Haskell Functor Law)
-|#
-
-[#ex-haskell-bifunctor]
-# Haskell Bifunctor
-
-Any Haskell type constructor F that has an instance of the link:https://hackage.haskell.org/package/base-4.18.0.0/docs/Data-Bifunctor.html[Haskell Bifunctor class] forms a bifunctor in FP.
-
-_Proof._
-
-We are given a type constructor F taking 2 parameters, and a function 
-
- bimap: (a → b) → (c → d) → (F a c → F b d) 
-
-where bimap obeys the following laws:
-
- bimap id id = id
- bimap  (f ∘ g) (h ∘ i) = bimap f h ∘ bimap g i
-
-Note that 
-[{eqtable}]
-|#
-| F : Obj~FP~ → Obj~FP~ → Obj~FP~ | = F : Obj~FP~ ⨯ Obj~FP~ → Obj~FP~  | (uncurrying)
-|                                 | = F : Obj~FP⨯FP~ → Obj~FP~         | (definition product category)
-|#
-
-Furthermore, we have that 
-[{eqtable}]
-|#
-| bimap : (a → b) → (c → d) → (F a c → F b d) | = bimap : Mor~FP~ → Mor~FP~ → Mor~FP~ |
-|                                             | = bimap : Mor~FP~ ⨯ Mor~FP~ → Mor~FP~ | (uncurrying)
-|                                             | = bimap : Mor~FP⨯FP~ → Mor~FP~        | (definition product category)
-|#
-
-which means that bimap indeed gives us a function for map~F~.
-It can be observed that map~F~ obeys the functor axioms from the bimap laws listed above.
-
-[#ex-prelist]
+<!--
+::: Example :::
 # The PreList Bifunctor
 The PreList type constructor given below forms a bifunctor from FP ⨯ FP to FP.
 
@@ -443,51 +469,7 @@ Furthermore, define map~PreList~ : Mor~FP⨯FP~ → Mor~FP~ as
 |#
 
 ∎
+:::
+-->
 
-[#ex-product-functor-fp]
-# The Product Functor in FP
-The type constructor
 
- Pair: FP ⨯ FP → FP
- Pair a b = Pair a b
-
-forms a bifunctor under
-
- map~Pair~ (f, g) (Pair a b) = Pair (f a) (g b)
-
-[#ex-sum-functor-fp]
-# The Sum Functor in FP
-The type constructor
-
- Either: FP ⨯ FP → FP
- Either a b = Left a | Right b
-
-forms a bifunctor under
-
- map~Either~ (f, g) (Left a) = Left (f a)
- map~Either~ (f, g) (Right b) = Right (g b)
-
-[#ex-haskell-contravariant-functor]
-# Haskell Contravariant Functor
-Any type constructor that has an instance of link:https://hackage.haskell.org/package/base-4.18.0.0/docs/Data-Functor-Contravariant.html[Contravariant]
-forms a contravariant endofunctor in FP.
-
-_Proof._ TODO
-
-[#ex-haskell-profunctor]
-# Haskell Profunctor
-Any type constructor that has an instance of link:https://hackage.haskell.org/package/profunctors-5.6.2/docs/Data-Profunctor.html[Profunctor]
-forms a profunctor in FP.
-
-_Proof._ TODO
-
-[#ex-hom-functor]
-# Hom-functor
-Given a category C, the Hom-functor F: C^op^ ⨯ C → C is given by 
-
- F: Obj~C^op^~ ⨯ Obj~C~ → Obj~Set~  
- F (a, b) = Mor~C~ a b
-
- map~F~: Mor~C^op^~ ⨯ Mor~C~ → Mor~Set~  
- map~F~: ((a' → a), (b → b')) → mor~C~ a b → Mor~C~ a' b'  
- map~F~ (f, g) h = g ∘ h ∘ f

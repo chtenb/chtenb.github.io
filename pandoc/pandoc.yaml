@@ -15,13 +15,13 @@ number-sections: false
 #   url: "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
 
 css:
-- "${.}/overrides.css"
-# - "${.}/theorems.css"
+- "pandoc/overrides.css"
+# - "pandoc/theorems.css"
 
 filters: 
-  - "${.}/diagrams.lua"
-  - "${.}/theorems.lua"
-  - "${.}/toc.lua"
-  - "${.}/header-anchor-links.lua"
-  - "${.}/adoc-compat.lua"
+  - "pandoc/diagrams.lua"
+  - "pandoc/theorems.lua"
+  - "pandoc/toc.lua"
+  - "pandoc/header-anchor-links.lua"
+  - "pandoc/adoc-compat.lua"
 
