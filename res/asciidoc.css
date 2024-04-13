@@ -20,19 +20,19 @@ blockquote,
 th,
 td {
   margin: 0;
-  padding: 0
+  padding: 0;
 }
 
 :not(pre).nobreak {
-  word-wrap: normal
+  word-wrap: normal;
 }
 
 :not(pre).nowrap {
-  white-space: nowrap
+  white-space: nowrap;
 }
 
 :not(pre).pre-wrap {
-  white-space: pre-wrap
+  white-space: pre-wrap;
 }
 
 :not(pre):not([class^=L])>code {
@@ -41,10 +41,10 @@ td {
   letter-spacing: 0;
   padding: .1em .5ex;
   word-spacing: -.15em;
-  background: var(--button-hover-bg);
+  background: var(--header-bg);
   -webkit-border-radius: 4px;
   border-radius: 4px;
-  line-height: 1.45
+  line-height: 1.45;
 }
 
 pre {
@@ -55,17 +55,17 @@ pre code,
 pre pre {
   color: inherit;
   font-size: inherit;
-  line-height: inherit
+  line-height: inherit;
 }
 
 pre>code {
-  display: block
+  display: block;
 }
 
 pre.nowrap,
 pre.nowrap pre {
   white-space: pre;
-  word-wrap: normal
+  word-wrap: normal;
 }
 
 pre {
@@ -101,6 +101,7 @@ samp {
   font-family: var(--code-font);
   font-size: 0.9em;
   line-height: 1.45;
+  background: var(--header-bg);
 }
 
 html {
