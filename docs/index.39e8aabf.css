@@ -1,89 +1,10 @@
-:root {
-  --shadow: #0003;
-  --bg: #fef8ec;
-  --header-bg: #f9f1e1;
-  --button-bg: #f5eddd;
-  --button-hover-bg: #d1dfd0;
-  --button-active-bg: #a9b5a9;
-  --fg: #67a198;
-  --fg-alt: #657b83;
-  --fg-alt2: #268bd2;
-  --accent: #dc322f;
-  --accent-alt: #fa9600;
-}
-
-* {
-  scrollbar-color: var(--button-hover-bg) var(--bg);
-}
-
-::-webkit-scrollbar {
-  background-color: var(--button-hover-bg);
-  cursor: pointer;
-}
-
-::-webkit-scrollbar-button {
-  height: 0;
-  width: 0;
-}
-
-::-webkit-scrollbar-corner {
-  background-color: var(--bg);
-}
-
-::-webkit-scrollbar-track-piece {
-  background-color: var(--bg);
-}
-
-::-webkit-scrollbar-thumb {
-  background-color: var(--button-hover-bg);
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background-color: var(--button-active-bg);
-}
-
-::-webkit-scrollbar-thumb:active {
-  background-color: var(--button-active-bg);
-}
-
-@font-face {
-  font-family: Local Cascadia Mono;
-  src: url("CascadiaMono.946196d0.woff2");
-}
-
-@font-face {
-  font-family: Local Cascadia Mono Italic;
-  src: url("CascadiaMonoItalic.f1f6fb9b.woff2");
-}
-
-@font-face {
-  font-family: Local Open Sans;
-  src: url("OpenSans-Regular.4e2aea0d.woff2");
-}
-
-@font-face {
-  font-family: Local Open Sans Italic;
-  src: url("OpenSans-Italic.21d61329.woff2");
-}
-
-@font-face {
-  font-family: Local Open Sans Light;
-  src: url("OpenSans-Light.e0b2a08e.woff2");
-}
-
-@font-face {
-  font-family: Local Open Sans Light Italic;
-  src: url("OpenSans-LightItalic.f71c2d37.woff2");
-}
-
-:root {
-  --code-font: "Local Cascadia Mono", monospace;
-  --prose-font: "Local Open Sans", sans-serif;
-  --header-font: "Local Open Sans Light", sans-serif;
-  --code-fontsize: 1rem;
-  --prose-fontsize: 1rem;
-}
-
+/*!
+  Theme: Solarized Light
+  Author: Ethan Schoonover (modified by aramisgithub)
+  License: ~ MIT (or more permissive) [via base16-schemes-source]
+  Maintainer: @highlightjs/core-team
+  Version: 2021.05.0
+*/
 div, dl, dt, dd, ul, ol, li, h1, h2, h3, #toctitle, .sidebarblock > .content > .title, h4, h5, h6, pre, form, p, blockquote, th, td {
   margin: 0;
   padding: 0;
@@ -104,7 +25,7 @@ div, dl, dt, dd, ul, ol, li, h1, h2, h3, #toctitle, .sidebarblock > .content > .
 :not(pre):not([class^="L"]) > code {
   letter-spacing: 0;
   word-spacing: -.15em;
-  background: var(--button-hover-bg);
+  background: var(--header-bg);
   border-radius: 4px;
   padding: .1em .5ex;
   font-size: .9375em;
@@ -114,6 +35,7 @@ div, dl, dt, dd, ul, ol, li, h1, h2, h3, #toctitle, .sidebarblock > .content > .
 
 pre {
   color: #000000e6;
+  margin-bottom: 1.25em;
 }
 
 pre code, pre pre {
@@ -159,8 +81,8 @@ code, pre, samp {
 
 html {
   font-family: var(--header-font);
-  -ms-text-size-adjust: 100%;
   -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
 }
 
 body {
@@ -328,7 +250,12 @@ input[type="checkbox"], input[type="radio"] {
   padding: 0;
 }
 
-button::-moz-focus-inner, input::-moz-focus-inner {
+button::-moz-focus-inner {
+  border: 0;
+  padding: 0;
+}
+
+input::-moz-focus-inner {
   border: 0;
   padding: 0;
 }
@@ -476,8 +403,8 @@ h6 {
 hr {
   border: solid var(--fg);
   clear: both;
-  height: 0;
   border-width: 1px 0 0;
+  height: 0;
   margin: 1.25em 0 1.1875em;
 }
 
@@ -567,7 +494,7 @@ blockquote, blockquote p {
   line-height: 1.6;
 }
 
-@media screen and (min-width: 768px) {
+@media screen and (width >= 768px) {
   h1, h2, h3, #toctitle, .sidebarblock > .content > .title, h4, h5, h6 {
     line-height: 1.2;
   }
@@ -859,7 +786,7 @@ p a > code:hover {
   font-size: 1.2em;
 }
 
-@media screen and (min-width: 768px) {
+@media screen and (width >= 768px) {
   #toctitle {
     font-size: 1.375em;
   }
@@ -870,11 +797,11 @@ p a > code:hover {
   }
 
   #toc.toc2 {
-    width: 15em;
     z-index: 1000;
-    height: 100%;
     background: #f8f8f7;
     border-right: 1px solid #e7e7e9;
+    width: 15em;
+    height: 100%;
     padding: 1.25em 1em;
     position: fixed;
     top: 0;
@@ -920,7 +847,7 @@ p a > code:hover {
   }
 }
 
-@media screen and (min-width: 1280px) {
+@media screen and (width >= 1280px) {
   body.toc2 {
     padding-left: 20em;
     padding-right: 0;
@@ -982,7 +909,7 @@ p a > code:hover {
   padding-bottom: .625em;
 }
 
-@media screen and (min-width: 768px) {
+@media screen and (width >= 768px) {
   #content {
     margin-bottom: 1.25em;
   }
@@ -1002,9 +929,9 @@ p a > code:hover {
 
 #content h1 > a.anchor, h2 > a.anchor, h3 > a.anchor, #toctitle > a.anchor, .sidebarblock > .content > .title > a.anchor, h4 > a.anchor, h5 > a.anchor, h6 > a.anchor {
   z-index: 1001;
-  width: 1.5ex;
   visibility: hidden;
   text-align: center;
+  width: 1.5ex;
   margin-left: -1.5ex;
   font-weight: 400;
   display: block;
@@ -1060,9 +987,9 @@ table.tableblock #preamble > .sectionbody > [class="paragraph"]:first-of-type p 
 
 .admonitionblock > table {
   border-collapse: separate;
-  width: 100%;
   background: none;
   border: 0;
+  width: 100%;
 }
 
 .admonitionblock > table td.icon {
@@ -1135,7 +1062,7 @@ table.tableblock #preamble > .sectionbody > [class="paragraph"]:first-of-type p 
   overflow-x: auto;
 }
 
-@media screen and (min-width: 768px) {
+@media screen and (width >= 768px) {
   .literalblock pre, .listingblock > .content > pre {
     font-size: .85625em;
   }
@@ -1425,7 +1352,7 @@ table.frame-none > * > tr > :last-child, table.frame-ends > * > tr > :last-child
   border-right-width: 0;
 }
 
-table.stripes-all tr, table.stripes-odd tr:nth-of-type(2n+1), table.stripes-even tr:nth-of-type(2n), table.stripes-hover tr:hover {
+table.stripes-all tr, table.stripes-odd tr:nth-of-type(odd), table.stripes-even tr:nth-of-type(2n), table.stripes-hover tr:hover {
   background: #f8f8f7;
 }
 
@@ -1679,9 +1606,9 @@ sup.footnote a:active, sup.footnoteref a:active {
 }
 
 #footnotes hr {
+  border-width: 1px 0 0;
   width: 20%;
   min-width: 6.25em;
-  border-width: 1px 0 0;
   margin: -.25em 0 .75em;
 }
 
@@ -1710,9 +1637,9 @@ sup.footnote a:active, sup.footnoteref a:active {
 }
 
 .gist .file-data > table {
-  width: 100%;
   background: #fff;
   border: 0;
+  width: 100%;
   margin-bottom: 0;
 }
 
@@ -1914,10 +1841,10 @@ a span.icon > .fa {
 
 .conum[data-value] {
   text-align: center;
-  width: 1.67em;
-  height: 1.67em;
   background: #000c;
   border-radius: 50%;
+  width: 1.67em;
+  height: 1.67em;
   font-family: Open Sans, DejaVu Sans, sans-serif;
   font-size: .75em;
   font-style: normal;
@@ -1984,6 +1911,92 @@ p {
 
 @page {
   margin: 1.25cm .75cm;
+}
+
+:root {
+  --shadow: #0003;
+  --bg: #fef8ec;
+  --header-bg: #f9f1e1;
+  --button-bg: #f5eddd;
+  --button-hover-bg: #d1dfd0;
+  --button-active-bg: #a9b5a9;
+  --fg: #67a198;
+  --fg-alt: #657b83;
+  --fg-alt2: #268bd2;
+  --accent: #dc322f;
+  --accent-alt: #fa9600;
+}
+
+* {
+  scrollbar-color: var(--button-hover-bg) var(--bg);
+}
+
+::-webkit-scrollbar {
+  background-color: var(--button-hover-bg);
+  cursor: pointer;
+}
+
+::-webkit-scrollbar-button {
+  width: 0;
+  height: 0;
+}
+
+::-webkit-scrollbar-corner {
+  background-color: var(--bg);
+}
+
+::-webkit-scrollbar-track-piece {
+  background-color: var(--bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--button-hover-bg);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--button-active-bg);
+}
+
+::-webkit-scrollbar-thumb:active {
+  background-color: var(--button-active-bg);
+}
+
+@font-face {
+  font-family: Local Cascadia Mono;
+  src: url("CascadiaMono.946196d0.woff2");
+}
+
+@font-face {
+  font-family: Local Cascadia Mono Italic;
+  src: url("CascadiaMonoItalic.f1f6fb9b.woff2");
+}
+
+@font-face {
+  font-family: Local Open Sans;
+  src: url("OpenSans-Regular.4e2aea0d.woff2");
+}
+
+@font-face {
+  font-family: Local Open Sans Italic;
+  src: url("OpenSans-Italic.21d61329.woff2");
+}
+
+@font-face {
+  font-family: Local Open Sans Light;
+  src: url("OpenSans-Light.e0b2a08e.woff2");
+}
+
+@font-face {
+  font-family: Local Open Sans Light Italic;
+  src: url("OpenSans-LightItalic.f71c2d37.woff2");
+}
+
+:root {
+  --code-font: "Local Cascadia Mono", monospace;
+  --prose-font: "Local Open Sans", sans-serif;
+  --header-font: "Local Open Sans Light", sans-serif;
+  --code-fontsize: 1rem;
+  --prose-fontsize: 1rem;
 }
 
 .highlight {
@@ -2128,12 +2141,12 @@ body {
 }
 
 .controls button {
-  height: 100%;
   background-color: var(--button-bg);
   color: var(--fg);
   cursor: pointer;
   box-shadow: 0 0 2px 0 var(--shadow);
   border: 0;
+  height: 100%;
   padding: 10px 25px;
   font-family: Local Cascadia Mono;
   font-size: 13px;
@@ -2160,7 +2173,7 @@ body {
   overflow: auto;
 }
 
-@media only screen and (max-width: 767px) {
+@media only screen and (width <= 767px) {
   .smallViewport {
     display: inline;
   }
@@ -2187,4 +2200,3 @@ body {
 .hidden {
   display: none;
 }
-
