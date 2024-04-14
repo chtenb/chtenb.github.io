@@ -49,6 +49,7 @@ td {
 
 pre {
   color: rgba(0, 0, 0, .9);
+  margin-bottom: 1.25em;
 }
 
 pre code,
@@ -101,7 +102,7 @@ samp {
   font-family: var(--code-font);
   font-size: 0.9em;
   line-height: 1.45;
-  background: var(--header-bg);
+  /* background: var(--header-bg); */
 }
 
 html {
