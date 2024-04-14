@@ -15,27 +15,31 @@ This is an imprecise collection of notes about category theory, using an experim
 A **category** `𝓒` consists of the following components:
 
 1. **Objects**: Denoted by uppercase letters, e.g., `A`, `B`, `C`. The set of all objects of `𝓒` is written `Obj(𝓒)`.
-2. **Morphisms**: Denoted by lowercase letters. A morphism `f` from object `A` to object `B` is written as `f: A → B`.  The set of all morphisms of `𝓒` is written `Mor(𝓒)` or `Hom(𝓒)`. Morphisms are also called **arrows**.
+2. **Morphisms**: Also called *arrows*. Denoted by lowercase letters. A morphism `f` from object `A` to object `B` is written as `f: A → B`.  The set of all morphisms of `𝓒` is written `Mor(𝓒)` or `Hom(𝓒)`. Morphisms are also called **arrows**.
 3. **Composition**: Given morphisms `f: A → B` and `g: B → C`, their composition is another morphism, denoted `g ∘ f: A → C`. The composition operator satisfies associativity, meaning for any morphism `h: C → D` it holds true that `(h ∘ g) ∘ f = h ∘ (g ∘ f)`. Alternatively, composition can be written using forward composition, `f ▹ g: A → C`.
 4. **Identity morphism**: For each object `A`, there exists an identity morphism `id<A>` such that for any morphism `f: A → B`, we have `f ▹ id<B> = f = id<A> ▹ f`.
 :::
 
 
 ::: Definition :::
-# Homset
-For two objects `A,B` in a category `𝓒`, the set of morphisms from `A` to `B` is called the homset (or arrowset) from `A` to `B`. We denote this set by `A→B`.
-In other words, the following two ways of denoting a morphism are equivalent: `m ∈ A→B  ≡  m: A → B`.
+# Homsets/Arrowsets
+For two objects `A,B` in a category `𝓒`, the set of morphisms from `A` to `B` is called the homset, or arrowset, from `A` to `B`. We denote this set by `A→B`.
+In other words, the notation `m ∈ A→B` is equivalent to `m: A → B`.
+:::
+
+
+::: Definition :::
+# Inverses
+Given a category `𝓒` and a morphism `f: A → B`. 
+
+* Any morphism `g: B → A` is called a **pre-inverse** of `f` if and only if `g ▹ f = id<B>`.
+* Any morphism `g: B → A` is called a **post-inverse** of `f` if and only if `f ▹ g = id<A>`.
+* Any morphism `g: B → A` is called an **inverse** of `f` if and only if it is both a pre-inverse and a post-inverse to `f`.
 :::
 
 ::: Definition :::
 # Isomorphism
-Given a category `𝓒`, a morphism `f: A → B` is called an **isomorphism** if there exists another morphism `g: B → A` such that
-
-```
- f ▹ g = id<A>
- g ▹ f = id<B>
-```
-
+Given a category `𝓒`, a morphism `f: A → B` is called an **isomorphism** if there exists an inverse morphism to `f`.
 :::
 
 ::: Definition :::
@@ -120,14 +124,8 @@ Given categories `𝓒` and `𝓓`, a functor `F: 𝓒⁻ → 𝓓` is called a 
 :::
 
 ::: Definition :::
-# Homsets/Arrowsets
-For two objects `A,B` in a category `𝓒`, the set of morphisms from `A` to `B` is called the homset (or arrowset) from `A` to `B`. We denote this set by `A→B`.
-In other words, the following two ways of denoting a morphism are equivalent: `m ∈ A→B   ≡   m: A → B`.
-:::
-
-::: Definition :::
 # Covariant Homfunctor
-For a fixed object `A` in a category `𝓒`, the covariant Homfunctor on `A`, `A→: 𝓒 → Set`, is defined as follows.
+For a fixed object `A` in a category `𝓒`, the covariant Homfunctor (or covariant arrow functor) on `A`, `A→: 𝓒 → Set`, is defined as follows.
 
 1. **On Objects**: For each object `B` in `𝓒`, `A→<B> = A→B`.
 2. **On Morphisms**: Each morphism `f: B → C` in `𝓒`, is mapped to a function between homsets `A→(f): (A→B) → (A→C)`, `m ↦ m ▹ f`.
@@ -135,7 +133,7 @@ For a fixed object `A` in a category `𝓒`, the covariant Homfunctor on `A`, `A
 
 ::: Definition :::
 # Contravariant Homfunctor
-For a fixed object `A` in a category `𝓒`, the contravariant Homfunctor on `A`, `→A: 𝓒 → Set`, is defined as follows.
+For a fixed object `A` in a category `𝓒`, the contravariant Homfunctor (or contravariant arrow functor) on `A`, `→A: 𝓒 → Set`, is defined as follows.
 
 1. **On Objects**: For each object `B` in `𝓒`, `→A<B> = B→A`.
 2. **On Morphisms**: Each morphism `f: B → C` in `𝓒`, is mapped to a function between homsets `A→(f): (C→A) → (B→A)`, `m ↦ f ▹ m`.
@@ -143,7 +141,7 @@ For a fixed object `A` in a category `𝓒`, the contravariant Homfunctor on `A`
 
 ::: Definition :::
 # Homfunctor
-For a category `𝓒`, it's Homfunctor `→: 𝓒⁻ × 𝓒 → Set` is defined as follows.
+For a category `𝓒`, it's Homfunctor (or *arrow functor*) `→: 𝓒⁻ × 𝓒 → Set` is defined as follows.
 
 1. **On Objects**: For each object `<A₁,A₂>` in `𝓒⁻ × 𝓒`, `→<A₁,A₂> = A₁→A₂`.
 2. **On Morphisms**: Each morphism `(f₁⁻,f₂): <A₁,A₂> → <B₁,B₂>` in `𝓒⁻ × 𝓒`, is mapped to a function between homsets,  `→(f₁⁻,f₂): (A₁→A₂) → (B₁→B₂)`, `m ↦ f₁ ▹ m ▹ f₂`.
@@ -176,11 +174,6 @@ ii) Let (f₁⁻,f₂) : <A₁,A₂> → <B₁,B₂> and (g₁⁻,g₂) : <B₁,
 ∎
 :::
 
-
-::: Definition :::
-# Profunctor
-Given categories `𝓒` and `𝓓`, a functor `F: 𝓒⁻ ⨯ 𝓓 → Set` is called a *profunctor*.
-:::
 
 ::: Definition :::
 # Product and Coproduct
