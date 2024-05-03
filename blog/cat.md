@@ -174,7 +174,6 @@ ii) Let (f₁⁻,f₂) : <A₁,A₂> → <B₁,B₂> and (g₁⁻,g₂) : <B₁,
 ∎
 :::
 
-
 ::: Definition :::
 # Product and Coproduct
 A **product** of two objects `A` and `B` is the object `C` equipped with two morphisms (called projections) `p: C → A` and `q: C → B` 
@@ -193,6 +192,14 @@ such that for any other object `C'` equipped with two injections `i': A → C'` 
  j' = j ▹ m
 ```
 :::
+
+::: Definition :::
+# Left and Right Adjoint Functors
+Let `L: 𝓒 → 𝓓`, `R: 𝓓 → 𝓒` functors such that for all `A` in `𝓒` there is a natural isomorphism between `R ▹ A→ : 𝓓 → Set` and  `L<A>→ : 𝓓 → Set`
+and for all `B` in `𝓓` there is a natural isomorphism between `L ▹ →B : 𝓒 → Set` and `→R<B> : 𝓒 → Set`.
+Then `L` is called the left-adjoint of `R`, and `R` is called the right-adjoint of `L`.
+:::
+
 
 ## Examples
 
