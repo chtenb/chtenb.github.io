@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>tpsv</title>
+  <style>code {
+  white-space: pre-wrap;
+}
+
+span.smallcaps {
+  font-variant: small-caps;
+}
+
+div.columns {
+  gap: min(4vw, 1.5em);
+  display: flex;
+}
+
+div.column {
+  flex: auto;
+  overflow-x: auto;
+}
+
+div.hanging-indent {
+  text-indent: -1.5em;
+  margin-left: 1.5em;
+}
+
+ul.task-list[class] {
+  list-style: none;
+}
+
+ul.task-list li input[type="checkbox"] {
+  font-size: inherit;
+  vertical-align: middle;
+  width: .8em;
+  margin: 0 .8em .2em -1.6em;
+}
+
+.display.math {
+  text-align: center;
+  margin: .5rem auto;
+  display: block;
+}
+
+pre > code.sourceCode {
+  white-space: pre;
+  position: relative;
+}
+
+pre > code.sourceCode > span {
+  line-height: 1.25;
+}
+
+pre > code.sourceCode > span:empty {
+  height: 1.2em;
+}
+
+.sourceCode {
+  overflow: visible;
+}
+
+code.sourceCode > span {
+  color: inherit;
+  -webkit-text-decoration: inherit;
+  text-decoration: inherit;
+}
+
+div.sourceCode {
+  margin: 1em 0;
+}
+
+pre.sourceCode {
+  margin: 0;
+}
+
+@media screen {
+  div.sourceCode {
+    overflow: auto;
+  }
+}
+
+@media print {
+  pre > code.sourceCode {
+    white-space: pre-wrap;
+  }
+
+  pre > code.sourceCode > span {
+    text-indent: -5em;
+    padding-left: 5em;
+  }
+}
+
+pre.numberSource code {
+  counter-reset: source-line 0;
+}
+
+pre.numberSource code > span {
+  counter-increment: source-line;
+  position: relative;
+  left: -4em;
+}
+
+pre.numberSource code > span > a:first-child:before {
+  content: counter(source-line);
+  text-align: right;
+  vertical-align: baseline;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+  -khtml-user-select: none;
+  color: #aaa;
+  border: none;
+  width: 4em;
+  padding: 0 4px;
+  display: inline-block;
+  position: relative;
+  left: -1em;
+}
+
+pre.numberSource {
+  border-left: 1px solid #aaa;
+  margin-left: 3em;
+  padding-left: 4px;
+}
+
+@media screen {
+  pre > code.sourceCode > span > a:first-child:before {
+    text-decoration: underline;
+  }
+}
+
+code span.al {
+  color: red;
+  font-weight: bold;
+}
+
+code span.an {
+  color: #60a0b0;
+  font-style: italic;
+  font-weight: bold;
+}
+
+code span.at {
+  color: #7d9029;
+}
+
+code span.bn {
+  color: #40a070;
+}
+
+code span.bu {
+  color: green;
+}
+
+code span.cf {
+  color: #007020;
+  font-weight: bold;
+}
+
+code span.ch {
+  color: #4070a0;
+}
+
+code span.cn {
+  color: #800;
+}
+
+code span.co {
+  color: #60a0b0;
+  font-style: italic;
+}
+
+code span.cv {
+  color: #60a0b0;
+  font-style: italic;
+  font-weight: bold;
+}
+
+code span.do {
+  color: #ba2121;
+  font-style: italic;
+}
+
+code span.dt {
+  color: #902000;
+}
+
+code span.dv {
+  color: #40a070;
+}
+
+code span.er {
+  color: red;
+  font-weight: bold;
+}
+
+code span.fl {
+  color: #40a070;
+}
+
+code span.fu {
+  color: #06287e;
+}
+
+code span.im {
+  color: green;
+  font-weight: bold;
+}
+
+code span.in {
+  color: #60a0b0;
+  font-style: italic;
+  font-weight: bold;
+}
+
+code span.kw {
+  color: #007020;
+  font-weight: bold;
+}
+
+code span.op {
+  color: #666;
+}
+
+code span.ot {
+  color: #007020;
+}
+
+code span.pp {
+  color: #bc7a00;
+}
+
+code span.sc {
+  color: #4070a0;
+}
+
+code span.ss {
+  color: #b68;
+}
+
+code span.st {
+  color: #4070a0;
+}
+
+code span.va {
+  color: #19177c;
+}
+
+code span.vs {
+  color: #4070a0;
+}
+
+code span.wa {
+  color: #60a0b0;
+  font-style: italic;
+  font-weight: bold;
+}
+</style>
+  <style type="text/css"></style>
+</head>
+<body>
+<div id="content">
+<h1 id="tpsv"><a class="anchor" href="#tpsv"></a>TPSV</h1>
+<ul>
+<li><a href="#tpsv">TPSV</a></li>
+<li><a href="#syntax">Syntax</a></li>
+<li><a href="#example">Example</a></li>
+<li><a href="#editor-compatibility">Editor compatibility</a></li>
+<li><a href="#comparison-with-other-formats">Comparison with other
+formats</a></li>
+<li><a href="#parsing">Parsing</a></li>
+</ul>
+<p>TPSV stands for Tab-Pipe-Separated-Values and is a human readable
+replacement for CSV and TSV. Like both of these formats, TPSV is able to
+describe tabular data where each cell contains a string value. The main
+design requirement for TPSV is that it should be easy to parse and easy
+to use for everyone with a text editor, no plugins needed.</p>
+<h2 id="syntax"><a class="anchor" href="#syntax"></a>Syntax</h2>
+<p>The basic syntax is simple.</p>
+<ol type="1">
+<li>A cell starts with a <code>|</code> and ends with one or more
+tabs.</li>
+<li>A line that starts with a cell is a row. Any other lines are
+ignored.</li>
+<li>The first row is the header row, and it defines the number of
+columns and their names.</li>
+</ol>
+<p>That’s all you need, but there are a few more rules to make life
+easier.</p>
+<ol start="4" type="1">
+<li>A row with too few cells has the remaining cells be an empty
+string.</li>
+<li>A row with too many cells has the superfluous cells ignored.</li>
+<li>The last column in a row does not have to end with tabs.</li>
+</ol>
+<p>Then there is one last optional rule, the multiline extension.</p>
+<ol start="7" type="1">
+<li>A row that starts with a <code>\</code> instead of a <code>|</code>
+is treated as a continuation row. The contents of its cells are appended
+to the cells of the previous row, delimited by a newline character.</li>
+</ol>
+<h2 id="example"><a class="anchor" href="#example"></a>Example</h2>
+<p>This is a sample TPSV demonstrating the format</p>
+<pre><code>vim: tw=4
+Employee table
+|First Name |Second Name    |Occupation |Notes          |Details
+------------|---------------|-----------|---------------|-------
+|Alice      |Johnson        |Engineer   |Top performer  |Has consistently exceeded expectations across multiple projects, including the Q4 rollout.
+|Bob        |Lee            |Manager    |Needs review   |Pending evaluation for lateral move to operations; decision expected next month.
+|Carol      |Wu             |Analyst    |Fast learner   |Quickly adapted to new tooling. Mentors junior staff.                  | TODO: review this row
+|Dan        |Kent           |Technician |Retired        |Though retired, Dan remains available on a consultancy basis,
+\           |               |           |               |especially for legacy systems and knowledge transfer sessions with new staff.</code></pre>
+<p>This example is chosen to highlight a few aspects.</p>
+<ul>
+<li>The first two lines are comments. The first line is a modeline,
+which can be interpreted by text editors that support them, and in this
+case sets the tab width to 4.</li>
+<li>The header separator does not start with a | or a  , and is thus
+ignored.</li>
+<li>This chosen header separator makes this example compatible with
+markdown pipe tables, which are recognized as tables in many places,
+like github markdown. Convenient if you want to paste it somewhere.</li>
+<li>The last column is ideal for long cell contents.</li>
+<li>The cell with the TODO is past the last column, so it acts as a
+comment.</li>
+<li>The last line is a continuation, which can be nice if you don’t want
+the text to exceed a certain width.</li>
+</ul>
+<h2 id="editor-compatibility"><a class="anchor" href="#editor-compatibility"></a>Editor
+compatibility</h2>
+<p>Recommendations:</p>
+<ul>
+<li>Use monospaced text editor.</li>
+<li>Configure editor to render tab characters (so you can distinghuish
+from spaces).</li>
+<li>Use editorconfig to set tabwidth for specific files, or use
+modelines like <code>vim: tw=8</code>, which are supported by several
+editors.</li>
+<li>The smaller you choose the tabwidth, the more finegrained you can
+make the column widths, but this also comes with more width management.
+I would generally recommend a tabwidth of 8 for TPSV files, but other
+choices can make a lot of sense too.</li>
+</ul>
+<p>Example .editorconfig for generic tsv files:</p>
+<pre><code>[*.tsv]
+indent_style = tab
+tab_width = 28
+trim_trailing_whitespace = false
+max_line_length = 999
+insert_final_newline = true</code></pre>
+<h2 id="comparison-with-other-formats"><a class="anchor" href="#comparison-with-other-formats"></a>Comparison
+with other formats</h2>
+<p>Improvements over TSV:</p>
+<ul>
+<li>Allows comments</li>
+<li>Easier to view in text editors without setting the tabwidth very
+high (which would make all columns as wide as the widest column)</li>
+<li>Can be made compatible with markdown pipe tables</li>
+<li>Multiline extension</li>
+</ul>
+<p>Improvements over markdown pipe tables:</p>
+<ul>
+<li>Less managing spaces for vertical alignment. Tabs are easier to
+space evenly (unless you have a tabwidth of 1).</li>
+<li>Cell contents are able to contain pipes and leading/trailing
+spaces.</li>
+<li>Multiline extension</li>
+</ul>
+<h2 id="parsing"><a class="anchor" href="#parsing"></a>Parsing</h2>
+<p>This parses the basic syntax.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> parse_tpsv(<span class="bu">file</span>):</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    headers <span class="op">=</span> []</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> line <span class="kw">in</span> <span class="bu">file</span>:</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> line.startswith(<span class="st">&#39;|&#39;</span>):</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>            cells <span class="op">=</span> [c.rstrip(<span class="st">&#39;</span><span class="ch">\t</span><span class="st">&#39;</span>) <span class="cf">for</span> c <span class="kw">in</span> line[<span class="dv">1</span>:].rstrip(<span class="st">&#39;</span><span class="ch">\n</span><span class="st">&#39;</span>).split(<span class="st">&#39;</span><span class="ch">\t</span><span class="st">|&#39;</span>)]</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> <span class="kw">not</span> headers:</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>                headers <span class="op">=</span> cells</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>            <span class="cf">else</span>:</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>                cells <span class="op">+=</span> [<span class="st">&#39;&#39;</span>] <span class="op">*</span> (<span class="bu">len</span>(headers) <span class="op">-</span> <span class="bu">len</span>(cells)) <span class="co"># Missing cells are empty</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>                <span class="cf">yield</span> <span class="bu">dict</span>(<span class="bu">zip</span>(headers, cells)) <span class="co"># Superfluous cells are omitted</span></span></code></pre></div>
+<p>To also parse the multiline extension, something like this would
+do</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> parse_tpsv_multiline(<span class="bu">file</span>):</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    headers <span class="op">=</span> []</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    row <span class="op">=</span> <span class="va">None</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> line <span class="kw">in</span> <span class="bu">file</span>:</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>        line <span class="op">=</span> line.rstrip(<span class="st">&#39;</span><span class="ch">\n</span><span class="st">&#39;</span>)</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> line.startswith(<span class="st">&#39;|&#39;</span>):</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> row:</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>                <span class="cf">yield</span> row</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>            cells <span class="op">=</span> line[<span class="dv">1</span>:].split(<span class="st">&#39;</span><span class="ch">\t</span><span class="st">|&#39;</span>)</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>            cells <span class="op">=</span> [c.rstrip(<span class="st">&#39;</span><span class="ch">\t</span><span class="st">&#39;</span>) <span class="cf">for</span> c <span class="kw">in</span> cells]</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> <span class="kw">not</span> headers:</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>                headers <span class="op">=</span> cells</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>            <span class="cf">else</span>:</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>                cells <span class="op">+=</span> [<span class="st">&#39;&#39;</span>] <span class="op">*</span> (<span class="bu">len</span>(headers) <span class="op">-</span> <span class="bu">len</span>(cells))</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>                row <span class="op">=</span> <span class="bu">dict</span>(<span class="bu">zip</span>(headers, cells))</span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>        <span class="cf">elif</span> line.startswith(<span class="st">&#39;</span><span class="ch">\\</span><span class="st">&#39;</span>) <span class="kw">and</span> row:</span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>            cells <span class="op">=</span> line[<span class="dv">1</span>:].split(<span class="st">&#39;</span><span class="ch">\t</span><span class="st">|&#39;</span>)</span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>            cells <span class="op">+=</span> [<span class="st">&#39;&#39;</span>] <span class="op">*</span> (<span class="bu">len</span>(headers) <span class="op">-</span> <span class="bu">len</span>(cells))</span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>            <span class="cf">for</span> h, c <span class="kw">in</span> <span class="bu">zip</span>(headers, cells):</span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>                <span class="cf">if</span> c.strip():</span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>                    row[h] <span class="op">+=</span> <span class="st">&#39;</span><span class="ch">\n</span><span class="st">&#39;</span> <span class="op">+</span> c.rstrip(<span class="st">&#39;</span><span class="ch">\t</span><span class="st">&#39;</span>)</span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>                    </span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> row:</span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>        <span class="cf">yield</span> row</span></code></pre></div>
+</div>
+</body>
+</html>

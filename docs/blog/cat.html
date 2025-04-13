@@ -81,18 +81,20 @@ Homfunctor)</a></li>
 <li><a href="#homfunctor">Definition 13. (Homfunctor)</a></li>
 <li><a href="#product-and-coproduct">Definition 14. (Product and
 Coproduct)</a></li>
+<li><a href="#left-and-right-adjoint-functors">Definition 15. (Left and
+Right Adjoint Functors)</a></li>
 <li><a href="#examples">Examples</a></li>
-<li><a href="#the-monoid-category">Example 15. (The Monoid
+<li><a href="#the-monoid-category">Example 16. (The Monoid
 Category)</a></li>
-<li><a href="#the-category-of-categories">Example 16. (The Category of
+<li><a href="#the-category-of-categories">Example 17. (The Category of
 Categories)</a></li>
-<li><a href="#the-set-category">Example 17. (The Set Category)</a></li>
-<li><a href="#the-product-functor-in-set">Example 18. (The Product
+<li><a href="#the-set-category">Example 18. (The Set Category)</a></li>
+<li><a href="#the-product-functor-in-set">Example 19. (The Product
 Functor in Set)</a></li>
-<li><a href="#the-sum-functor-in-set">Example 19. (The Sum Functor in
+<li><a href="#the-sum-functor-in-set">Example 20. (The Sum Functor in
 Set)</a></li>
-<li><a href="#the-list-functor">Example 20. (The List Functor)</a></li>
-<li><a href="#haskell-functor">Example 21. (Haskell Functor)</a></li>
+<li><a href="#the-list-functor">Example 21. (The List Functor)</a></li>
+<li><a href="#haskell-functor">Example 22. (Haskell Functor)</a></li>
 </ul>
 <h2 id="notation"><a class="anchor" href="#notation"></a>Notation</h2>
 <ul>
@@ -357,9 +359,21 @@ equipped with two injections <code>i&#39;: A → C&#39;</code> and
 <pre><code> i&#39; = i ▹ m
  j&#39; = j ▹ m</code></pre>
 </section>
+<section id="left-and-right-adjoint-functors" class="Definition">
+<h4><a class="anchor" href="#left-and-right-adjoint-functors"></a>Definition
+15. (Left and Right Adjoint Functors)</h4>
+<p>Let <code>L: 𝓒 → 𝓓</code>, <code>R: 𝓓 → 𝓒</code> functors such that
+for all <code>A</code> in <code>𝓒</code> there is a natural isomorphism
+between <code>R ▹ A→ : 𝓓 → Set</code> and
+<code>L&lt;A&gt;→ : 𝓓 → Set</code> and for all <code>B</code> in
+<code>𝓓</code> there is a natural isomorphism between
+<code>L ▹ →B : 𝓒 → Set</code> and <code>→R&lt;B&gt; : 𝓒 → Set</code>.
+Then <code>L</code> is called the left-adjoint of <code>R</code>, and
+<code>R</code> is called the right-adjoint of <code>L</code>.</p>
+</section>
 <h2 id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
 <section id="the-monoid-category" class="Example">
-<h4><a class="anchor" href="#the-monoid-category"></a>Example 15. (The
+<h4><a class="anchor" href="#the-monoid-category"></a>Example 16. (The
 Monoid Category)</h4>
 <p>A monoid <code>M</code> is characterized by a set of values
 <code>M</code>, an identity value <code>0</code> and an operator
@@ -391,7 +405,7 @@ met.</p>
 <p>∎</p>
 </section>
 <section id="the-category-of-categories" class="Example">
-<h4><a class="anchor" href="#the-category-of-categories"></a>Example 16.
+<h4><a class="anchor" href="#the-category-of-categories"></a>Example 17.
 (The Category of Categories)</h4>
 <p>The category <em>Cat</em> where objects are categories and morphisms
 are functors between categories, is a category. Functors <code>F</code>
@@ -416,7 +430,7 @@ the underlying functions is associative. (Identity) For any object
 functions. ∎</p>
 </section>
 <section id="the-set-category" class="Example">
-<h4><a class="anchor" href="#the-set-category"></a>Example 17. (The Set
+<h4><a class="anchor" href="#the-set-category"></a>Example 18. (The Set
 Category)</h4>
 <p>The category <em>Set</em> is the category where objects are sets and
 morphisms are functions between sets. When programming with total
@@ -427,7 +441,7 @@ functions map types to other types. For example, <code>Bool</code> and
 morphism.</p>
 </section>
 <section id="the-product-functor-in-set" class="Example">
-<h4><a class="anchor" href="#the-product-functor-in-set"></a>Example 18.
+<h4><a class="anchor" href="#the-product-functor-in-set"></a>Example 19.
 (The Product Functor in Set)</h4>
 <p>The type constructor</p>
 <pre><code> Pair: Set ⨯ Set → Set
@@ -437,7 +451,7 @@ morphism.</p>
 <p><em>Proof.</em> TODO</p>
 </section>
 <section id="the-sum-functor-in-set" class="Example">
-<h4><a class="anchor" href="#the-sum-functor-in-set"></a>Example 19.
+<h4><a class="anchor" href="#the-sum-functor-in-set"></a>Example 20.
 (The Sum Functor in Set)</h4>
 <p>The type constructor</p>
 <pre><code> Either: Set ⨯ Set → Set
@@ -448,7 +462,7 @@ morphism.</p>
 <p><em>Proof.</em> TODO</p>
 </section>
 <section id="the-list-functor" class="Example">
-<h4><a class="anchor" href="#the-list-functor"></a>Example 20. (The List
+<h4><a class="anchor" href="#the-list-functor"></a>Example 21. (The List
 Functor)</h4>
 <p>The <em>List</em> type constructor forms an endofunctor in the
 category Set.</p>
@@ -493,7 +507,7 @@ List(id&lt;A&gt;)(Cons(x, xs)) = Cons(id&lt;A&gt;(x), List(id&lt;A&gt;)(xs))  (L
 <p>Both expressions simplify to <code>Cons(x, xs)</code>. ∎</p>
 </section>
 <section id="haskell-functor" class="Example">
-<h4><a class="anchor" href="#haskell-functor"></a>Example 21. (Haskell
+<h4><a class="anchor" href="#haskell-functor"></a>Example 22. (Haskell
 Functor)</h4>
 <p>Any Haskell type constructor <code>F</code> that has an instance of
 the <a href="https://wiki.haskell.org/Functor">Haskell Functor class</a>
