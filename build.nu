@@ -4,6 +4,7 @@
 def "main" [] {
   print "building pandoc"
   ^pandoc blog/cat.md -o blog/cat.html -d pandoc/pandoc.yaml
+  ^pandoc blog/tpsv.md -o blog/tpsv.html -d pandoc/pandoc.yaml
 }
 
 def "main watch" [] {
