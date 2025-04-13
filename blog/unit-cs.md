@@ -1,24 +1,22 @@
-= The missing C# built-in type: void
+% The missing C# built-in type: void
 
 ## The problem: void is not a type
 
 Suppose you wanted to write a `Map` function for tasks.
 The definition is very simple.
 
-[source,cs]
-....
+~~~~cs
 async Task<T2> Map<T1, T2>(Task<T1> task, Func<T1, T2> f) => f(await task);
-....
+~~~~
 
 You can then use it as follows.
 
-[source,cs]
-....
+~~~~cs
 Task<int> DoubleIntAsync(Task<int> task)
 {
   return Map(task, i => i * i);
 }
-....
+~~~~
 
 There is a problem however.
 We've written our `Map` function to be able to deal with `Task<>` and `Func<>`.
@@ -27,8 +25,7 @@ And since the type system doesn't allow us to simply use `Task<void>` and `Func<
 And that disallows us from using our `Map` for the void cases of these types.
 In other words, the following functions won't compile.
 
-[source,cs]
-....
+~~~~cs
 Task PrintIntAsync(Task<int> task)
 {
   return Map(task, Console.WriteLine);
@@ -43,16 +40,15 @@ Task LogTaskFinished(Task task)
 {
   return Map(task, () => Console.WriteLine("task finished"));
 }
-....
+~~~~
 
 We would have to write `Map` overloads to support these void cases.
 
-[source,cs]
-....
+~~~~cs
 async Task Map<T1>(Task<T1> task, Action<T1> f) => f(await task);
 async Task Map(Task task, Action f) { await task; f(); }
 async Task<T2> Map<T2>(Task task, Func<T2> f) { await task; return f(); }
-....
+~~~~
 
 In this case the function definitions are fairly simple and we only need four of them, but the general problem is bigger.
 For each additional type involved that has a void case, the amount of necessary overloads doubles.
@@ -66,8 +62,7 @@ Many functional programming languages do not actually support void functions lik
 Instead they have a builtin unit type, which is used whenever a function doesn't return any actual data.
 We can create our own C# version of a `Unit` and use it instead of `void`.
 
-[source,cs]
-....
+~~~~cs
 public struct Unit : IEquatable<Unit>
 {
   public static readonly Unit unit;
@@ -78,7 +73,7 @@ public struct Unit : IEquatable<Unit>
   public bool Equals(Unit other) => true;
   public override string ToString() => "()";
 }
-....
+~~~~
 
 If we now have a function that is `void` we can have it return `Unit` instead, so that it can be used as a `Func<Unit>` delegate.
 Similarly, if we need a `Task` without a value, we can simply use `Task<Unit>`.
@@ -87,8 +82,7 @@ But our code doesn't live in isolation.
 We have to deal with existing code and an existing ecosystem, both of which expose a lot of void oriented types and functions.
 Luckily C# supports extension methods, which allow use to deal with this in an acceptable way and convert void cases to their unit counterparts.
 
-[source,cs]
-....
+~~~~cs
 using static Unit;
 
 public static class ExtensionMethods
@@ -117,12 +111,11 @@ public static class ExtensionMethods
     };
   }
 }
-....
+~~~~
 
 Now we can rewrite the original snippets as follows.
 
-[source,cs]
-....
+~~~~cs
 Task<int> DoubleIntAsync(Task<int> task)
 {
   return Map(task, i => i * i);
@@ -145,7 +138,7 @@ Task<Unit> LogTaskFinished(Task task)
   Action a = () => Console.WriteLine("task finished");
   return Map(task.AsUnitTask(), a.AsFunc());
 }
-....
+~~~~
 
 It may seem that we've merely moved the burden from writing `Map` overloads to writing extension methods.
 But that is not the case.

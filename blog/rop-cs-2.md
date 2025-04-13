@@ -1,27 +1,27 @@
-= Railroad Oriented Programming in C#: Part 2
+% Railroad Oriented Programming in C#: Part 2
 
-In the link:/?page=rop-cs-1[previous part] we looked at problems with traditional forms of handling failure.
+In the [previous part](/?page=rop-cs-1) we looked at problems with traditional forms of handling failure.
 Here we will look at one solution to deal with these problems: a `Result` type that allows for a success case and a failure case.
 
 ## A result type supporting the failure path
 While C# does not directory support Discriminated Unions, it does support subclassing.
 Since a class can have multiple subclasses, and any object is always just one of them, we can use this phenomenon to implement the notion of having two return types, one for the success result, and one for the failure result.
 
-[source,cs]
-....
+
+~~~~cs
 public abstract class Result {
   public sealed class Success : Result { }
   public sealed class Failure : Result { }
   // Private constructor so we are certain that Success and Failure are the only subclasses
   private Result () { }
 }
-....
+~~~~
 
 However, this class does not allow us to associate any return data with either the success or the failure result.
 We can fix that.
 
-[source,cs]
-....
+
+~~~~cs
 public abstract class Result<TSuccess, TFailure> {
 
   public sealed class Success : Result<TSuccess, TFailure> {
@@ -41,24 +41,24 @@ public abstract class Result<TSuccess, TFailure> {
   // Private constructor so we are certain that Success and Failure are the only subclasses
   private Result () { }
 }
-....
+~~~~
 
 With this in our toolkit we can now implement our `GetEmailAddress` function from earlier with an explicit failure path.
 
-[source,cs]
-....
+
+~~~~cs
 Result<User, string> GetUser(string username) {
   var user = Datastore.FindUser(username);
   if (user == null)
     return new Result<User, string>.Failure("User has no email");
   return new Result<User, string>.Success(user);
 }
-....
+~~~~
 
 Usage of this function would look something like
 
-[source,cs]
-....
+
+~~~~cs
 var result = GetUser(username);
 if (result is Result<User,string>.Success) {
   var user = ((Result<User,string>.Success)result).ResultValue;
@@ -67,15 +67,15 @@ if (result is Result<User,string>.Success) {
   var error = ((Result<User,string>.Failure)result).ErrorValue;
   // Handle the failure appropriately
 }
-....
+~~~~
 
 As you can see we've achieved an explicit failure path.
 When we call `GetUser` we obtain a result object and this encourages us to consider both the success and the failure case.
 But the code leaves much to be desired.
 Even more so when we need to call more than one function.
 
-[source,cs]
-....
+
+~~~~cs
 Result<string, string> GetEmailAddress(User user);
 
 // ...
@@ -95,7 +95,7 @@ if (result is Result<User, string>.Success) {
   var error = ((Result<User, string>.Failure)result).ErrorValue;
   // Handle the failure appropriately
 }
-....
+~~~~
 
 We would like to
 
@@ -110,8 +110,8 @@ To resolve the complaints about our previous implementation, we'll define an `On
 They will do the unwrapping for us and form a https://en.wikipedia.org/wiki/Fluent_interface[Fluent Interface] and thereby removing the nesting.
 Moreover, the OnSuccess function will "shortcircuit" the failure path, such that we only have to handle the failure path once.
 
-[source,cs]
-....
+
+~~~~cs
 public abstract class Result<TSuccess, TFailure> {
 
   public abstract Result<TNextSuccess, TFailure> OnSuccess<TNextSuccess>(
@@ -146,27 +146,27 @@ public abstract class Result<TSuccess, TFailure> {
 
   private Result() { }
 }
-....
+~~~~
 
 Apart from the daunting function signatures, the actual function bodies are trivial.
 Yet they suddenly allow us to write very concise code.
 Compare the following with what we had in the previous section.
 
-[source,cs]
-....
+
+~~~~cs
 GetUser(username)
   .OnSuccess(GetEmailAddress);
   .Handle(
     emailAddress => ..., // Do your thing
     error => ... // Handle the failure appropriately
   );
-....
+~~~~
 
 If we visualize the code flow above in a diagram, it becomes clear why this style of programming is sometimes referred to as _railway oriented programming_.
 The `Result` type encapsulates two "paths" or "tracks", the success track and the failure track.
 
-[pikchr]
-....
+
+~~~~pikchr
 scale = .8
 
 R: oval "Result" fit
@@ -174,62 +174,62 @@ arrow from R.n right color lightblue behind R
 oval "Success" fit fill lightblue
 arrow from R.s right color orange behind R
 oval "Failure" fit fill orange
-....
+~~~~
 
 And the `OnSuccess` and `Handle` methods form trackpieces.
 
-[pikchr]
-....
+
+~~~~pikchr
 include::rop.pikchr[]
 
 onSuccess("OnSuccess", "SuccessValue")
-....
+~~~~
 
-[pikchr]
-....
+
+~~~~pikchr
 include::rop.pikchr[]
 
 handle("Handle", "EndValue")
-....
+~~~~
 
 The railway of the example code would look like
 
-[pikchr]
-....
+
+~~~~pikchr
 include::rop.pikchr[]
 
 startResult("GetUser","User","string")
 onSuccess("GetEmailAddress","string")
 handle("Handle","string")
-....
+~~~~
 
 ### Another example
 
 Suppose now that we needed to write the following function.
 
-[source,cs]
-....
+
+~~~~cs
 /// <returns>Message to be printed on the screen</returns>
 string MailMessageToUser(string username, string msg);
-....
+~~~~
 
 And suppose that we have the following functions at our disposal.
 
-[source,cs]
-....
+
+~~~~cs
 Result<User, string> GetUser(string username);
 Result<string, string> GetEmailAddress(User user);
 Result<EmailMessage, string> CreateEmailMessage(string emailAddress, string msg);
 Result<Unit, string> SendEmail(EmailMessage email);
-....
+~~~~
 
 If you're wondering what that `Unit` type is, it's a replacement for `void`, since we can't put `void` in there.
-For more information refer to link:/?page=unit-cs[The missing C# built-in type: void].
+For more information refer to [The missing C# built-in type: void](/?page=unit-cs).
 
 Then we could implement the function as follows.
 
-[source,cs]
-....
+
+~~~~cs
 /// <returns>Message to be printed on the screen</returns>
 string MailMessageToUser(string username, string msg) {
   return GetUser(username)
@@ -244,12 +244,12 @@ string MailMessageToUser(string username, string msg) {
       }
     );
 }
-....
+~~~~
 
 The railway of the example code would look like
 
-[pikchr]
-....
+
+~~~~pikchr
 include::rop.pikchr[]
 
 startResult("GetUser","User","string")
@@ -258,14 +258,14 @@ newline
 onSuccess("CreateEmailMessage","EmailMessage")
 onSuccess("SendEmail","Unit")
 handle("Handle","string")
-....
+~~~~
 
 ### Void handlers
 
 If we would rather handle the end result without returning anything, e.g. using void methods only, we would need a variant of `Handle` for that.
 
-[source,cs]
-....
+
+~~~~cs
 public abstract class Result<TSuccess, TFailure> {
 
   // ...
@@ -277,12 +277,12 @@ public abstract class Result<TSuccess, TFailure> {
     _ = Handle(onSuccess.AsFunc(), onFailure.AsFunc());
   }
 }
-....
+~~~~
 
 Then we could use it as follows.
 
-[source,cs]
-....
+
+~~~~cs
 /// <returns>Message to be printed on the screen</returns>
 string MailMessageToUser(string username, string msg) {
   return GetUser(username)
@@ -299,24 +299,24 @@ string MailMessageToUser(string username, string msg) {
       }
     );
 }
-....
+~~~~
 
-For the implementation of `AsFunc`, refer to link:/?page=unit-cs[The missing C# built-in type: void].
+For the implementation of `AsFunc`, refer to [The missing C# built-in type: void](/?page=unit-cs).
 
 ### The OnFailure method
 
 If we have a OnSuccess method, there is no reason why we couldn't have an OnFailure method too.
 This would allow us to do operations on the failure track, such as modifying the error, or recovering from the error and get back on the success track.
 
-[pikchr]
-....
+
+~~~~pikchr
 include::rop.pikchr[]
 
 onFailure("OnFailure","ErrorValue")
-....
+~~~~
 
-[source,cs]
-....
+
+~~~~cs
 /// <returns>Message to be printed on the screen</returns>
 string MailMessageToUser(string username, string msg) {
   return GetUser(username)
@@ -332,10 +332,10 @@ string MailMessageToUser(string username, string msg) {
       }
     );
 }
-....
+~~~~
 
-[pikchr]
-....
+
+~~~~pikchr
 include::rop.pikchr[]
 
 startResult("GetUser","User","string")
@@ -345,6 +345,6 @@ newline
 onSuccess("SendEmail","Unit")
 onFailureF("TransformError","string")
 handle("Handle","string")
-....
+~~~~
 
-We still need to deal with the awkward construction of `Result` instances, and we'll do that in the link:/?page=rop-cs-3[next part].
+We still need to deal with the awkward construction of `Result` instances, and we'll do that in the [next part](/?page=rop-cs-3).

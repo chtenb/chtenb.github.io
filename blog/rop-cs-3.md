@@ -1,34 +1,32 @@
-= Railroad Oriented Programming in C#: Part 3
+% Railroad Oriented Programming in C#: Part 3
 
-In the link:/?page=rop-cs-2[previous part] we looked at an implementation of a `Result` type for explicit failure paths.
+In the [previous part](/?page=rop-cs-2) we looked at an implementation of a `Result` type for explicit failure paths.
 In this part we'll look at how we can improve the creation of these `Result` objects.
 
 ## Creating `Result` instances
 
 When creating a `Result` instance we often find ourselves writing code like this.
 
-[source,cs]
-....
+~~~~cs
 Result<User, string> GetUser(string username) {
   var user = Datastore.FindUser(username);
   if (user == null)
     return new Result<User, string>.Failure("User not found");
   return new Result<User, string>.Success(user);
 }
-....
+~~~~
 
 There is not much wrong with it, except that it may become cumbersome to have to specify those generic parameters all the time.
 We'd much rather write the following.
 
-[source,cs]
-....
+~~~~cs
 Result<User, string> GetUser(string username) {
   var user = Datastore.FindUser(username);
   if (user == null)
     return Result.Fail("User not found");
   return Result.Succeed(user);
 }
-....
+~~~~
 
 Unfortunately the C# compiler cannot infer type parameters on types, but only on methods.
 So we could introduce a static class `Result` and put some factory methods in there.
@@ -42,8 +40,7 @@ Then we introduce implicit cast operators to make it possible to cast it to a fu
 The win here is that the casting can be done by the compiler in a context where the type parameters are all clear from the context, even when it's based on the return type of the enclosing function.
 
 
-[source,cs]
-....
+~~~~cs
 public abstract class Result<TSuccess, TFailure> {
 
   // ...
@@ -78,34 +75,32 @@ public static class Result {
     }
   }
 }
-....
+~~~~
 
 If we now attempt to compile the previous code snippet, we find that the compiler is happy with the type parameters being left out.
 However, there are still situations in which this will not infer all the types, for example when using a lambda expression, which has no explicit signature.
 
-[source,cs]
-....
+~~~~cs
 Result<string, string> GetEmail(string username) {
   return GetUser(username)
     .OnSuccess(user => {
       return Result.Succeed("test@example.com");
     });
 }
-....
+~~~~
 
 This will give a compiler error saying that the type arguments could not be inferred.
 In that case we should provide the type argument to the `OnSuccess` method.
 
-[source,cs]
-....
+~~~~cs
 Result<string, string> GetEmail(string username) {
   return GetUser(username)
     .OnSuccess<string>(user => {
       return Result.Succeed("test@example.com");
     });
 }
-....
+~~~~
 
 As a rule of thumb, if one encounters any confusing compile errors, try supplying the type parameters to the `OnSuccess`, `OnFailure` and `Handle` methods, and work from there.
 
-In the link:/?page=rop-cs-4[next part] we will look at more complex railway tracks and conclude this series.
+In the [next part](/?page=rop-cs-4) we will look at more complex railway tracks and conclude this series.

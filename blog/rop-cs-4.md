@@ -1,6 +1,6 @@
-= Railroad Oriented Programming in C#: Part 4
+% Railroad Oriented Programming in C#: Part 4
 
-In the link:/?page=rop-cs-3[previous part] we looked at how we could construct `Result` instances more easily.
+In the [previous part](/?page=rop-cs-3) we looked at how we could construct `Result` instances more easily.
 In this part we will look at slightly more complex railway tracks and wrap up the series.
 
 ## Subtracks and failure recovery
@@ -12,16 +12,14 @@ Let's give an example that demonstrates having a subtrack and performing a failu
 
 Suppose that now the `SendEmail` function does not return a `string` on failure, but some failure object like an `Exception` instance.
 
-[source,cs]
-....
+~~~~cs
 Result<Unit, Exception> SendEmail(EmailMessage email, MailServer server);
-....
+~~~~
 
 We could then inspect this failure object and decide how to handle it based on the kind of failure.
 Suppose we want to send an email to the server, but we have a fallback server in case the first server fails.
 
-[source,cs]
-....
+~~~~cs
 /// <returns>Message to be printed on the screen</returns>
 string MailMessageToUser(string username, string msg, MailServer server1, MailServer server2) {
   return GetUser(username)
@@ -44,14 +42,13 @@ string MailMessageToUser(string username, string msg, MailServer server1, MailSe
       }
     );
 }
-....
+~~~~
 
 Here we attempt to defer our email to a second mail server when the first server appears unreachable.
 The function `MailMessageToUser` having two mail servers as parameters is a little odd, and probably not how we would want to do it in real life.
 But it demonstrates having subtracks and failure recovery very well in the context of our email example.
 
-[pikchr]
-....
+~~~~pikchr
 include::rop.pikchr[]
 
 startResult("GetUser","User","string")
@@ -80,7 +77,7 @@ line from B2.e right linerad then down then right color orange behind B2
 move to E.end
 
 handle("Handle","string")
-....
+~~~~
 
 ## Asynchronous programming
 
@@ -91,8 +88,7 @@ Maybe I'll write another article about that some time.
 
 Here follows the code for the `Result` type we've produced in this article series. 
 
-[source,cs]
-....
+~~~~cs
   public abstract class Result<TSuccess, TFailure> {
 
     public abstract Result<TNextSuccess, TFailure> OnSuccess<TNextSuccess>(
@@ -201,4 +197,4 @@ Here follows the code for the `Result` type we've produced in this article serie
       }
     }
   }
-....
+~~~~
