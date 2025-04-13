@@ -1,15 +1,15 @@
 TPSV
 ====
 
-TPSV stands for Tab-Pipe-Separated-Values and is a human readable replacement for CSV and TSV.
+TPSV stands for Tab-Pipe-Separated-Values. It is a human-readable alternative to CSV and TSV.
 Like both of these formats, TPSV is able to describe tabular data where each cell contains a string value.
-The main design requirement for TPSV is that it should be easy to parse and easy to use for everyone with a text editor, no plugins needed.
+The primary design goal of TPSV is ease of parsing and ease of use such that anyone with a text editor can work with it, no plugins required.
 
 ## Syntax
 
 The basic syntax is simple.
 
-1. A cell starts with a `|` and ends with one or more tabs.
+1. A cell starts with `|` and ends with one or more tabs.
 2. A line that starts with a cell is a row. Any other lines are ignored.
 3. The first row defines the number of columns.
 
@@ -17,11 +17,11 @@ That's all you need, but there are a few more rules to make life easier.
 
 4. A row with too few cells has the remaining cells be an empty string.
 5. A row with too many cells has the superfluous cells ignored.
-6. The last column in a row does not have to end with tabs.
+6. The last column in a row does not need to end with tabs.
 
 Then there is one last optional rule, the multiline extension.
 
-7. A row that starts with a `\` instead of a `|` is treated as a continuation row.
+7. A row that starts with `\` instead of `|` is treated as a continuation row.
    The non-empty contents of its cells are appended to the cells of the previous row, delimited by a newline character.
 
 ## Example
@@ -35,22 +35,22 @@ This example highlights a few aspects.
 
 - The first two lines are comments. The first line is a modeline, which can be interpreted by text editors that support them, and in this case sets the tab width to 4.
 - The first row is usually a header, giving captions to the columns.
-- The header separator does not start with a | or a \ , and is thus ignored.
-- This chosen header separator makes this example compatible with markdown pipe tables, which are recognized as tables in many places, like github markdown.
+- The header separator does not start with `|` or `\`, so it is ignored.
+- This choice of header separator makes the example compatible with Markdown pipe tables, which are recognized as tables in many contexts, including GitHub-flavored Markdown.
   Convenient if you want to paste it somewhere.
 - The last column is ideal for long cell contents.
-- The cell with the TODO is past the last column, so it acts as a comment.
+- The cell with the "TODO" is beyond the last column, so it acts as a comment.
 - The last line is a continuation, which can be nice if you don't want the text to exceed a certain width.
 
 ## Editor compatibility
 
 Recommendations:
 
-- Use monospaced text editor.
-- Configure editor to render tab characters (so you can distinghuish from spaces).
+- Use a monospaced text editor.
+- Configure your editor to render tab characters (so you can distinguish them from spaces).
 - Use editorconfig to set tabwidth for specific files, or use modelines like `vim: tw=8`, which are supported by several editors.
-- The smaller you choose the tabwidth, the more finegrained you can make the column widths, but this also comes with more width management.
-  I would generally recommend a tabwidth of 8 for TPSV files, but other choices can make a lot of sense too.
+- A smaller tab-width gives you finer control over column widths, but requires more manual width management.
+  I would generally recommend a tab-width of 8 for TPSV files, but other choices can make a lot of sense too.
 
 Example .editorconfig for generic tpsv files:
 
@@ -66,15 +66,15 @@ insert_final_newline = true
 
 Improvements over TSV:
 
-- Allows comments
+- Supports comments
 - Easier to view in text editors without setting the tabwidth very high
   (which would make all columns as wide as the widest column)
-- Can be made compatible with markdown pipe tables
+- Can be made compatible with Markdown pipe tables
 - Multiline extension
 
-Improvements over markdown pipe tables:
+Improvements over Markdown pipe tables:
 
-- Less managing spaces for vertical alignment. Tabs are easier to space evenly (unless you have a tabwidth of 1).
+- Less need to manage spaces for vertical alignment. Tabs are easier to space evenly (unless you use a tab width of 1).
 - Cell contents are able to contain pipes and leading/trailing spaces.
 - Multiline extension
 
