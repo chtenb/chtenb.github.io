@@ -273,20 +273,19 @@ code span.wa {
 formats</a></li>
 <li><a href="#parsing">Parsing</a></li>
 </ul>
-<p>TPSV stands for Tab-Pipe-Separated-Values and is a human readable
-replacement for CSV and TSV. Like both of these formats, TPSV is able to
-describe tabular data where each cell contains a string value. The main
-design requirement for TPSV is that it should be easy to parse and easy
-to use for everyone with a text editor, no plugins needed.</p>
+<p>TPSV stands for Tab-Pipe-Separated-Values. It is a human-readable
+alternative to CSV and TSV. Like both of these formats, TPSV is able to
+describe tabular data where each cell contains a string value. The
+primary design goal of TPSV is ease of parsing and ease of use such that
+anyone with a text editor can work with it, no plugins required.</p>
 <h2 id="syntax"><a class="anchor" href="#syntax"></a>Syntax</h2>
 <p>The basic syntax is simple.</p>
 <ol type="1">
-<li>A cell starts with a <code>|</code> and ends with one or more
+<li>A cell starts with <code>|</code> and ends with one or more
 tabs.</li>
 <li>A line that starts with a cell is a row. Any other lines are
 ignored.</li>
-<li>The first row is the header row, and it defines the number of
-columns and their names.</li>
+<li>The first row defines the number of columns.</li>
 </ol>
 <p>That’s all you need, but there are a few more rules to make life
 easier.</p>
@@ -294,37 +293,37 @@ easier.</p>
 <li>A row with too few cells has the remaining cells be an empty
 string.</li>
 <li>A row with too many cells has the superfluous cells ignored.</li>
-<li>The last column in a row does not have to end with tabs.</li>
+<li>The last column in a row does not need to end with tabs.</li>
 </ol>
 <p>Then there is one last optional rule, the multiline extension.</p>
 <ol start="7" type="1">
-<li>A row that starts with a <code>\</code> instead of a <code>|</code>
-is treated as a continuation row. The contents of its cells are appended
-to the cells of the previous row, delimited by a newline character.</li>
+<li>A row that starts with <code>\</code> instead of <code>|</code> is
+treated as a continuation row. The non-empty contents of its cells are
+appended to the cells of the previous row, delimited by a newline
+character.</li>
 </ol>
 <h2 id="example"><a class="anchor" href="#example"></a>Example</h2>
-<p>This is a sample TPSV demonstrating the format</p>
-<pre><code>vim: tw=4
-Employee table
-|First Name |Second Name    |Occupation |Notes          |Details
-------------|---------------|-----------|---------------|-------
-|Alice      |Johnson        |Engineer   |Top performer  |Has consistently exceeded expectations across multiple projects, including the Q4 rollout.
-|Bob        |Lee            |Manager    |Needs review   |Pending evaluation for lateral move to operations; decision expected next month.
-|Carol      |Wu             |Analyst    |Fast learner   |Quickly adapted to new tooling. Mentors junior staff.                  | TODO: review this row
-|Dan        |Kent           |Technician |Retired        |Though retired, Dan remains available on a consultancy basis,
-\           |               |           |               |especially for legacy systems and knowledge transfer sessions with new staff.</code></pre>
-<p>This example is chosen to highlight a few aspects.</p>
+<p>This is a sample TPSV demonstrating the format. The gray arrows are
+tab characters.</p>
+<figure>
+<img src="/tpsv.4dc8995d.png" alt="Alt text">
+<figcaption aria-hidden="true">Alt text</figcaption>
+</figure>
+<p>This example highlights a few aspects.</p>
 <ul>
 <li>The first two lines are comments. The first line is a modeline,
 which can be interpreted by text editors that support them, and in this
 case sets the tab width to 4.</li>
-<li>The header separator does not start with a | or a  , and is thus
-ignored.</li>
-<li>This chosen header separator makes this example compatible with
-markdown pipe tables, which are recognized as tables in many places,
-like github markdown. Convenient if you want to paste it somewhere.</li>
+<li>The first row is usually a header, giving captions to the
+columns.</li>
+<li>The header separator does not start with <code>|</code> or
+<code>\</code>, so it is ignored.</li>
+<li>This choice of header separator makes the example compatible with
+Markdown pipe tables, which are recognized as tables in many contexts,
+including GitHub-flavored Markdown. Convenient if you want to paste it
+somewhere.</li>
 <li>The last column is ideal for long cell contents.</li>
-<li>The cell with the TODO is past the last column, so it acts as a
+<li>The cell with the “TODO” is beyond the last column, so it acts as a
 comment.</li>
 <li>The last line is a continuation, which can be nice if you don’t want
 the text to exceed a certain width.</li>
@@ -333,82 +332,67 @@ the text to exceed a certain width.</li>
 compatibility</h2>
 <p>Recommendations:</p>
 <ul>
-<li>Use monospaced text editor.</li>
-<li>Configure editor to render tab characters (so you can distinghuish
-from spaces).</li>
+<li>Use a monospaced text editor.</li>
+<li>Configure your editor to render tab characters (so you can
+distinguish them from spaces).</li>
 <li>Use editorconfig to set tabwidth for specific files, or use
 modelines like <code>vim: tw=8</code>, which are supported by several
 editors.</li>
-<li>The smaller you choose the tabwidth, the more finegrained you can
-make the column widths, but this also comes with more width management.
-I would generally recommend a tabwidth of 8 for TPSV files, but other
-choices can make a lot of sense too.</li>
+<li>A smaller tab-width gives you finer control over column widths, but
+requires more manual width management. I would generally recommend a
+tab-width of 8 for TPSV files, but other choices can make a lot of sense
+too.</li>
 </ul>
-<p>Example .editorconfig for generic tsv files:</p>
-<pre><code>[*.tsv]
+<p>Example .editorconfig for generic tpsv files:</p>
+<pre><code>[*.tpsv]
 indent_style = tab
-tab_width = 28
-trim_trailing_whitespace = false
+tab_width = 8
 max_line_length = 999
 insert_final_newline = true</code></pre>
 <h2 id="comparison-with-other-formats"><a class="anchor" href="#comparison-with-other-formats"></a>Comparison
 with other formats</h2>
 <p>Improvements over TSV:</p>
 <ul>
-<li>Allows comments</li>
+<li>Supports comments</li>
 <li>Easier to view in text editors without setting the tabwidth very
 high (which would make all columns as wide as the widest column)</li>
-<li>Can be made compatible with markdown pipe tables</li>
+<li>Can be made compatible with Markdown pipe tables</li>
 <li>Multiline extension</li>
 </ul>
-<p>Improvements over markdown pipe tables:</p>
+<p>Improvements over Markdown pipe tables:</p>
 <ul>
-<li>Less managing spaces for vertical alignment. Tabs are easier to
-space evenly (unless you have a tabwidth of 1).</li>
+<li>Less need to manage spaces for vertical alignment. Tabs are easier
+to space evenly (unless you use a tab width of 1).</li>
 <li>Cell contents are able to contain pipes and leading/trailing
 spaces.</li>
 <li>Multiline extension</li>
 </ul>
 <h2 id="parsing"><a class="anchor" href="#parsing"></a>Parsing</h2>
-<p>This parses the basic syntax.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> parse_tpsv(<span class="bu">file</span>):</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    headers <span class="op">=</span> []</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> line <span class="kw">in</span> <span class="bu">file</span>:</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> line.startswith(<span class="st">&#39;|&#39;</span>):</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>            cells <span class="op">=</span> [c.rstrip(<span class="st">&#39;</span><span class="ch">\t</span><span class="st">&#39;</span>) <span class="cf">for</span> c <span class="kw">in</span> line[<span class="dv">1</span>:].rstrip(<span class="st">&#39;</span><span class="ch">\n</span><span class="st">&#39;</span>).split(<span class="st">&#39;</span><span class="ch">\t</span><span class="st">|&#39;</span>)]</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> <span class="kw">not</span> headers:</span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>                headers <span class="op">=</span> cells</span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>            <span class="cf">else</span>:</span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>                cells <span class="op">+=</span> [<span class="st">&#39;&#39;</span>] <span class="op">*</span> (<span class="bu">len</span>(headers) <span class="op">-</span> <span class="bu">len</span>(cells)) <span class="co"># Missing cells are empty</span></span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>                <span class="cf">yield</span> <span class="bu">dict</span>(<span class="bu">zip</span>(headers, cells)) <span class="co"># Superfluous cells are omitted</span></span></code></pre></div>
+<p>This parses the basic syntax into an iterator of python lists.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> parse_tpsv(<span class="bu">file</span>):</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    row_len <span class="op">=</span> <span class="op">-</span><span class="dv">1</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> line <span class="kw">in</span> <span class="bu">file</span>:</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> line.startswith(<span class="st">&#39;|&#39;</span>):</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>            cells <span class="op">=</span> [c.rstrip(<span class="st">&#39;</span><span class="ch">\t</span><span class="st">&#39;</span>) <span class="cf">for</span> c <span class="kw">in</span> line[<span class="dv">1</span>:].rstrip(<span class="st">&#39;</span><span class="ch">\n</span><span class="st">&#39;</span>).split(<span class="st">&#39;</span><span class="ch">\t</span><span class="st">|&#39;</span>)]</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>            row_len <span class="op">=</span> <span class="bu">len</span>(cells) <span class="cf">if</span> row_len <span class="op">&lt;</span> <span class="dv">0</span> <span class="cf">else</span> row_len <span class="co"># Decide number of columns</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>            <span class="cf">yield</span> cells[:row_len] <span class="op">+</span> [<span class="st">&#39;&#39;</span>] <span class="op">*</span> (row_len <span class="op">-</span> <span class="bu">len</span>(cells)) <span class="co"># Normalize row size</span></span></code></pre></div>
 <p>To also parse the multiline extension, something like this would
 do</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> parse_tpsv_multiline(<span class="bu">file</span>):</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    headers <span class="op">=</span> []</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    row <span class="op">=</span> <span class="va">None</span></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> line <span class="kw">in</span> <span class="bu">file</span>:</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>        line <span class="op">=</span> line.rstrip(<span class="st">&#39;</span><span class="ch">\n</span><span class="st">&#39;</span>)</span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> line.startswith(<span class="st">&#39;|&#39;</span>):</span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> row:</span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>                <span class="cf">yield</span> row</span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>            cells <span class="op">=</span> line[<span class="dv">1</span>:].split(<span class="st">&#39;</span><span class="ch">\t</span><span class="st">|&#39;</span>)</span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>            cells <span class="op">=</span> [c.rstrip(<span class="st">&#39;</span><span class="ch">\t</span><span class="st">&#39;</span>) <span class="cf">for</span> c <span class="kw">in</span> cells]</span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> <span class="kw">not</span> headers:</span>
-<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>                headers <span class="op">=</span> cells</span>
-<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>            <span class="cf">else</span>:</span>
-<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>                cells <span class="op">+=</span> [<span class="st">&#39;&#39;</span>] <span class="op">*</span> (<span class="bu">len</span>(headers) <span class="op">-</span> <span class="bu">len</span>(cells))</span>
-<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>                row <span class="op">=</span> <span class="bu">dict</span>(<span class="bu">zip</span>(headers, cells))</span>
-<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>        <span class="cf">elif</span> line.startswith(<span class="st">&#39;</span><span class="ch">\\</span><span class="st">&#39;</span>) <span class="kw">and</span> row:</span>
-<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>            cells <span class="op">=</span> line[<span class="dv">1</span>:].split(<span class="st">&#39;</span><span class="ch">\t</span><span class="st">|&#39;</span>)</span>
-<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>            cells <span class="op">+=</span> [<span class="st">&#39;&#39;</span>] <span class="op">*</span> (<span class="bu">len</span>(headers) <span class="op">-</span> <span class="bu">len</span>(cells))</span>
-<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>            <span class="cf">for</span> h, c <span class="kw">in</span> <span class="bu">zip</span>(headers, cells):</span>
-<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>                <span class="cf">if</span> c.strip():</span>
-<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>                    row[h] <span class="op">+=</span> <span class="st">&#39;</span><span class="ch">\n</span><span class="st">&#39;</span> <span class="op">+</span> c.rstrip(<span class="st">&#39;</span><span class="ch">\t</span><span class="st">&#39;</span>)</span>
-<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>                    </span>
-<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> row:</span>
-<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>        <span class="cf">yield</span> row</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> parse_tpsv_multiline(<span class="bu">file</span>):</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    row_len, row <span class="op">=</span> <span class="op">-</span><span class="dv">1</span>, <span class="va">None</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> line <span class="kw">in</span> <span class="bu">file</span>:</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> line.startswith(<span class="st">&#39;|&#39;</span>):</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> row:</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>                <span class="cf">yield</span> row</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>            cells <span class="op">=</span> [c.rstrip(<span class="st">&#39;</span><span class="ch">\t</span><span class="st">&#39;</span>) <span class="cf">for</span> c <span class="kw">in</span> line[<span class="dv">1</span>:].rstrip(<span class="st">&#39;</span><span class="ch">\n</span><span class="st">&#39;</span>).split(<span class="st">&#39;</span><span class="ch">\t</span><span class="st">|&#39;</span>)]</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>            row_len <span class="op">=</span> <span class="bu">len</span>(cells) <span class="cf">if</span> row_len <span class="op">&lt;</span> <span class="dv">0</span> <span class="cf">else</span> row_len</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>            row <span class="op">=</span> cells[:row_len] <span class="op">+</span> [<span class="st">&#39;&#39;</span>] <span class="op">*</span> (row_len <span class="op">-</span> <span class="bu">len</span>(cells))</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>        <span class="cf">elif</span> line.startswith(<span class="st">&#39;</span><span class="ch">\\</span><span class="st">&#39;</span>) <span class="kw">and</span> row:</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>            cells <span class="op">=</span> [c.rstrip(<span class="st">&#39;</span><span class="ch">\t</span><span class="st">&#39;</span>) <span class="cf">for</span> c <span class="kw">in</span> line[<span class="dv">1</span>:].rstrip(<span class="st">&#39;</span><span class="ch">\n</span><span class="st">&#39;</span>).split(<span class="st">&#39;</span><span class="ch">\t</span><span class="st">|&#39;</span>)]</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>            <span class="cf">for</span> i, c <span class="kw">in</span> <span class="bu">enumerate</span>(cells[:row_len]):</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>                row[i] <span class="op">+=</span> <span class="st">&#39;</span><span class="ch">\n</span><span class="st">&#39;</span> <span class="op">+</span> c <span class="cf">if</span> c <span class="cf">else</span> <span class="st">&#39;&#39;</span> <span class="co"># Continue cell content if needed</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> row:</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>        <span class="cf">yield</span> row</span></code></pre></div>
 </div>
 </body>
 </html>

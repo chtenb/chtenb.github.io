@@ -11,7 +11,7 @@
     "test": "npm exec spago test",
     "adocw": "watchexec -w blog/ -e adoc,pikchr npm run adoc",
     "serve": "parcel serve --no-cache index.html blog/*.html",
-    "release": "rm -rf docs && npm run build && parcel build --no-optimize --no-source-maps --dist-dir docs/ './index.html' './blog/*.html' && git checkout -- docs/CNAME docs/.nojekyll",
+    "release": "rm -rf docs && nu build.nu && npm run build && parcel build --no-optimize --no-source-maps --dist-dir docs/ './index.html' './blog/*.html' && git checkout -- docs/CNAME docs/.nojekyll",
     "publish": "npm run release && git add . && git commit -m publish",
     "clean": "rm -rf .cache .spago .psci_modules node_modules output .parcel-cache"
   },
