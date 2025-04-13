@@ -1,5 +1,5 @@
 ---
-title:  Category Theory
+title: Category Theory
 ...
 
 This is an imprecise collection of notes about category theory, using an experimental notation that mixes the traditional set-theory oriented notation for functions with a more programming language oriented notation.

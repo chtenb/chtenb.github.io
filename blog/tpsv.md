@@ -1,5 +1,6 @@
-TPSV
-====
+---
+title: TPSV
+...
 
 TPSV stands for Tab-Pipe-Separated-Values. It is a human-readable alternative to CSV and TSV.
 Like both of these formats, TPSV is able to describe tabular data where each cell contains a string value.
@@ -29,7 +30,7 @@ Then there is one last optional rule, the multiline extension.
 This is a sample TPSV demonstrating the format.
 The gray arrows are tab characters.
 
-![Alt text](tpsv.png)
+![](tpsv.png)
 
 This example highlights a few aspects.
 
