@@ -2096,12 +2096,10 @@ body {
 }
 
 a.external:after {
-  content: "⧉";
-  vertical-align: super;
+  content: "🌐";
   color: #888;
   margin-left: .1em;
-  font-size: .65em;
-  text-decoration: none;
+  font-size: .85em;
   display: inline-block;
 }
 
