@@ -29,4 +29,5 @@ filters:
   - "pandoc/toc.lua"
   - "pandoc/header-anchor-links.lua"
   - "pandoc/adoc-compat.lua"
+  - "pandoc/external-links.lua"
 
