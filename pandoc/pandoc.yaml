@@ -10,7 +10,7 @@ self-contained: true
 # toc-depth: 4
 number-sections: false
 
-highlight-style: pandoc/highlight.theme
+highlight-style: pandoc/lux.theme
 
 # html-math-method:
 #   method: mathjax
