@@ -1,140 +1,162 @@
-<!DOCTYPE html><html lang="en"><head>
-<meta charset="UTF-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="generator" content="Asciidoctor 2.0.17">
-<title>On Exception Throwing and Catching in OO</title>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>On Exception Throwing and Catching in OO</title>
+  <style>code {
+  white-space: pre-wrap;
+}
 
+span.smallcaps {
+  font-variant: small-caps;
+}
 
-<base target="_self">
+div.columns {
+  gap: min(4vw, 1.5em);
+  display: flex;
+}
+
+div.column {
+  flex: auto;
+  overflow-x: auto;
+}
+
+div.hanging-indent {
+  text-indent: -1.5em;
+  margin-left: 1.5em;
+}
+
+ul.task-list[class] {
+  list-style: none;
+}
+
+ul.task-list li input[type="checkbox"] {
+  font-size: inherit;
+  vertical-align: middle;
+  width: .8em;
+  margin: 0 .8em .2em -1.6em;
+}
+
+.display.math {
+  text-align: center;
+  margin: .5rem auto;
+  display: block;
+}
+</style>
+  <style type="text/css"></style>
 </head>
-<body class="article">
-<div id="header">
-<h1>On Exception Throwing and Catching in OO</h1>
-</div>
+<body>
+<header id="title-block-header">
+<h1 class="title">On Exception Throwing and Catching in OO</h1>
+</header>
 <div id="content">
-<div id="preamble">
-<div class="sectionbody">
-<div class="paragraph">
-<p>Exceptions are a well-established feature of almost every Object Oriented programming language these days.
-However, exceptions are tricky.
-Let’s discuss the tricky parts and how we can use exceptions to their strength.</p>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_problems_with_throwing_exceptions"><a class="anchor" href="#_problems_with_throwing_exceptions"></a>Problems with throwing exceptions</h2>
-<div class="sectionbody">
-<div class="ulist">
+<p>Exceptions are a well-established feature of almost every Object
+Oriented programming language these days. However, exceptions are
+tricky. Let’s discuss the tricky parts and how we can use exceptions to
+their strength.</p>
+<h2 id="problems-with-throwing-exceptions"><a class="anchor" href="#problems-with-throwing-exceptions"></a>Problems
+with throwing exceptions</h2>
 <ul>
-<li>
-<p>Exceptions are not part of the function signature. As such a caller of a function does not know which exceptions to catch unless he reads all the code that is possibly hit by the function, assuming that he even has access to it.</p>
-</li>
-<li>
-<p>In well-defined and well-maintained APIs the list of possible exceptions a function can throw is stated in the documentation. But the compiler is not aware of this. So:</p>
-<div class="ulist">
+<li><p>Exceptions are not part of the function signature. As such a
+caller of a function does not know which exceptions to catch unless he
+reads all the code that is possibly hit by the function, assuming that
+he even has access to it.</p></li>
+<li><p>In well-defined and well-maintained APIs the list of possible
+exceptions a function can throw is stated in the documentation. But the
+compiler is not aware of this. So:</p>
 <ul>
-<li>
-<p>The user of the API can easily overlook exceptions and get away without compiler warnings.</p>
-</li>
-<li>
-<p>If the API changes over time and adds more exceptions, the user will not be notified of this by the compiler.</p>
-</li>
-<li>
-<p>Most functions are not part of a well-defined API. And even seemingly well-defined/documented APIs are not always documented exhaustively, especially as they change over time.</p>
-</li>
+<li><p>The user of the API can easily overlook exceptions and get away
+without compiler warnings.</p></li>
+<li><p>If the API changes over time and adds more exceptions, the user
+will not be notified of this by the compiler.</p></li>
+<li><p>Most functions are not part of a well-defined API. And even
+seemingly well-defined/documented APIs are not always documented
+exhaustively, especially as they change over time.</p></li>
+</ul></li>
+<li><p>Throwing is slow and using throw/catch for control flow just
+kills performance.</p></li>
+<li><p>When using a debugger, the debugger halts on most exceptions.
+Specifying which exceptions to halt on is a lot of work if you throw a
+lot of exceptions for control flow, instead of just for things that are
+really exceptional.</p></li>
+<li><p>Frequent try-catch blocks are verbose, make the actual intention
+of the code much less clear and which eventually leads to making
+mistakes.</p></li>
 </ul>
-</div>
-</li>
-<li>
-<p>Throwing is slow and using throw/catch for control flow just kills performance.</p>
-</li>
-<li>
-<p>When using a debugger, the debugger halts on most exceptions. Specifying which exceptions to halt on is a lot of work if you throw a lot of exceptions for control flow, instead of just for things that are really exceptional.</p>
-</li>
-<li>
-<p>Frequent try-catch blocks are verbose, make the actual intention of the code much less clear and which eventually leads to making mistakes.</p>
-</li>
-</ul>
-</div>
-<div class="paragraph">
-<p>There are often other ways to handle failure, like having functions return an error value.
-A robust approach to this is discussed in <a href="/?page=rop-cs-1">this article about Railroad Oriented Programming</a>.</p>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_exceptions_are_a_part_of_life"><a class="anchor" href="#_exceptions_are_a_part_of_life"></a>Exceptions are a part of life</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>Making a failure path part of the function return type is neat, but it does not mean that there are no exceptional situations for which the exception throwing mechanism is actually a very good fit.
-To give an extreme example, almost any function can <em>in theory</em> encounter an <code>OutOfMemoryException</code> while doing an allocation.
-Or any function could <em>in theory</em> trigger a bug somewhere causing a <code>NullReferenceException</code> to be thrown.
-Exceptions are a fact of life, and we should be prepared to deal with them.
-It would make no sense to have the returntype of each function indicate that it could return with a null reference failure in the way we suggested above.
-These cases are really exceptions which are <strong>unexpected</strong>.
-There is often no proper way to handle them other than to cancel the whole "operation", log the error and present the user with an appropriate error, indicating that something went completely sideways.
-So how should we deal with that in our code?</p>
-</div>
-<div class="paragraph">
-<p>In a complex application there is no way of telling whether you have caught all exceptions you want to catch.
-You probably don’t want to crash your application or present your user an exception with a callstack.
-In that case you should split up your application into transactional operations, or <em>transactions</em> for short, to contain how far an exception can propagate. Let’s define the term <em>transaction</em>.</p>
-</div>
-<div class="ulist">
+<p>There are often other ways to handle failure, like having functions
+return an error value. A robust approach to this is discussed in <a href="/?page=rop-cs-1">this article about Railroad Oriented
+Programming</a>.</p>
+<h2 id="exceptions-are-a-part-of-life"><a class="anchor" href="#exceptions-are-a-part-of-life"></a>Exceptions
+are a part of life</h2>
+<p>Making a failure path part of the function return type is neat, but
+it does not mean that there are no exceptional situations for which the
+exception throwing mechanism is actually a very good fit. To give an
+extreme example, almost any function can <em>in theory</em> encounter an
+<code>OutOfMemoryException</code> while doing an allocation. Or any
+function could <em>in theory</em> trigger a bug somewhere causing a
+<code>NullReferenceException</code> to be thrown. Exceptions are a fact
+of life, and we should be prepared to deal with them. It would make no
+sense to have the returntype of each function indicate that it could
+return with a null reference failure in the way we suggested above.
+These cases are really exceptions which are <em>unexpected</em>. There
+is often no proper way to handle them other than to cancel the whole
+“operation”, log the error and present the user with an appropriate
+error, indicating that something went completely sideways. So how should
+we deal with that in our code?</p>
+<p>In a complex application there is no way of telling whether you have
+caught all exceptions you want to catch. You probably don’t want to
+crash your application or present your user an exception with a
+callstack. In that case you should split up your application into
+transactional operations, or <em>transactions</em> for short, to contain
+how far an exception can propagate. Let’s define the term
+<em>transaction</em>.</p>
 <ul>
-<li>
-<p>A piece of code is a valid transaction if its abortion would not harm the health of the rest of the application.</p>
-</li>
-<li>
-<p>A transaction may contain other subtransactions.</p>
-</li>
+<li><p>A piece of code is a valid transaction if its abortion would not
+harm the health of the rest of the application.</p></li>
+<li><p>A transaction may contain other subtransactions.</p></li>
 </ul>
-</div>
-<div class="paragraph">
-<p>Given that we’ve succesfully composed our code in terms of transactions, exceptions can be handled properly and safely in the following structured way.</p>
-</div>
-<div class="olist arabic">
-<ol class="arabic">
-<li>
-<p>Place a try-catch-all construction at the top of each transaction, such that it is guaranteed that each exception will not propagate beyond the transaction in which it occurs. Make sure the exception is properly handled and logged. If the exception cannot be properly handled in a particular transaction it should be rethrown and propagated to the parent transaction.</p>
-</li>
-<li>
-<p>Never place a try-catch construction at a point in your program where it incorrectly may prevent a transaction to be aborted.</p>
-</li>
-<li>
-<p>If your transactions are not bigger than they need to be, then your application is probably decently resilient to exceptions.</p>
-</li>
+<p>Given that we’ve succesfully composed our code in terms of
+transactions, exceptions can be handled properly and safely in the
+following structured way.</p>
+<ol type="1">
+<li><p>Place a try-catch-all construction at the top of each
+transaction, such that it is guaranteed that each exception will not
+propagate beyond the transaction in which it occurs. Make sure the
+exception is properly handled and logged. If the exception cannot be
+properly handled in a particular transaction it should be rethrown and
+propagated to the parent transaction.</p></li>
+<li><p>Never place a try-catch construction at a point in your program
+where it incorrectly may prevent a transaction to be aborted.</p></li>
+<li><p>If your transactions are not bigger than they need to be, then
+your application is probably decently resilient to exceptions.</p></li>
 </ol>
-</div>
-<div class="paragraph">
-<p>How a program should be split up into transactions is very much dependent on the program.
-Some programs (perhaps a CLI) may even consist of a single transaction.</p>
-</div>
-<div class="paragraph">
-<p>Let’s take a web application as an example. In a web application each request should <em>at least</em> be a separate transaction because a failure to handle a request should not bring the web application down or influence other requests in any way.
-If it is appropriate to split a request into more than one transaction, then do so by all means.</p>
-</div>
-<div class="paragraph">
-<p>All right. We’ve achieved that any uncaught exception only affects its containing transaction.
-However, we still don’t know if we’ve missed any exceptions that should <em>not</em> cause the transaction to be aborted.
-What can we do about that?</p>
-</div>
-<div class="olist arabic">
-<ol class="arabic">
-<li>
-<p>Don’t throw exceptions in your code if it shouldn’t abort the transaction. Instead make the corresponding failure part of the normal code path <a href="/?page=rop-cs-1">using a <code>Result</code> type</a>.</p>
-</li>
-<li>
-<p>For exceptions thrown by 3rd party APIs, make sure to study the documentation to find any uncaught exceptions that you could have missed, or be on the safe side and place catch-all clauses around 3rd party API calls.</p>
-</li>
+<p>How a program should be split up into transactions is very much
+dependent on the program. Some programs (perhaps a CLI) may even consist
+of a single transaction.</p>
+<p>Let’s take a web application as an example. In a web application each
+request should <em>at least</em> be a separate transaction because a
+failure to handle a request should not bring the web application down or
+influence other requests in any way. If it is appropriate to split a
+request into more than one transaction, then do so by all means.</p>
+<p>All right. We’ve achieved that any uncaught exception only affects
+its containing transaction. However, we still don’t know if we’ve missed
+any exceptions that should <em>not</em> cause the transaction to be
+aborted. What can we do about that?</p>
+<ol type="1">
+<li><p>Don’t throw exceptions in your code if it shouldn’t abort the
+transaction. Instead make the corresponding failure part of the normal
+code path <a href="/?page=rop-cs-1">using a <code>Result</code>
+type</a>.</p></li>
+<li><p>For exceptions thrown by 3rd party APIs, make sure to study the
+documentation to find any uncaught exceptions that you could have
+missed, or be on the safe side and place catch-all clauses around 3rd
+party API calls.</p></li>
 </ol>
+<p>With these rules of thumb we should be able to use exceptions to
+their strength instead of letting them make our code complicated and
+unpredictable.</p>
 </div>
-<div class="paragraph">
-<p>With these rules of thumb we should be able to use exceptions to their strength instead of letting them make our code complicated and unpredictable.</p>
-</div>
-</div>
-</div>
-</div>
-
-</body></html>
+</body>
+</html>

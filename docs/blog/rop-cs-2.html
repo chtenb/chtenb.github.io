@@ -1,592 +1,728 @@
-<!DOCTYPE html><html lang="en"><head>
-<meta charset="UTF-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="generator" content="Asciidoctor 2.0.17">
-<title>Railroad Oriented Programming in C#: Part 2</title>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Railroad Oriented Programming in C#: Part 2</title>
+  <style>code {
+  white-space: pre-wrap;
+}
 
+span.smallcaps {
+  font-variant: small-caps;
+}
 
-<base target="_self">
+div.columns {
+  gap: min(4vw, 1.5em);
+  display: flex;
+}
+
+div.column {
+  flex: auto;
+  overflow-x: auto;
+}
+
+div.hanging-indent {
+  text-indent: -1.5em;
+  margin-left: 1.5em;
+}
+
+ul.task-list[class] {
+  list-style: none;
+}
+
+ul.task-list li input[type="checkbox"] {
+  font-size: inherit;
+  vertical-align: middle;
+  width: .8em;
+  margin: 0 .8em .2em -1.6em;
+}
+
+.display.math {
+  text-align: center;
+  margin: .5rem auto;
+  display: block;
+}
+
+pre > code.sourceCode {
+  white-space: pre;
+  position: relative;
+}
+
+pre > code.sourceCode > span {
+  line-height: 1.25;
+}
+
+pre > code.sourceCode > span:empty {
+  height: 1.2em;
+}
+
+.sourceCode {
+  overflow: visible;
+}
+
+code.sourceCode > span {
+  color: inherit;
+  -webkit-text-decoration: inherit;
+  text-decoration: inherit;
+}
+
+div.sourceCode {
+  margin: 1em 0;
+}
+
+pre.sourceCode {
+  margin: 0;
+}
+
+@media screen {
+  div.sourceCode {
+    overflow: auto;
+  }
+}
+
+@media print {
+  pre > code.sourceCode {
+    white-space: pre-wrap;
+  }
+
+  pre > code.sourceCode > span {
+    text-indent: -5em;
+    padding-left: 5em;
+  }
+}
+
+pre.numberSource code {
+  counter-reset: source-line 0;
+}
+
+pre.numberSource code > span {
+  counter-increment: source-line;
+  position: relative;
+  left: -4em;
+}
+
+pre.numberSource code > span > a:first-child:before {
+  content: counter(source-line);
+  text-align: right;
+  vertical-align: baseline;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+  -khtml-user-select: none;
+  color: #005661;
+  background-color: #fefaf2;
+  border: none;
+  width: 4em;
+  padding: 0 4px;
+  display: inline-block;
+  position: relative;
+  left: -1em;
+}
+
+pre.numberSource {
+  border-left: 1px solid #005661;
+  margin-left: 3em;
+  padding-left: 4px;
+}
+
+div.sourceCode {
+  color: #005661;
+  background-color: #fef8ec;
+}
+
+@media screen {
+  pre > code.sourceCode > span > a:first-child:before {
+    text-decoration: underline;
+  }
+}
+
+code span {
+  color: #005661;
+}
+
+code span.al {
+  color: #e64100;
+}
+
+code span.an {
+  color: #00bdd6;
+}
+
+code span.at {
+  color: #b3694d;
+}
+
+code span.bn {
+  color: #e64100;
+}
+
+code span.bu {
+  color: #fa8900;
+}
+
+code span.cf {
+  color: #ff5792;
+  font-weight: bold;
+}
+
+code span.ch, code span.cn {
+  color: #e5164a;
+}
+
+code span.co {
+  color: #8ca6a6;
+  font-style: italic;
+}
+
+code span.cv {
+  color: #8ca6a6;
+}
+
+code span.do {
+  color: #8ca6a6;
+  font-style: italic;
+}
+
+code span.dt {
+  color: #fa8900;
+}
+
+code span.dv, code span.er {
+  color: #e64100;
+}
+
+code span.ex {
+  color: #00bdd6;
+}
+
+code span.fl {
+  color: #0094f0;
+}
+
+code span.fu {
+  color: #0095a8;
+}
+
+code span.im {
+  color: #00bdd6;
+}
+
+code span.in {
+  color: #8ca6a6;
+}
+
+code span.kw {
+  color: #ff5792;
+  font-weight: bold;
+}
+
+code span.op {
+  color: #0094f0;
+}
+
+code span.ot {
+  color: #005661;
+}
+
+code span.pp {
+  color: #0095a8;
+}
+
+code span.re {
+  color: #00bdd6;
+}
+
+code span.sc {
+  color: #e5164a;
+}
+
+code span.ss {
+  color: #00bdd6;
+}
+
+code span.st {
+  color: #00b368;
+}
+
+code span.va, code span.vs {
+  color: #004d57;
+}
+
+code span.wa {
+  color: #e64100;
+}
+</style>
+  <style type="text/css"></style>
 </head>
-<body class="article">
-<div id="header">
-<h1>Railroad Oriented Programming in C#: Part 2</h1>
-</div>
+<body>
+<header id="title-block-header">
+<h1 class="title">Railroad Oriented Programming in C#: Part 2</h1>
+</header>
 <div id="content">
-<div id="preamble">
-<div class="sectionbody">
-<div class="paragraph">
-<p>In the <a href="/?page=rop-cs-1">previous part</a> we looked at problems with traditional forms of handling failure.
-Here we will look at one solution to deal with these problems: a <code>Result</code> type that allows for a success case and a failure case.</p>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_a_result_type_supporting_the_failure_path"><a class="anchor" href="#_a_result_type_supporting_the_failure_path"></a>A result type supporting the failure path</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>While C# does not directory support Discriminated Unions, it does support subclassing.
-Since a class can have multiple subclasses, and any object is always just one of them, we can use this phenomenon to implement the notion of having two return types, one for the success result, and one for the failure result.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-cs" data-lang="cs"><span class="hljs-keyword">public</span> <span class="hljs-keyword">abstract</span> <span class="hljs-keyword">class</span> <span class="hljs-title">Result</span> {
-  <span class="hljs-keyword">public</span> <span class="hljs-keyword">sealed</span> <span class="hljs-keyword">class</span> <span class="hljs-title">Success</span> : <span class="hljs-title">Result</span> { }
-  <span class="hljs-keyword">public</span> <span class="hljs-keyword">sealed</span> <span class="hljs-keyword">class</span> <span class="hljs-title">Failure</span> : <span class="hljs-title">Result</span> { }
-  <span class="hljs-comment">// Private constructor so we are certain that Success and Failure are the only subclasses</span>
-  <span class="hljs-function"><span class="hljs-keyword">private</span> <span class="hljs-title">Result</span> ()</span> { }
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>However, this class does not allow us to associate any return data with either the success or the failure result.
-We can fix that.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-cs" data-lang="cs"><span class="hljs-keyword">public</span> <span class="hljs-keyword">abstract</span> <span class="hljs-keyword">class</span> <span class="hljs-title">Result</span>&lt;<span class="hljs-title">TSuccess</span>, <span class="hljs-title">TFailure</span>&gt; {
-
-  <span class="hljs-keyword">public</span> <span class="hljs-keyword">sealed</span> <span class="hljs-keyword">class</span> <span class="hljs-title">Success</span> : <span class="hljs-title">Result</span>&lt;<span class="hljs-title">TSuccess</span>, <span class="hljs-title">TFailure</span>&gt; {
-    <span class="hljs-keyword">public</span> <span class="hljs-keyword">readonly</span> TSuccess SuccessValue;
-    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">Success</span>(<span class="hljs-params">TSuccess result</span>)</span>{
-      SuccessValue = result;
-    }
-  }
-
-  <span class="hljs-keyword">public</span> <span class="hljs-keyword">sealed</span> <span class="hljs-keyword">class</span> <span class="hljs-title">Failure</span> : <span class="hljs-title">Result</span>&lt;<span class="hljs-title">TSuccess</span>, <span class="hljs-title">TFailure</span>&gt; {
-    <span class="hljs-keyword">public</span> <span class="hljs-keyword">readonly</span> TFailure FailureValue;
-    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">Failure</span>(<span class="hljs-params">TFailure error</span>)</span>{
-      FailureValue = error;
-    }
-  }
-
-  <span class="hljs-comment">// Private constructor so we are certain that Success and Failure are the only subclasses</span>
-  <span class="hljs-function"><span class="hljs-keyword">private</span> <span class="hljs-title">Result</span> ()</span> { }
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>With this in our toolkit we can now implement our <code>GetEmailAddress</code> function from earlier with an explicit failure path.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-cs" data-lang="cs"><span class="hljs-function">Result&lt;User, <span class="hljs-built_in">string</span>&gt; <span class="hljs-title">GetUser</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> username</span>)</span> {
-  <span class="hljs-keyword">var</span> user = Datastore.FindUser(username);
-  <span class="hljs-keyword">if</span> (user == <span class="hljs-literal">null</span>)
-    <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> Result&lt;User, <span class="hljs-built_in">string</span>&gt;.Failure(<span class="hljs-string">"User has no email"</span>);
-  <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> Result&lt;User, <span class="hljs-built_in">string</span>&gt;.Success(user);
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
+<p>In the <a href="/?page=rop-cs-1">previous part</a> we looked at
+problems with traditional forms of handling failure. Here we will look
+at one solution to deal with these problems: a <code>Result</code> type
+that allows for a success case and a failure case.</p>
+<h2 id="a-result-type-supporting-the-failure-path"><a class="anchor" href="#a-result-type-supporting-the-failure-path"></a>A
+result type supporting the failure path</h2>
+<p>While C# does not directory support Discriminated Unions, it does
+support subclassing. Since a class can have multiple subclasses, and any
+object is always just one of them, we can use this phenomenon to
+implement the notion of having two return types, one for the success
+result, and one for the failure result.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode cs"><code class="sourceCode cs"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">public</span> <span class="kw">abstract</span> <span class="kw">class</span> Result <span class="op">{</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="kw">public</span> <span class="kw">sealed</span> <span class="kw">class</span> Success <span class="op">:</span> Result <span class="op">{</span> <span class="op">}</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="kw">public</span> <span class="kw">sealed</span> <span class="kw">class</span> Failure <span class="op">:</span> Result <span class="op">{</span> <span class="op">}</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="co">// Private constructor so we are certain that Success and Failure are the only subclasses</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="kw">private</span> <span class="fu">Result</span> <span class="op">()</span> <span class="op">{</span> <span class="op">}</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>However, this class does not allow us to associate any return data
+with either the success or the failure result. We can fix that.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode cs"><code class="sourceCode cs"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">public</span> <span class="kw">abstract</span> <span class="kw">class</span> Result<span class="op">&lt;</span>TSuccess<span class="op">,</span> TFailure<span class="op">&gt;</span> <span class="op">{</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="kw">public</span> <span class="kw">sealed</span> <span class="kw">class</span> Success <span class="op">:</span> Result<span class="op">&lt;</span>TSuccess<span class="op">,</span> TFailure<span class="op">&gt;</span> <span class="op">{</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">public</span> <span class="kw">readonly</span> TSuccess SuccessValue<span class="op">;</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    <span class="kw">public</span> <span class="fu">Success</span><span class="op">(</span>TSuccess result<span class="op">){</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>      SuccessValue <span class="op">=</span> result<span class="op">;</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>  <span class="op">}</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>  <span class="kw">public</span> <span class="kw">sealed</span> <span class="kw">class</span> Failure <span class="op">:</span> Result<span class="op">&lt;</span>TSuccess<span class="op">,</span> TFailure<span class="op">&gt;</span> <span class="op">{</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>    <span class="kw">public</span> <span class="kw">readonly</span> TFailure FailureValue<span class="op">;</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>    <span class="kw">public</span> <span class="fu">Failure</span><span class="op">(</span>TFailure error<span class="op">){</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>      FailureValue <span class="op">=</span> error<span class="op">;</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>  <span class="op">}</span></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>  <span class="co">// Private constructor so we are certain that Success and Failure are the only subclasses</span></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>  <span class="kw">private</span> <span class="fu">Result</span> <span class="op">()</span> <span class="op">{</span> <span class="op">}</span></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>With this in our toolkit we can now implement our
+<code>GetEmailAddress</code> function from earlier with an explicit
+failure path.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode cs"><code class="sourceCode cs"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>Result<span class="op">&lt;</span>User<span class="op">,</span> <span class="dt">string</span><span class="op">&gt;</span> <span class="fu">GetUser</span><span class="op">(</span><span class="dt">string</span> username<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">var</span> user <span class="op">=</span> Datastore<span class="op">.</span><span class="fu">FindUser</span><span class="op">(</span>username<span class="op">);</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="kw">if</span> <span class="op">(</span>user <span class="op">==</span> <span class="kw">null</span><span class="op">)</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">return</span> <span class="kw">new</span> Result<span class="op">&lt;</span>User<span class="op">,</span> <span class="dt">string</span><span class="op">&gt;.</span><span class="fu">Failure</span><span class="op">(</span><span class="st">&quot;User has no email&quot;</span><span class="op">);</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="kw">return</span> <span class="kw">new</span> Result<span class="op">&lt;</span>User<span class="op">,</span> <span class="dt">string</span><span class="op">&gt;.</span><span class="fu">Success</span><span class="op">(</span>user<span class="op">);</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
 <p>Usage of this function would look something like</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-cs" data-lang="cs"><span class="hljs-keyword">var</span> result = GetUser(username);
-<span class="hljs-keyword">if</span> (result <span class="hljs-keyword">is</span> Result&lt;User,<span class="hljs-built_in">string</span>&gt;.Success) {
-  <span class="hljs-keyword">var</span> user = ((Result&lt;User,<span class="hljs-built_in">string</span>&gt;.Success)result).ResultValue;
-  <span class="hljs-comment">// Do what you wanna do</span>
-} <span class="hljs-keyword">else</span> {
-  <span class="hljs-keyword">var</span> error = ((Result&lt;User,<span class="hljs-built_in">string</span>&gt;.Failure)result).ErrorValue;
-  <span class="hljs-comment">// Handle the failure appropriately</span>
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>As you can see we’ve achieved an explicit failure path.
-When we call <code>GetUser</code> we obtain a result object and this encourages us to consider both the success and the failure case.
-But the code leaves much to be desired.
-Even more so when we need to call more than one function.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-cs" data-lang="cs"><span class="hljs-function">Result&lt;<span class="hljs-built_in">string</span>, <span class="hljs-built_in">string</span>&gt; <span class="hljs-title">GetEmailAddress</span>(<span class="hljs-params">User user</span>)</span>;
-
-<span class="hljs-comment">// ...</span>
-
-<span class="hljs-keyword">var</span> result = GetUser(username);
-<span class="hljs-keyword">if</span> (result <span class="hljs-keyword">is</span> Result&lt;User, <span class="hljs-built_in">string</span>&gt;.Success) {
-  <span class="hljs-keyword">var</span> user = ((Result&lt;User, <span class="hljs-built_in">string</span>&gt;.Success)result).ResultValue;
-  <span class="hljs-keyword">var</span> result2 = GetEmailAddress(user);
-  <span class="hljs-keyword">if</span> (result2 <span class="hljs-keyword">is</span> Result&lt;<span class="hljs-built_in">string</span>, <span class="hljs-built_in">string</span>&gt;.Success) {
-    <span class="hljs-keyword">var</span> email = ((Result&lt;<span class="hljs-built_in">string</span>, <span class="hljs-built_in">string</span>&gt;.Success)result2).ResultValue;
-    <span class="hljs-comment">// And so on...</span>
-  } <span class="hljs-keyword">else</span> {
-    <span class="hljs-keyword">var</span> error2 = ((Result&lt;<span class="hljs-built_in">string</span>, <span class="hljs-built_in">string</span>&gt;.Failure)result2).ErrorValue;
-    <span class="hljs-comment">// Handle the failure appropriately</span>
-  }
-} <span class="hljs-keyword">else</span> {
-  <span class="hljs-keyword">var</span> error = ((Result&lt;User, <span class="hljs-built_in">string</span>&gt;.Failure)result).ErrorValue;
-  <span class="hljs-comment">// Handle the failure appropriately</span>
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
+<div class="sourceCode" id="cb4"><pre class="sourceCode cs"><code class="sourceCode cs"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="dt">var</span> result <span class="op">=</span> <span class="fu">GetUser</span><span class="op">(</span>username<span class="op">);</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="kw">if</span> <span class="op">(</span>result <span class="kw">is</span> Result<span class="op">&lt;</span>User<span class="op">,</span><span class="dt">string</span><span class="op">&gt;.</span><span class="fu">Success</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">var</span> user <span class="op">=</span> <span class="op">((</span>Result<span class="op">&lt;</span>User<span class="op">,</span><span class="dt">string</span><span class="op">&gt;.</span><span class="fu">Success</span><span class="op">)</span>result<span class="op">).</span><span class="fu">ResultValue</span><span class="op">;</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="co">// Do what you wanna do</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  <span class="dt">var</span> error <span class="op">=</span> <span class="op">((</span>Result<span class="op">&lt;</span>User<span class="op">,</span><span class="dt">string</span><span class="op">&gt;.</span><span class="fu">Failure</span><span class="op">)</span>result<span class="op">).</span><span class="fu">ErrorValue</span><span class="op">;</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  <span class="co">// Handle the failure appropriately</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>As you can see we’ve achieved an explicit failure path. When we call
+<code>GetUser</code> we obtain a result object and this encourages us to
+consider both the success and the failure case. But the code leaves much
+to be desired. Even more so when we need to call more than one
+function.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode cs"><code class="sourceCode cs"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>Result<span class="op">&lt;</span><span class="dt">string</span><span class="op">,</span> <span class="dt">string</span><span class="op">&gt;</span> <span class="fu">GetEmailAddress</span><span class="op">(</span>User user<span class="op">);</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co">// ...</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="dt">var</span> result <span class="op">=</span> <span class="fu">GetUser</span><span class="op">(</span>username<span class="op">);</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="kw">if</span> <span class="op">(</span>result <span class="kw">is</span> Result<span class="op">&lt;</span>User<span class="op">,</span> <span class="dt">string</span><span class="op">&gt;.</span><span class="fu">Success</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>  <span class="dt">var</span> user <span class="op">=</span> <span class="op">((</span>Result<span class="op">&lt;</span>User<span class="op">,</span> <span class="dt">string</span><span class="op">&gt;.</span><span class="fu">Success</span><span class="op">)</span>result<span class="op">).</span><span class="fu">ResultValue</span><span class="op">;</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>  <span class="dt">var</span> result2 <span class="op">=</span> <span class="fu">GetEmailAddress</span><span class="op">(</span>user<span class="op">);</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>  <span class="kw">if</span> <span class="op">(</span>result2 <span class="kw">is</span> Result<span class="op">&lt;</span><span class="dt">string</span><span class="op">,</span> <span class="dt">string</span><span class="op">&gt;.</span><span class="fu">Success</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    <span class="dt">var</span> email <span class="op">=</span> <span class="op">((</span>Result<span class="op">&lt;</span><span class="dt">string</span><span class="op">,</span> <span class="dt">string</span><span class="op">&gt;.</span><span class="fu">Success</span><span class="op">)</span>result2<span class="op">).</span><span class="fu">ResultValue</span><span class="op">;</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>    <span class="co">// And so on...</span></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>  <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>    <span class="dt">var</span> error2 <span class="op">=</span> <span class="op">((</span>Result<span class="op">&lt;</span><span class="dt">string</span><span class="op">,</span> <span class="dt">string</span><span class="op">&gt;.</span><span class="fu">Failure</span><span class="op">)</span>result2<span class="op">).</span><span class="fu">ErrorValue</span><span class="op">;</span></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Handle the failure appropriately</span></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>  <span class="op">}</span></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a><span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>  <span class="dt">var</span> error <span class="op">=</span> <span class="op">((</span>Result<span class="op">&lt;</span>User<span class="op">,</span> <span class="dt">string</span><span class="op">&gt;.</span><span class="fu">Failure</span><span class="op">)</span>result<span class="op">).</span><span class="fu">ErrorValue</span><span class="op">;</span></span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>  <span class="co">// Handle the failure appropriately</span></span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
 <p>We would like to</p>
-</div>
-<div class="ulist">
 <ul>
-<li>
-<p>not have to unwrap the <code>Result</code> instance by doing a type check + cast</p>
-</li>
-<li>
-<p>not have a new nesting level for each subsequent function we call</p>
-</li>
-<li>
-<p>not have to handle all failures individually</p>
-</li>
-<li>
-<p>not have to specify the whole type when creating a <code>Result</code> instance: <code>new Result&lt;User, string&gt;.Success()</code></p>
-</li>
+<li>not have to unwrap the <code>Result</code> instance by doing a type
+check + cast</li>
+<li>not have a new nesting level for each subsequent function we
+call</li>
+<li>not have to handle all failures individually</li>
+<li>not have to specify the whole type when creating a
+<code>Result</code> instance:
+<code>new Result&lt;User, string&gt;.Success()</code></li>
 </ul>
-</div>
-<div class="sect2">
-<h3 id="_a_fluent_result_type"><a class="anchor" href="#_a_fluent_result_type"></a>A fluent result type</h3>
-<div class="paragraph">
-<p>To resolve the complaints about our previous implementation, we’ll define an <code>OnSuccess</code> function and a <code>Handle</code> function.
-They will do the unwrapping for us and form a <a href="https://en.wikipedia.org/wiki/Fluent_interface" target="_blank">Fluent Interface</a> and thereby removing the nesting.
-Moreover, the OnSuccess function will "shortcircuit" the failure path, such that we only have to handle the failure path once.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-cs" data-lang="cs"><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">abstract</span> <span class="hljs-keyword">class</span> <span class="hljs-title">Result</span>&lt;<span class="hljs-title">TSuccess</span>, <span class="hljs-title">TFailure</span>&gt;</span> {
-
-  <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">abstract</span> <span class="hljs-title">Result</span>&lt;<span class="hljs-title">TNextSuccess</span>, <span class="hljs-title">TFailure</span>&gt; <span class="hljs-title">OnSuccess</span>&lt;<span class="hljs-title">TNextSuccess</span>&gt;(<span class="hljs-params">
-    Func&lt;TSuccess, Result&lt;TNextSuccess, TFailure&gt;&gt; onSuccess</span>)</span>;
-  <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">abstract</span> TReturn <span class="hljs-title">Handle</span>&lt;<span class="hljs-title">TReturn</span>&gt;(<span class="hljs-params">Func&lt;TSuccess, TReturn&gt; onSuccess, Func&lt;TFailure, TReturn&gt; onFailure</span>)</span>;
-
-  <span class="hljs-keyword">public</span> <span class="hljs-keyword">sealed</span> <span class="hljs-keyword">class</span> <span class="hljs-title">Success</span> : <span class="hljs-title">Result</span>&lt;<span class="hljs-title">TSuccess</span>, <span class="hljs-title">TFailure</span>&gt; {
-    <span class="hljs-keyword">public</span> TSuccess SuccessValue { <span class="hljs-keyword">get</span>; }
-
-    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">Success</span>(<span class="hljs-params">TSuccess result</span>)</span> =&gt; SuccessValue = result;
-
-    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">override</span> <span class="hljs-title">Result</span>&lt;<span class="hljs-title">TNextSuccess</span>, <span class="hljs-title">TFailure</span>&gt; <span class="hljs-title">OnSuccess</span>&lt;<span class="hljs-title">TNextSuccess</span>&gt;(<span class="hljs-params">
-      Func&lt;TSuccess, Result&lt;TNextSuccess, TFailure&gt;&gt; onSuccess</span>)</span>
-        =&gt; onSuccess(SuccessValue);
-
-    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">override</span> TReturn <span class="hljs-title">Handle</span>&lt;<span class="hljs-title">TReturn</span>&gt;(<span class="hljs-params">Func&lt;TSuccess, TReturn&gt; onSuccess, Func&lt;TFailure, TReturn&gt; onFailure</span>)</span>
-        =&gt; onSuccess(SuccessValue);
-  }
-
-  <span class="hljs-keyword">public</span> <span class="hljs-keyword">sealed</span> <span class="hljs-keyword">class</span> <span class="hljs-title">Failure</span> : <span class="hljs-title">Result</span>&lt;<span class="hljs-title">TSuccess</span>, <span class="hljs-title">TFailure</span>&gt; {
-    <span class="hljs-keyword">public</span> TFailure FailureValue { <span class="hljs-keyword">get</span>; }
-
-    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">Failure</span>(<span class="hljs-params">TFailure error</span>)</span> =&gt; FailureValue = error;
-
-    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">override</span> <span class="hljs-title">Result</span>&lt;<span class="hljs-title">TNextSuccess</span>, <span class="hljs-title">TFailure</span>&gt; <span class="hljs-title">OnSuccess</span>&lt;<span class="hljs-title">TNextSuccess</span>&gt;(<span class="hljs-params">
-      Func&lt;TSuccess, Result&lt;TNextSuccess, TFailure&gt;&gt; onSuccess</span>)</span>
-        =&gt; Result.Fail(FailureValue);
-
-    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">override</span> TReturn <span class="hljs-title">Handle</span>&lt;<span class="hljs-title">TReturn</span>&gt;(<span class="hljs-params">Func&lt;TSuccess, TReturn&gt; onSuccess, Func&lt;TFailure, TReturn&gt; onFailure</span>)</span>
-        =&gt; onFailure(FailureValue);
-  }
-
-  <span class="hljs-function"><span class="hljs-keyword">private</span> <span class="hljs-title">Result</span>()</span> { }
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Apart from the daunting function signatures, the actual function bodies are trivial.
-Yet they suddenly allow us to write very concise code.
-Compare the following with what we had in the previous section.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-cs" data-lang="cs">GetUser(username)
-  .OnSuccess(GetEmailAddress);
-  .Handle(
-    emailAddress =&gt; ..., <span class="hljs-comment">// Do your thing</span>
-    error =&gt; ... <span class="hljs-comment">// Handle the failure appropriately</span>
-  );</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>If we visualize the code flow above in a diagram, it becomes clear why this style of programming is sometimes referred to as <em>railway oriented programming</em>.
-The <code>Result</code> type encapsulates two "paths" or "tracks", the success track and the failure track.</p>
-</div>
-<div class="imageblock kroki">
-<div class="content">
-<svg xmlns="http://www.w3.org/2000/svg" class="pikchr" width="149" height="51" viewbox="0 0 187.43 64.8">
-<polygon points="106,17 95,21 95,12" style="fill: #add8e6"></polygon>
-<path d="M34,17L100,17" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
-<polygon points="106,47 95,51 95,43" style="fill: orange"></polygon>
-<path d="M34,47L100,47" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
-<path d="M17,47L52,47A15 15 0 0 0 67 32A15 15 0 0 0 52 17L17,17A15 15 0 0 0 2 32A15 15 0 0 0 17 47Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
-<text x="34" y="32" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">Result</text>
-<path d="M121,32L170,32A15 15 0 0 0 185 17A15 15 0 0 0 170 2L121,2A15 15 0 0 0 106 17A15 15 0 0 0 121 32Z" style="fill: #add8e6; stroke-width: 2.16px; stroke: #000"></path>
-<text x="145" y="17" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">Success</text>
-<path d="M121,62L163,62A15 15 0 0 0 178 47A15 15 0 0 0 163 32L121,32A15 15 0 0 0 106 47A15 15 0 0 0 121 62Z" style="fill: orange; stroke-width: 2.16px; stroke: #000"></path>
-<text x="142" y="47" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">Failure</text>
+<h3 id="a-fluent-result-type"><a class="anchor" href="#a-fluent-result-type"></a>A
+fluent result type</h3>
+<p>To resolve the complaints about our previous implementation, we’ll
+define an <code>OnSuccess</code> function and a <code>Handle</code>
+function. They will do the unwrapping for us and form a <a href="https://en.wikipedia.org/wiki/Fluent_interface" class=" external" target="_blank">Fluent Interface</a> and thereby removing the nesting.
+Moreover, the OnSuccess function will “shortcircuit” the failure path,
+such that we only have to handle the failure path once.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode cs"><code class="sourceCode cs"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">public</span> <span class="kw">abstract</span> <span class="kw">class</span> Result<span class="op">&lt;</span>TSuccess<span class="op">,</span> TFailure<span class="op">&gt;</span> <span class="op">{</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="kw">public</span> <span class="kw">abstract</span> Result<span class="op">&lt;</span>TNextSuccess<span class="op">,</span> TFailure<span class="op">&gt;</span> OnSuccess<span class="op">&lt;</span>TNextSuccess<span class="op">&gt;(</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    Func<span class="op">&lt;</span>TSuccess<span class="op">,</span> Result<span class="op">&lt;</span>TNextSuccess<span class="op">,</span> TFailure<span class="op">&gt;&gt;</span> onSuccess<span class="op">);</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  <span class="kw">public</span> <span class="kw">abstract</span> TReturn Handle<span class="op">&lt;</span>TReturn<span class="op">&gt;(</span>Func<span class="op">&lt;</span>TSuccess<span class="op">,</span> TReturn<span class="op">&gt;</span> onSuccess<span class="op">,</span> Func<span class="op">&lt;</span>TFailure<span class="op">,</span> TReturn<span class="op">&gt;</span> onFailure<span class="op">);</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>  <span class="kw">public</span> <span class="kw">sealed</span> <span class="kw">class</span> Success <span class="op">:</span> Result<span class="op">&lt;</span>TSuccess<span class="op">,</span> TFailure<span class="op">&gt;</span> <span class="op">{</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    <span class="kw">public</span> TSuccess SuccessValue <span class="op">{</span> <span class="kw">get</span><span class="op">;</span> <span class="op">}</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>    <span class="kw">public</span> <span class="fu">Success</span><span class="op">(</span>TSuccess result<span class="op">)</span> <span class="op">=&gt;</span> SuccessValue <span class="op">=</span> result<span class="op">;</span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>    <span class="kw">public</span> <span class="kw">override</span> Result<span class="op">&lt;</span>TNextSuccess<span class="op">,</span> TFailure<span class="op">&gt;</span> OnSuccess<span class="op">&lt;</span>TNextSuccess<span class="op">&gt;(</span></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>      Func<span class="op">&lt;</span>TSuccess<span class="op">,</span> Result<span class="op">&lt;</span>TNextSuccess<span class="op">,</span> TFailure<span class="op">&gt;&gt;</span> onSuccess<span class="op">)</span></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>        <span class="op">=&gt;</span> <span class="fu">onSuccess</span><span class="op">(</span>SuccessValue<span class="op">);</span></span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>    <span class="kw">public</span> <span class="kw">override</span> TReturn Handle<span class="op">&lt;</span>TReturn<span class="op">&gt;(</span>Func<span class="op">&lt;</span>TSuccess<span class="op">,</span> TReturn<span class="op">&gt;</span> onSuccess<span class="op">,</span> Func<span class="op">&lt;</span>TFailure<span class="op">,</span> TReturn<span class="op">&gt;</span> onFailure<span class="op">)</span></span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>        <span class="op">=&gt;</span> <span class="fu">onSuccess</span><span class="op">(</span>SuccessValue<span class="op">);</span></span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>  <span class="op">}</span></span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>  <span class="kw">public</span> <span class="kw">sealed</span> <span class="kw">class</span> Failure <span class="op">:</span> Result<span class="op">&lt;</span>TSuccess<span class="op">,</span> TFailure<span class="op">&gt;</span> <span class="op">{</span></span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>    <span class="kw">public</span> TFailure FailureValue <span class="op">{</span> <span class="kw">get</span><span class="op">;</span> <span class="op">}</span></span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>    <span class="kw">public</span> <span class="fu">Failure</span><span class="op">(</span>TFailure error<span class="op">)</span> <span class="op">=&gt;</span> FailureValue <span class="op">=</span> error<span class="op">;</span></span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a>    <span class="kw">public</span> <span class="kw">override</span> Result<span class="op">&lt;</span>TNextSuccess<span class="op">,</span> TFailure<span class="op">&gt;</span> OnSuccess<span class="op">&lt;</span>TNextSuccess<span class="op">&gt;(</span></span>
+<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a>      Func<span class="op">&lt;</span>TSuccess<span class="op">,</span> Result<span class="op">&lt;</span>TNextSuccess<span class="op">,</span> TFailure<span class="op">&gt;&gt;</span> onSuccess<span class="op">)</span></span>
+<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a>        <span class="op">=&gt;</span> Result<span class="op">.</span><span class="fu">Fail</span><span class="op">(</span>FailureValue<span class="op">);</span></span>
+<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a>    <span class="kw">public</span> <span class="kw">override</span> TReturn Handle<span class="op">&lt;</span>TReturn<span class="op">&gt;(</span>Func<span class="op">&lt;</span>TSuccess<span class="op">,</span> TReturn<span class="op">&gt;</span> onSuccess<span class="op">,</span> Func<span class="op">&lt;</span>TFailure<span class="op">,</span> TReturn<span class="op">&gt;</span> onFailure<span class="op">)</span></span>
+<span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a>        <span class="op">=&gt;</span> <span class="fu">onFailure</span><span class="op">(</span>FailureValue<span class="op">);</span></span>
+<span id="cb6-31"><a href="#cb6-31" aria-hidden="true" tabindex="-1"></a>  <span class="op">}</span></span>
+<span id="cb6-32"><a href="#cb6-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-33"><a href="#cb6-33" aria-hidden="true" tabindex="-1"></a>  <span class="kw">private</span> <span class="fu">Result</span><span class="op">()</span> <span class="op">{</span> <span class="op">}</span></span>
+<span id="cb6-34"><a href="#cb6-34" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>Apart from the daunting function signatures, the actual function
+bodies are trivial. Yet they suddenly allow us to write very concise
+code. Compare the following with what we had in the previous
+section.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode cs"><code class="sourceCode cs"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">GetUser</span><span class="op">(</span>username<span class="op">)</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="op">.</span><span class="fu">OnSuccess</span><span class="op">(</span>GetEmailAddress<span class="op">);</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="op">.</span><span class="fu">Handle</span><span class="op">(</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    emailAddress <span class="op">=&gt;</span> <span class="op">...,</span> <span class="co">// Do your thing</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    error <span class="op">=&gt;</span> <span class="op">...</span> <span class="co">// Handle the failure appropriately</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>  <span class="op">);</span></span></code></pre></div>
+<p>If we visualize the code flow above in a diagram, it becomes clear
+why this style of programming is sometimes referred to as <em>railway
+oriented programming</em>. The <code>Result</code> type encapsulates two
+“paths” or “tracks”, the success track and the failure track.</p>
+<svg xmlns="http://www.w3.org/2000/svg" style="font-size: initial" class="pikchr" width="149" height="51" viewbox="0 0 187.43 64.8" data-pikchr-date="20250321215505">
+<polygon points="106.704,17.28 95.184,21.6 95.184,12.96" style="fill: #add8e6"></polygon>
+<path d="M34.704,17.28L100.944,17.28" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
+<polygon points="106.704,47.52 95.184,51.84 95.184,43.2" style="fill: orange"></polygon>
+<path d="M34.704,47.52L100.944,47.52" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
+<path d="M17.28,47.52L52.128,47.52A15.12 15.12 0 0 0 67.248 32.4A15.12 15.12 0 0 0 52.128 17.28L17.28,17.28A15.12 15.12 0 0 0 2.16 32.4A15.12 15.12 0 0 0 17.28 47.52Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<text x="34.704" y="32.4" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">Result</text>
+<path d="M121.824,32.4L170.15,32.4A15.12 15.12 0 0 0 185.27 17.28A15.12 15.12 0 0 0 170.15 2.16L121.824,2.16A15.12 15.12 0 0 0 106.704 17.28A15.12 15.12 0 0 0 121.824 32.4Z" style="fill: #add8e6; stroke-width: 2.16px; stroke: #000"></path>
+<text x="145.987" y="17.28" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">Success</text>
+<path d="M121.824,62.64L163.584,62.64A15.12 15.12 0 0 0 178.704 47.52A15.12 15.12 0 0 0 163.584 32.4L121.824,32.4A15.12 15.12 0 0 0 106.704 47.52A15.12 15.12 0 0 0 121.824 62.64Z" style="fill: orange; stroke-width: 2.16px; stroke: #000"></path>
+<text x="142.704" y="47.52" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">Failure</text>
 </svg>
 
-</div>
-</div>
-<div class="paragraph">
-<p>And the <code>OnSuccess</code> and <code>Handle</code> methods form trackpieces.</p>
-</div>
-<div class="imageblock kroki">
-<div class="content">
-<svg xmlns="http://www.w3.org/2000/svg" class="pikchr" width="244" height="40" viewbox="0 0 306.317 51.12">
-<path d="M133,17 L 140,17 Q 147,17 147,31 L 147,34 Q 147,48 156,48 L 165,48" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
-<path d="M133,17L162,17" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
-<path d="M288,17L304,17" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
-<polygon points="30,17 19,21 19,12" style="fill: #add8e6"></polygon>
-<path d="M2,17L25,17" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
-<path d="M30,32L133,32L133,2L30,2Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
-<text x="82" y="17" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">OnSuccess</text>
-<path d="M177,32L273,32A15 15 0 0 0 288 17A15 15 0 0 0 273 2L177,2A15 15 0 0 0 162 17A15 15 0 0 0 177 32Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
-<text x="225" y="17" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">SuccessValue</text>
-<path d="M2,48L304,48" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
+
+<p>And the <code>OnSuccess</code> and <code>Handle</code> methods form
+trackpieces.</p>
+<svg xmlns="http://www.w3.org/2000/svg" style="font-size: initial" class="pikchr" width="244" height="40" viewbox="0 0 306.317 51.12" data-pikchr-date="20250321215505">
+<path d="M133.373,17.28 L 140.573,17.28 Q 147.773,17.28 147.773,31.68 L 147.773,34.56 Q 147.773,48.96 156.413,48.96 L 165.053,48.96" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
+<path d="M133.373,17.28L162.173,17.28" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
+<path d="M288.317,17.28L304.157,17.28" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
+<polygon points="30.96,17.28 19.44,21.6 19.44,12.96" style="fill: #add8e6"></polygon>
+<path d="M2.16,17.28L25.2,17.28" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
+<path d="M30.96,32.4L133.373,32.4L133.373,2.16L30.96,2.16Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<text x="82.1664" y="17.28" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">OnSuccess</text>
+<path d="M177.293,32.4L273.197,32.4A15.12 15.12 0 0 0 288.317 17.28A15.12 15.12 0 0 0 273.197 2.16L177.293,2.16A15.12 15.12 0 0 0 162.173 17.28A15.12 15.12 0 0 0 177.293 32.4Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<text x="225.245" y="17.28" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">SuccessValue</text>
+<path d="M2.16,48.96L304.157,48.96" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
 </svg>
 
-</div>
-</div>
-<div class="imageblock kroki">
-<div class="content">
-<svg xmlns="http://www.w3.org/2000/svg" class="pikchr" width="207" height="35" viewbox="0 0 259.776 44.64">
-<polygon points="30,6 19,10 19,2" style="fill: #add8e6"></polygon>
-<path d="M2,6L25,6" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
-<polygon points="30,38 19,42 19,33" style="fill: orange"></polygon>
-<path d="M2,38L25,38" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
-<path d="M30,37L103,37L103,7L30,7Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
-<text x="67" y="22" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">Handle</text>
-<path d="M103,22L132,22" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
-<path d="M147,37L209,37A15 15 0 0 0 224 22L224,22A15 15 0 0 0 209 7L147,7A15 15 0 0 0 132 22L132,22A15 15 0 0 0 147 37Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
-<text x="178" y="22" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">EndValue</text>
-<polygon points="253,22 241,26 241,18" style="fill: #000"></polygon>
-<path d="M224,22L247,22" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+
+<svg xmlns="http://www.w3.org/2000/svg" style="font-size: initial" class="pikchr" width="207" height="35" viewbox="0 0 259.776 44.64" data-pikchr-date="20250321215505">
+<polygon points="30.96,6.48 19.44,10.8 19.44,2.16" style="fill: #add8e6"></polygon>
+<path d="M2.16,6.48L25.2,6.48" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
+<polygon points="30.96,38.16 19.44,42.48 19.44,33.84" style="fill: orange"></polygon>
+<path d="M2.16,38.16L25.2,38.16" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
+<path d="M30.96,37.44L103.306,37.44L103.306,7.2L30.96,7.2Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<text x="67.1328" y="22.32" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">Handle</text>
+<path d="M103.306,22.32L132.106,22.32" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<path d="M147.226,37.44L209.376,37.44A15.12 15.12 0 0 0 224.496 22.32L224.496,22.32A15.12 15.12 0 0 0 209.376 7.2L147.226,7.2A15.12 15.12 0 0 0 132.106 22.32L132.106,22.32A15.12 15.12 0 0 0 147.226 37.44Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<text x="178.301" y="22.32" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">EndValue</text>
+<polygon points="253.296,22.32 241.776,26.64 241.776,18" style="fill: #000"></polygon>
+<path d="M224.496,22.32L247.536,22.32" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
 </svg>
 
-</div>
-</div>
-<div class="paragraph">
+
 <p>The railway of the example code would look like</p>
-</div>
-<div class="imageblock kroki">
-<div class="content">
-<svg xmlns="http://www.w3.org/2000/svg" class="pikchr" width="580" height="52" viewbox="0 0 725.184 66.24">
-<path d="M111,17 L 118,17 Q 125,17 125,31 L 125,34 Q 125,48 134,48 L 142,48" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
-<path d="M204,48L219,48" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
-<path d="M111,17L139,17" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
-<path d="M191,17L207,17" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
-<path d="M392,17 L 399,17 Q 406,17 406,31 L 406,34 Q 406,48 415,48 L 424,48" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
-<path d="M392,17L421,17" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
-<path d="M482,17L498,17" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
-<polygon points="30,17 19,21 19,12" style="fill: #000"></polygon>
-<path d="M2,17L25,17" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
-<path d="M30,32L111,32L111,2L30,2Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
-<text x="70" y="17" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">GetUser</text>
-<path d="M157,64L188,64A15 15 0 0 0 204 48L204,48A15 15 0 0 0 188 33L157,33A15 15 0 0 0 142 48L142,48A15 15 0 0 0 157 64Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
-<text x="173" y="48" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">string</text>
-<path d="M154,32L176,32A15 15 0 0 0 191 17A15 15 0 0 0 176 2L154,2A15 15 0 0 0 139 17A15 15 0 0 0 154 32Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
-<text x="165" y="17" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">User</text>
-<polygon points="235,17 224,21 224,12" style="fill: #add8e6"></polygon>
-<path d="M207,17L230,17" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
-<path d="M235,32L392,32L392,2L235,2Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
-<text x="314" y="17" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">GetEmailAddress</text>
-<path d="M436,32L467,32A15 15 0 0 0 482 17A15 15 0 0 0 467 2L436,2A15 15 0 0 0 421 17A15 15 0 0 0 436 32Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
-<text x="452" y="17" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">string</text>
-<path d="M207,48L498,48" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
-<polygon points="527,17 515,21 515,12" style="fill: #add8e6"></polygon>
-<path d="M498,17L521,17" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
-<polygon points="527,48 515,53 515,44" style="fill: orange"></polygon>
-<path d="M498,48L521,48" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
-<path d="M527,48L599,48L599,17L527,17Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
-<text x="563" y="33" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">Handle</text>
-<path d="M599,33L628,33" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
-<path d="M643,48L674,48A15 15 0 0 0 689 33L689,33A15 15 0 0 0 674 18L643,18A15 15 0 0 0 628 33L628,33A15 15 0 0 0 643 48Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
-<text x="659" y="33" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">string</text>
-<polygon points="718,33 707,37 707,28" style="fill: #000"></polygon>
-<path d="M689,33L712,33" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<svg xmlns="http://www.w3.org/2000/svg" style="font-size: initial" class="pikchr" width="580" height="52" viewbox="0 0 725.184 66.24" data-pikchr-date="20250321215505">
+<path d="M111.024,17.28 L 118.224,17.28 Q 125.424,17.28 125.424,31.68 L 125.424,34.56 Q 125.424,48.96 134.064,48.96 L 142.704,48.96" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
+<path d="M204.106,48.96L219.946,48.96" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
+<path d="M111.024,17.28L139.824,17.28" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
+<path d="M191.318,17.28L207.158,17.28" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
+<path d="M392.515,17.28 L 399.715,17.28 Q 406.915,17.28 406.915,31.68 L 406.915,34.56 Q 406.915,48.96 415.555,48.96 L 424.195,48.96" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
+<path d="M392.515,17.28L421.315,17.28" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
+<path d="M482.717,17.28L498.557,17.28" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
+<polygon points="30.96,17.28 19.44,21.6 19.44,12.96" style="fill: #000"></polygon>
+<path d="M2.16,17.28L25.2,17.28" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<path d="M30.96,32.4L111.024,32.4L111.024,2.16L30.96,2.16Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<text x="70.992" y="17.28" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">GetUser</text>
+<path d="M157.824,64.08L188.986,64.08A15.12 15.12 0 0 0 204.106 48.96L204.106,48.96A15.12 15.12 0 0 0 188.986 33.84L157.824,33.84A15.12 15.12 0 0 0 142.704 48.96L142.704,48.96A15.12 15.12 0 0 0 157.824 64.08Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<text x="173.405" y="48.96" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">string</text>
+<path d="M154.944,32.4L176.198,32.4A15.12 15.12 0 0 0 191.318 17.28A15.12 15.12 0 0 0 176.198 2.16L154.944,2.16A15.12 15.12 0 0 0 139.824 17.28A15.12 15.12 0 0 0 154.944 32.4Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<text x="165.571" y="17.28" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">User</text>
+<polygon points="235.958,17.28 224.438,21.6 224.438,12.96" style="fill: #add8e6"></polygon>
+<path d="M207.158,17.28L230.198,17.28" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
+<path d="M235.958,32.4L392.515,32.4L392.515,2.16L235.958,2.16Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<text x="314.237" y="17.28" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">GetEmailAddress</text>
+<path d="M436.435,32.4L467.597,32.4A15.12 15.12 0 0 0 482.717 17.28A15.12 15.12 0 0 0 467.597 2.16L436.435,2.16A15.12 15.12 0 0 0 421.315 17.28A15.12 15.12 0 0 0 436.435 32.4Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<text x="452.016" y="17.28" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">string</text>
+<path d="M207.158,48.96L498.557,48.96" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
+<polygon points="527.357,17.28 515.837,21.6 515.837,12.96" style="fill: #add8e6"></polygon>
+<path d="M498.557,17.28L521.597,17.28" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
+<polygon points="527.357,48.96 515.837,53.28 515.837,44.64" style="fill: orange"></polygon>
+<path d="M498.557,48.96L521.597,48.96" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
+<path d="M527.357,48.24L599.702,48.24L599.702,18L527.357,18Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<text x="563.53" y="33.12" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">Handle</text>
+<path d="M599.702,33.12L628.502,33.12" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<path d="M643.622,48.24L674.784,48.24A15.12 15.12 0 0 0 689.904 33.12L689.904,33.12A15.12 15.12 0 0 0 674.784 18L643.622,18A15.12 15.12 0 0 0 628.502 33.12L628.502,33.12A15.12 15.12 0 0 0 643.622 48.24Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<text x="659.203" y="33.12" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">string</text>
+<polygon points="718.704,33.12 707.184,37.44 707.184,28.8" style="fill: #000"></polygon>
+<path d="M689.904,33.12L712.944,33.12" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
 </svg>
 
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_another_example"><a class="anchor" href="#_another_example"></a>Another example</h3>
-<div class="paragraph">
+
+<h3 id="another-example"><a class="anchor" href="#another-example"></a>Another
+example</h3>
 <p>Suppose now that we needed to write the following function.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-cs" data-lang="cs"><span class="hljs-comment"><span class="hljs-doctag">///</span> <span class="hljs-doctag">&lt;returns&gt;</span>Message to be printed on the screen<span class="hljs-doctag">&lt;/returns&gt;</span></span>
-<span class="hljs-function"><span class="hljs-built_in">string</span> <span class="hljs-title">MailMessageToUser</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> username, <span class="hljs-built_in">string</span> msg</span>)</span>;</code></pre>
-</div>
-</div>
-<div class="paragraph">
+<div class="sourceCode" id="cb8"><pre class="sourceCode cs"><code class="sourceCode cs"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co">/// </span><span class="kw">&lt;returns&gt;</span><span class="co">Message to be printed on the screen</span><span class="kw">&lt;/returns&gt;</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="dt">string</span> <span class="fu">MailMessageToUser</span><span class="op">(</span><span class="dt">string</span> username<span class="op">,</span> <span class="dt">string</span> msg<span class="op">);</span></span></code></pre></div>
 <p>And suppose that we have the following functions at our disposal.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-cs" data-lang="cs"><span class="hljs-function">Result&lt;User, <span class="hljs-built_in">string</span>&gt; <span class="hljs-title">GetUser</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> username</span>)</span>;
-<span class="hljs-function">Result&lt;<span class="hljs-built_in">string</span>, <span class="hljs-built_in">string</span>&gt; <span class="hljs-title">GetEmailAddress</span>(<span class="hljs-params">User user</span>)</span>;
-<span class="hljs-function">Result&lt;EmailMessage, <span class="hljs-built_in">string</span>&gt; <span class="hljs-title">CreateEmailMessage</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> emailAddress, <span class="hljs-built_in">string</span> msg</span>)</span>;
-<span class="hljs-function">Result&lt;Unit, <span class="hljs-built_in">string</span>&gt; <span class="hljs-title">SendEmail</span>(<span class="hljs-params">EmailMessage email</span>)</span>;</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>If you’re wondering what that <code>Unit</code> type is, it’s a replacement for <code>void</code>, since we can’t put <code>void</code> in there.
-For more information refer to <a href="/?page=unit-cs">The missing C# built-in type: void</a>.</p>
-</div>
-<div class="paragraph">
+<div class="sourceCode" id="cb9"><pre class="sourceCode cs"><code class="sourceCode cs"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>Result<span class="op">&lt;</span>User<span class="op">,</span> <span class="dt">string</span><span class="op">&gt;</span> <span class="fu">GetUser</span><span class="op">(</span><span class="dt">string</span> username<span class="op">);</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>Result<span class="op">&lt;</span><span class="dt">string</span><span class="op">,</span> <span class="dt">string</span><span class="op">&gt;</span> <span class="fu">GetEmailAddress</span><span class="op">(</span>User user<span class="op">);</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>Result<span class="op">&lt;</span>EmailMessage<span class="op">,</span> <span class="dt">string</span><span class="op">&gt;</span> <span class="fu">CreateEmailMessage</span><span class="op">(</span><span class="dt">string</span> emailAddress<span class="op">,</span> <span class="dt">string</span> msg<span class="op">);</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>Result<span class="op">&lt;</span>Unit<span class="op">,</span> <span class="dt">string</span><span class="op">&gt;</span> <span class="fu">SendEmail</span><span class="op">(</span>EmailMessage email<span class="op">);</span></span></code></pre></div>
+<p>If you’re wondering what that <code>Unit</code> type is, it’s a
+replacement for <code>void</code>, since we can’t put <code>void</code>
+in there. For more information refer to <a href="/?page=unit-cs">The
+missing C# built-in type: void</a>.</p>
 <p>Then we could implement the function as follows.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-cs" data-lang="cs"><span class="hljs-comment"><span class="hljs-doctag">///</span> <span class="hljs-doctag">&lt;returns&gt;</span>Message to be printed on the screen<span class="hljs-doctag">&lt;/returns&gt;</span></span>
-<span class="hljs-function"><span class="hljs-built_in">string</span> <span class="hljs-title">MailMessageToUser</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> username, <span class="hljs-built_in">string</span> msg</span>)</span> {
-  <span class="hljs-keyword">return</span> GetUser(username)
-    .OnSuccess(GetEmailAddress)
-    .OnSuccess(email =&gt; CreateEmailMessage(email, msg))
-    .OnSuccess(SendEmail)
-    .Handle(
-      _ =&gt; <span class="hljs-string">"Email sent"</span>,
-      error =&gt; {
-        Log(error);
-        <span class="hljs-keyword">return</span> <span class="hljs-string">"Email not sent"</span>;
-      }
-    );
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
+<div class="sourceCode" id="cb10"><pre class="sourceCode cs"><code class="sourceCode cs"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co">/// </span><span class="kw">&lt;returns&gt;</span><span class="co">Message to be printed on the screen</span><span class="kw">&lt;/returns&gt;</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="dt">string</span> <span class="fu">MailMessageToUser</span><span class="op">(</span><span class="dt">string</span> username<span class="op">,</span> <span class="dt">string</span> msg<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="kw">return</span> <span class="fu">GetUser</span><span class="op">(</span>username<span class="op">)</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span><span class="fu">OnSuccess</span><span class="op">(</span>GetEmailAddress<span class="op">)</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span><span class="fu">OnSuccess</span><span class="op">(</span>email <span class="op">=&gt;</span> <span class="fu">CreateEmailMessage</span><span class="op">(</span>email<span class="op">,</span> msg<span class="op">))</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span><span class="fu">OnSuccess</span><span class="op">(</span>SendEmail<span class="op">)</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span><span class="fu">Handle</span><span class="op">(</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>      _ <span class="op">=&gt;</span> <span class="st">&quot;Email sent&quot;</span><span class="op">,</span></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>      error <span class="op">=&gt;</span> <span class="op">{</span></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>        <span class="fu">Log</span><span class="op">(</span>error<span class="op">);</span></span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>        <span class="kw">return</span> <span class="st">&quot;Email not sent&quot;</span><span class="op">;</span></span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>      <span class="op">}</span></span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>    <span class="op">);</span></span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
 <p>The railway of the example code would look like</p>
-</div>
-<div class="imageblock kroki">
-<div class="content">
-<svg xmlns="http://www.w3.org/2000/svg" class="pikchr" width="760" height="101" viewbox="0 0 951.206 127.44">
-<path d="M111,17 L 118,17 Q 125,17 125,31 L 125,34 Q 125,48 134,48 L 142,48" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
-<path d="M204,48L219,48" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
-<path d="M111,17L139,17" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
-<path d="M191,17L207,17" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
-<path d="M392,17 L 399,17 Q 406,17 406,31 L 406,34 Q 406,48 415,48 L 424,48" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
-<path d="M392,17L421,17" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
-<path d="M482,17L498,17" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
-<path d="M322,89 L 329,89 Q 337,89 337,103 L 337,106 Q 337,120 345,120 L 354,120" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
-<path d="M322,89L351,89" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
-<path d="M485,89L501,89" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
-<path d="M632,89 L 639,89 Q 646,89 646,103 L 646,106 Q 646,120 655,120 L 663,120" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
-<path d="M632,89L660,89" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
-<path d="M708,89L724,89" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
-<polygon points="30,17 19,21 19,12" style="fill: #000"></polygon>
-<path d="M2,17L25,17" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
-<path d="M30,32L111,32L111,2L30,2Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
-<text x="70" y="17" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">GetUser</text>
-<path d="M157,64L188,64A15 15 0 0 0 204 48L204,48A15 15 0 0 0 188 33L157,33A15 15 0 0 0 142 48L142,48A15 15 0 0 0 157 64Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
-<text x="173" y="48" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">string</text>
-<path d="M154,32L176,32A15 15 0 0 0 191 17A15 15 0 0 0 176 2L154,2A15 15 0 0 0 139 17A15 15 0 0 0 154 32Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
-<text x="165" y="17" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">User</text>
-<polygon points="235,17 224,21 224,12" style="fill: #add8e6"></polygon>
-<path d="M207,17L230,17" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
-<path d="M235,32L392,32L392,2L235,2Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
-<text x="314" y="17" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">GetEmailAddress</text>
-<path d="M436,32L467,32A15 15 0 0 0 482 17A15 15 0 0 0 467 2L436,2A15 15 0 0 0 421 17A15 15 0 0 0 436 32Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
-<text x="452" y="17" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">string</text>
-<path d="M207,48L498,48" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
-<path d="M498,17L527,17" style="fill: none; stroke-width: 2.16px; stroke: #add8e6; stroke-dasharray: 4.32 4.32"></path>
-<path d="M498,48L527,48" style="fill: none; stroke-width: 2.16px; stroke: orange; stroke-dasharray: 4.32 4.32"></path>
-<path d="M74,89L102,89" style="fill: none; stroke-width: 2.16px; stroke: #add8e6; stroke-dasharray: 4.32 4.32"></path>
-<path d="M74,120L102,120" style="fill: none; stroke-width: 2.16px; stroke: orange; stroke-dasharray: 4.32 4.32"></path>
-<polygon points="131,89 120,93 120,84" style="fill: #add8e6"></polygon>
-<path d="M102,89L125,89" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
-<path d="M131,104L322,104L322,74L131,74Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
-<text x="227" y="89" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">CreateEmailMessage</text>
-<path d="M366,104L470,104A15 15 0 0 0 485 89A15 15 0 0 0 470 74L366,74A15 15 0 0 0 351 89A15 15 0 0 0 366 104Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
-<text x="418" y="89" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">EmailMessage</text>
-<path d="M102,120L501,120" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
-<polygon points="530,89 518,93 518,84" style="fill: #add8e6"></polygon>
-<path d="M501,89L524,89" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
-<path d="M530,104L632,104L632,74L530,74Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
-<text x="581" y="89" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">SendEmail</text>
-<path d="M676,104L693,104A15 15 0 0 0 708 89A15 15 0 0 0 693 74L676,74A15 15 0 0 0 660 89A15 15 0 0 0 676 104Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
-<text x="684" y="89" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">Unit</text>
-<path d="M501,120L724,120" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
-<polygon points="753,89 741,93 741,84" style="fill: #add8e6"></polygon>
-<path d="M724,89L747,89" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
-<polygon points="753,120 741,125 741,116" style="fill: orange"></polygon>
-<path d="M724,120L747,120" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
-<path d="M753,120L825,120L825,89L753,89Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
-<text x="789" y="105" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">Handle</text>
-<path d="M825,105L854,105" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
-<path d="M869,120L900,120A15 15 0 0 0 915 105A15 15 0 0 0 900 90L869,90A15 15 0 0 0 854 105A15 15 0 0 0 869 120Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
-<text x="885" y="105" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">string</text>
-<polygon points="944,105 933,109 933,100" style="fill: #000"></polygon>
-<path d="M915,105L938,105" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<svg xmlns="http://www.w3.org/2000/svg" style="font-size: initial" class="pikchr" width="760" height="101" viewbox="0 0 951.206 127.44" data-pikchr-date="20250321215505">
+<path d="M111.024,17.28 L 118.224,17.28 Q 125.424,17.28 125.424,31.68 L 125.424,34.56 Q 125.424,48.96 134.064,48.96 L 142.704,48.96" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
+<path d="M204.106,48.96L219.946,48.96" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
+<path d="M111.024,17.28L139.824,17.28" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
+<path d="M191.318,17.28L207.158,17.28" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
+<path d="M392.515,17.28 L 399.715,17.28 Q 406.915,17.28 406.915,31.68 L 406.915,34.56 Q 406.915,48.96 415.555,48.96 L 424.195,48.96" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
+<path d="M392.515,17.28L421.315,17.28" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
+<path d="M482.717,17.28L498.557,17.28" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
+<path d="M322.646,89.28 L 329.846,89.28 Q 337.046,89.28 337.046,103.68 L 337.046,106.56 Q 337.046,120.96 345.686,120.96 L 354.326,120.96" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
+<path d="M322.646,89.28L351.446,89.28" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
+<path d="M485.539,89.28L501.379,89.28" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
+<path d="M632.131,89.28 L 639.331,89.28 Q 646.531,89.28 646.531,103.68 L 646.531,106.56 Q 646.531,120.96 655.171,120.96 L 663.811,120.96" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
+<path d="M632.131,89.28L660.931,89.28" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
+<path d="M708.739,89.28L724.579,89.28" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
+<polygon points="30.96,17.28 19.44,21.6 19.44,12.96" style="fill: #000"></polygon>
+<path d="M2.16,17.28L25.2,17.28" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<path d="M30.96,32.4L111.024,32.4L111.024,2.16L30.96,2.16Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<text x="70.992" y="17.28" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">GetUser</text>
+<path d="M157.824,64.08L188.986,64.08A15.12 15.12 0 0 0 204.106 48.96L204.106,48.96A15.12 15.12 0 0 0 188.986 33.84L157.824,33.84A15.12 15.12 0 0 0 142.704 48.96L142.704,48.96A15.12 15.12 0 0 0 157.824 64.08Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<text x="173.405" y="48.96" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">string</text>
+<path d="M154.944,32.4L176.198,32.4A15.12 15.12 0 0 0 191.318 17.28A15.12 15.12 0 0 0 176.198 2.16L154.944,2.16A15.12 15.12 0 0 0 139.824 17.28A15.12 15.12 0 0 0 154.944 32.4Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<text x="165.571" y="17.28" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">User</text>
+<polygon points="235.958,17.28 224.438,21.6 224.438,12.96" style="fill: #add8e6"></polygon>
+<path d="M207.158,17.28L230.198,17.28" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
+<path d="M235.958,32.4L392.515,32.4L392.515,2.16L235.958,2.16Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<text x="314.237" y="17.28" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">GetEmailAddress</text>
+<path d="M436.435,32.4L467.597,32.4A15.12 15.12 0 0 0 482.717 17.28A15.12 15.12 0 0 0 467.597 2.16L436.435,2.16A15.12 15.12 0 0 0 421.315 17.28A15.12 15.12 0 0 0 436.435 32.4Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<text x="452.016" y="17.28" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">string</text>
+<path d="M207.158,48.96L498.557,48.96" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
+<path d="M498.557,17.28L527.357,17.28" style="fill: none; stroke-width: 2.16px; stroke: #add8e6; stroke-dasharray: 4.32 4.32"></path>
+<path d="M498.557,48.96L527.357,48.96" style="fill: none; stroke-width: 2.16px; stroke: orange; stroke-dasharray: 4.32 4.32"></path>
+<path d="M74.16,89.28L102.96,89.28" style="fill: none; stroke-width: 2.16px; stroke: #add8e6; stroke-dasharray: 4.32 4.32"></path>
+<path d="M74.16,120.96L102.96,120.96" style="fill: none; stroke-width: 2.16px; stroke: orange; stroke-dasharray: 4.32 4.32"></path>
+<polygon points="131.76,89.28 120.24,93.6 120.24,84.96" style="fill: #add8e6"></polygon>
+<path d="M102.96,89.28L126,89.28" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
+<path d="M131.76,104.4L322.646,104.4L322.646,74.16L131.76,74.16Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<text x="227.203" y="89.28" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">CreateEmailMessage</text>
+<path d="M366.566,104.4L470.419,104.4A15.12 15.12 0 0 0 485.539 89.28A15.12 15.12 0 0 0 470.419 74.16L366.566,74.16A15.12 15.12 0 0 0 351.446 89.28A15.12 15.12 0 0 0 366.566 104.4Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<text x="418.493" y="89.28" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">EmailMessage</text>
+<path d="M102.96,120.96L501.379,120.96" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
+<polygon points="530.179,89.28 518.659,93.6 518.659,84.96" style="fill: #add8e6"></polygon>
+<path d="M501.379,89.28L524.419,89.28" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
+<path d="M530.179,104.4L632.131,104.4L632.131,74.16L530.179,74.16Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<text x="581.155" y="89.28" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">SendEmail</text>
+<path d="M676.051,104.4L693.619,104.4A15.12 15.12 0 0 0 708.739 89.28A15.12 15.12 0 0 0 693.619 74.16L676.051,74.16A15.12 15.12 0 0 0 660.931 89.28A15.12 15.12 0 0 0 676.051 104.4Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<text x="684.835" y="89.28" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">Unit</text>
+<path d="M501.379,120.96L724.579,120.96" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
+<polygon points="753.379,89.28 741.859,93.6 741.859,84.96" style="fill: #add8e6"></polygon>
+<path d="M724.579,89.28L747.619,89.28" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
+<polygon points="753.379,120.96 741.859,125.28 741.859,116.64" style="fill: orange"></polygon>
+<path d="M724.579,120.96L747.619,120.96" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
+<path d="M753.379,120.24L825.725,120.24L825.725,90L753.379,90Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<text x="789.552" y="105.12" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">Handle</text>
+<path d="M825.725,105.12L854.525,105.12" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<path d="M869.645,120.24L900.806,120.24A15.12 15.12 0 0 0 915.926 105.12A15.12 15.12 0 0 0 900.806 90L869.645,90A15.12 15.12 0 0 0 854.525 105.12A15.12 15.12 0 0 0 869.645 120.24Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<text x="885.226" y="105.12" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">string</text>
+<polygon points="944.726,105.12 933.206,109.44 933.206,100.8" style="fill: #000"></polygon>
+<path d="M915.926,105.12L938.966,105.12" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
 </svg>
 
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_void_handlers"><a class="anchor" href="#_void_handlers"></a>Void handlers</h3>
-<div class="paragraph">
-<p>If we would rather handle the end result without returning anything, e.g. using void methods only, we would need a variant of <code>Handle</code> for that.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-cs" data-lang="cs"><span class="hljs-keyword">public</span> <span class="hljs-keyword">abstract</span> <span class="hljs-keyword">class</span> <span class="hljs-title">Result</span>&lt;<span class="hljs-title">TSuccess</span>, <span class="hljs-title">TFailure</span>&gt; {
 
-  <span class="hljs-comment">// ...</span>
-
-  <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">HandleVoid</span>(<span class="hljs-params">Action&lt;TResult&gt; onSuccess, Action&lt;TError&gt; onFailure</span>)</span> {
-    _ = onSuccess ?? <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> ArgumentNullException(<span class="hljs-keyword">nameof</span>(onSuccess));
-    _ = onFailure ?? <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> ArgumentNullException(<span class="hljs-keyword">nameof</span>(onFailure));
-
-    _ = Handle(onSuccess.AsFunc(), onFailure.AsFunc());
-  }
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
+<h3 id="void-handlers"><a class="anchor" href="#void-handlers"></a>Void
+handlers</h3>
+<p>If we would rather handle the end result without returning anything,
+e.g. using void methods only, we would need a variant of
+<code>Handle</code> for that.</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode cs"><code class="sourceCode cs"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="kw">public</span> <span class="kw">abstract</span> <span class="kw">class</span> Result<span class="op">&lt;</span>TSuccess<span class="op">,</span> TFailure<span class="op">&gt;</span> <span class="op">{</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="co">// ...</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>  <span class="kw">public</span> <span class="dt">void</span> <span class="fu">HandleVoid</span><span class="op">(</span>Action<span class="op">&lt;</span>TResult<span class="op">&gt;</span> onSuccess<span class="op">,</span> Action<span class="op">&lt;</span>TError<span class="op">&gt;</span> onFailure<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>    _ <span class="op">=</span> onSuccess <span class="op">??</span> <span class="kw">throw</span> <span class="kw">new</span> <span class="fu">ArgumentNullException</span><span class="op">(</span><span class="fu">nameof</span><span class="op">(</span>onSuccess<span class="op">));</span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>    _ <span class="op">=</span> onFailure <span class="op">??</span> <span class="kw">throw</span> <span class="kw">new</span> <span class="fu">ArgumentNullException</span><span class="op">(</span><span class="fu">nameof</span><span class="op">(</span>onFailure<span class="op">));</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>    _ <span class="op">=</span> <span class="fu">Handle</span><span class="op">(</span>onSuccess<span class="op">.</span><span class="fu">AsFunc</span><span class="op">(),</span> onFailure<span class="op">.</span><span class="fu">AsFunc</span><span class="op">());</span></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>  <span class="op">}</span></span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
 <p>Then we could use it as follows.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-cs" data-lang="cs"><span class="hljs-comment"><span class="hljs-doctag">///</span> <span class="hljs-doctag">&lt;returns&gt;</span>Message to be printed on the screen<span class="hljs-doctag">&lt;/returns&gt;</span></span>
-<span class="hljs-function"><span class="hljs-built_in">string</span> <span class="hljs-title">MailMessageToUser</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> username, <span class="hljs-built_in">string</span> msg</span>)</span> {
-  <span class="hljs-keyword">return</span> GetUser(username)
-    .OnSuccess(GetEmailAddress)
-    .OnSuccess(email =&gt; CreateEmailMessage(email, msg))
-    .OnSuccess(SendEmail)
-    .HandleVoid(
-      _ =&gt; {
-        Console.WriteLine(<span class="hljs-string">"Email sent"</span>);
-      },
-      error =&gt; {
-        Log(error);
-        Console.WriteLine(<span class="hljs-string">"Email not sent"</span>);
-      }
-    );
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
+<div class="sourceCode" id="cb12"><pre class="sourceCode cs"><code class="sourceCode cs"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co">/// </span><span class="kw">&lt;returns&gt;</span><span class="co">Message to be printed on the screen</span><span class="kw">&lt;/returns&gt;</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="dt">string</span> <span class="fu">MailMessageToUser</span><span class="op">(</span><span class="dt">string</span> username<span class="op">,</span> <span class="dt">string</span> msg<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  <span class="kw">return</span> <span class="fu">GetUser</span><span class="op">(</span>username<span class="op">)</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span><span class="fu">OnSuccess</span><span class="op">(</span>GetEmailAddress<span class="op">)</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span><span class="fu">OnSuccess</span><span class="op">(</span>email <span class="op">=&gt;</span> <span class="fu">CreateEmailMessage</span><span class="op">(</span>email<span class="op">,</span> msg<span class="op">))</span></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span><span class="fu">OnSuccess</span><span class="op">(</span>SendEmail<span class="op">)</span></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span><span class="fu">HandleVoid</span><span class="op">(</span></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>      _ <span class="op">=&gt;</span> <span class="op">{</span></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>        Console<span class="op">.</span><span class="fu">WriteLine</span><span class="op">(</span><span class="st">&quot;Email sent&quot;</span><span class="op">);</span></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>      <span class="op">},</span></span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>      error <span class="op">=&gt;</span> <span class="op">{</span></span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>        <span class="fu">Log</span><span class="op">(</span>error<span class="op">);</span></span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>        Console<span class="op">.</span><span class="fu">WriteLine</span><span class="op">(</span><span class="st">&quot;Email not sent&quot;</span><span class="op">);</span></span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>      <span class="op">}</span></span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>    <span class="op">);</span></span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
 <p>For the implementation of <code>AsFunc</code>, refer to <a href="/?page=unit-cs">The missing C# built-in type: void</a>.</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_the_onfailure_method"><a class="anchor" href="#_the_onfailure_method"></a>The OnFailure method</h3>
-<div class="paragraph">
-<p>If we have a OnSuccess method, there is no reason why we couldn’t have an OnFailure method too.
-This would allow us to do operations on the failure track, such as modifying the error, or recovering from the error and get back on the success track.</p>
-</div>
-<div class="imageblock kroki">
-<div class="content">
-<svg xmlns="http://www.w3.org/2000/svg" class="pikchr" width="222" height="40" viewbox="0 0 278.554 51.12">
-<path d="M126,33 L 134,33 Q 141,33 141,19 L 141,16 Q 141,2 149,2 L 158,2" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
-<path d="M126,33L155,33" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
-<path d="M260,33L276,33" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
-<polygon points="30,33 19,38 19,29" style="fill: orange"></polygon>
-<path d="M2,33L25,33" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
-<path d="M30,48L126,48L126,18L30,18Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
-<text x="78" y="33" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">OnFailure</text>
-<path d="M170,48L245,48A15 15 0 0 0 260 33L260,33A15 15 0 0 0 245 18L170,18A15 15 0 0 0 155 33L155,33A15 15 0 0 0 170 48Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
-<text x="208" y="33" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">ErrorValue</text>
-<path d="M2,2L276,2" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
+<h3 id="the-onfailure-method"><a class="anchor" href="#the-onfailure-method"></a>The
+OnFailure method</h3>
+<p>If we have a OnSuccess method, there is no reason why we couldn’t
+have an OnFailure method too. This would allow us to do operations on
+the failure track, such as modifying the error, or recovering from the
+error and get back on the success track.</p>
+<svg xmlns="http://www.w3.org/2000/svg" style="font-size: initial" class="pikchr" width="222" height="40" viewbox="0 0 278.554 51.12" data-pikchr-date="20250321215505">
+<path d="M126.806,33.84 L 134.006,33.84 Q 141.206,33.84 141.206,19.44 L 141.206,16.56 Q 141.206,2.16 149.846,2.16 L 158.486,2.16" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
+<path d="M126.806,33.84L155.606,33.84" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
+<path d="M260.554,33.84L276.394,33.84" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
+<polygon points="30.96,33.84 19.44,38.16 19.44,29.52" style="fill: orange"></polygon>
+<path d="M2.16,33.84L25.2,33.84" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
+<path d="M30.96,48.96L126.806,48.96L126.806,18.72L30.96,18.72Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<text x="78.8832" y="33.84" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">OnFailure</text>
+<path d="M170.726,48.96L245.434,48.96A15.12 15.12 0 0 0 260.554 33.84L260.554,33.84A15.12 15.12 0 0 0 245.434 18.72L170.726,18.72A15.12 15.12 0 0 0 155.606 33.84L155.606,33.84A15.12 15.12 0 0 0 170.726 48.96Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<text x="208.08" y="33.84" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">ErrorValue</text>
+<path d="M2.16,2.16L276.394,2.16" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
 </svg>
 
-</div>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-cs" data-lang="cs"><span class="hljs-comment"><span class="hljs-doctag">///</span> <span class="hljs-doctag">&lt;returns&gt;</span>Message to be printed on the screen<span class="hljs-doctag">&lt;/returns&gt;</span></span>
-<span class="hljs-function"><span class="hljs-built_in">string</span> <span class="hljs-title">MailMessageToUser</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> username, <span class="hljs-built_in">string</span> msg</span>)</span> {
-  <span class="hljs-keyword">return</span> GetUser(username)
-    .OnSuccess(GetEmailAddress)
-    .OnSuccess(email =&gt; CreateEmailMessage(email, msg))
-    .OnSuccess(SendEmail)
-    .OnFailure(error =&gt; <span class="hljs-keyword">new</span> Result&lt;Unit, <span class="hljs-built_in">string</span>&gt;.Failure(<span class="hljs-string">"An error occurred: "</span> + error))
-    .Handle(
-      _ =&gt; <span class="hljs-string">"Email sent"</span>,
-      error =&gt; {
-        Log(error);
-        <span class="hljs-keyword">return</span> <span class="hljs-string">"Email not sent"</span>;
-      }
-    );
-}</code></pre>
-</div>
-</div>
-<div class="imageblock kroki">
-<div class="content">
-<svg xmlns="http://www.w3.org/2000/svg" class="pikchr" width="741" height="110" viewbox="0 0 927.936 138.24">
-<path d="M111,17 L 118,17 Q 125,17 125,31 L 125,34 Q 125,48 134,48 L 142,48" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
-<path d="M204,48L219,48" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
-<path d="M111,17L139,17" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
-<path d="M191,17L207,17" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
-<path d="M392,17 L 399,17 Q 406,17 406,31 L 406,34 Q 406,48 415,48 L 424,48" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
-<path d="M392,17L421,17" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
-<path d="M482,17L498,17" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
-<path d="M718,17 L 725,17 Q 732,17 732,31 L 732,34 Q 732,48 741,48 L 749,48" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
-<path d="M718,17L747,17" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
-<path d="M881,17L896,17" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
-<path d="M233,89 L 240,89 Q 248,89 248,103 L 248,106 Q 248,120 256,120 L 265,120" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
-<path d="M233,89L262,89" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
-<path d="M310,89L326,89" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
-<path d="M499,120L528,120" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
-<path d="M590,120L606,120" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
-<polygon points="30,17 19,21 19,12" style="fill: #000"></polygon>
-<path d="M2,17L25,17" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
-<path d="M30,32L111,32L111,2L30,2Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
-<text x="70" y="17" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">GetUser</text>
-<path d="M157,64L188,64A15 15 0 0 0 204 48L204,48A15 15 0 0 0 188 33L157,33A15 15 0 0 0 142 48L142,48A15 15 0 0 0 157 64Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
-<text x="173" y="48" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">string</text>
-<path d="M154,32L176,32A15 15 0 0 0 191 17A15 15 0 0 0 176 2L154,2A15 15 0 0 0 139 17A15 15 0 0 0 154 32Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
-<text x="165" y="17" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">User</text>
-<polygon points="235,17 224,21 224,12" style="fill: #add8e6"></polygon>
-<path d="M207,17L230,17" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
-<path d="M235,32L392,32L392,2L235,2Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
-<text x="314" y="17" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">GetEmailAddress</text>
-<path d="M436,32L467,32A15 15 0 0 0 482 17A15 15 0 0 0 467 2L436,2A15 15 0 0 0 421 17A15 15 0 0 0 436 32Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
-<text x="452" y="17" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">string</text>
-<path d="M207,48L498,48" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
-<polygon points="527,17 515,21 515,12" style="fill: #add8e6"></polygon>
-<path d="M498,17L521,17" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
-<path d="M527,32L718,32L718,2L527,2Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
-<text x="622" y="17" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">CreateEmailMessage</text>
-<path d="M762,32L866,32A15 15 0 0 0 881 17A15 15 0 0 0 866 2L762,2A15 15 0 0 0 747 17A15 15 0 0 0 762 32Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
-<text x="814" y="17" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">EmailMessage</text>
-<path d="M498,48L896,48" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
-<path d="M896,17L925,17" style="fill: none; stroke-width: 2.16px; stroke: #add8e6; stroke-dasharray: 4.32 4.32"></path>
-<path d="M896,48L925,48" style="fill: none; stroke-width: 2.16px; stroke: orange; stroke-dasharray: 4.32 4.32"></path>
-<path d="M74,89L102,89" style="fill: none; stroke-width: 2.16px; stroke: #add8e6; stroke-dasharray: 4.32 4.32"></path>
-<path d="M74,120L102,120" style="fill: none; stroke-width: 2.16px; stroke: orange; stroke-dasharray: 4.32 4.32"></path>
-<polygon points="131,89 120,93 120,84" style="fill: #add8e6"></polygon>
-<path d="M102,89L125,89" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
-<path d="M131,104L233,104L233,74L131,74Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
-<text x="182" y="89" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">SendEmail</text>
-<path d="M277,104L295,104A15 15 0 0 0 310 89A15 15 0 0 0 295 74L277,74A15 15 0 0 0 262 89A15 15 0 0 0 277 104Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
-<text x="286" y="89" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">Unit</text>
-<path d="M102,120L326,120" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
-<polygon points="354,120 343,125 343,116" style="fill: orange"></polygon>
-<path d="M326,120L349,120" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
-<path d="M354,136L499,136L499,105L354,105Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
-<text x="427" y="120" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">TransformError</text>
-<path d="M543,136L575,136A15 15 0 0 0 590 120A15 15 0 0 0 575 105L543,105A15 15 0 0 0 528 120A15 15 0 0 0 543 136Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
-<text x="559" y="120" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">string</text>
-<path d="M326,89L606,89" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
-<polygon points="634,89 623,93 623,84" style="fill: #add8e6"></polygon>
-<path d="M606,89L629,89" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
-<polygon points="634,120 623,125 623,116" style="fill: orange"></polygon>
-<path d="M606,120L629,120" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
-<path d="M634,120L707,120L707,89L634,89Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
-<text x="671" y="105" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">Handle</text>
-<path d="M707,105L735,105" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
-<path d="M751,120L782,120A15 15 0 0 0 797 105A15 15 0 0 0 782 90L751,90A15 15 0 0 0 735 105A15 15 0 0 0 751 120Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
-<text x="766" y="105" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">string</text>
-<polygon points="826,105 814,109 814,100" style="fill: #000"></polygon>
-<path d="M797,105L820,105" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+
+<div class="sourceCode" id="cb13"><pre class="sourceCode cs"><code class="sourceCode cs"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co">/// </span><span class="kw">&lt;returns&gt;</span><span class="co">Message to be printed on the screen</span><span class="kw">&lt;/returns&gt;</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="dt">string</span> <span class="fu">MailMessageToUser</span><span class="op">(</span><span class="dt">string</span> username<span class="op">,</span> <span class="dt">string</span> msg<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  <span class="kw">return</span> <span class="fu">GetUser</span><span class="op">(</span>username<span class="op">)</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span><span class="fu">OnSuccess</span><span class="op">(</span>GetEmailAddress<span class="op">)</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span><span class="fu">OnSuccess</span><span class="op">(</span>email <span class="op">=&gt;</span> <span class="fu">CreateEmailMessage</span><span class="op">(</span>email<span class="op">,</span> msg<span class="op">))</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span><span class="fu">OnSuccess</span><span class="op">(</span>SendEmail<span class="op">)</span></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span><span class="fu">OnFailure</span><span class="op">(</span>error <span class="op">=&gt;</span> <span class="kw">new</span> Result<span class="op">&lt;</span>Unit<span class="op">,</span> <span class="dt">string</span><span class="op">&gt;.</span><span class="fu">Failure</span><span class="op">(</span><span class="st">&quot;An error occurred: &quot;</span> <span class="op">+</span> error<span class="op">))</span></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span><span class="fu">Handle</span><span class="op">(</span></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>      _ <span class="op">=&gt;</span> <span class="st">&quot;Email sent&quot;</span><span class="op">,</span></span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>      error <span class="op">=&gt;</span> <span class="op">{</span></span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>        <span class="fu">Log</span><span class="op">(</span>error<span class="op">);</span></span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>        <span class="kw">return</span> <span class="st">&quot;Email not sent&quot;</span><span class="op">;</span></span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>      <span class="op">}</span></span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>    <span class="op">);</span></span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<svg xmlns="http://www.w3.org/2000/svg" style="font-size: initial" class="pikchr" width="741" height="110" viewbox="0 0 927.936 138.24" data-pikchr-date="20250321215505">
+<path d="M111.024,17.28 L 118.224,17.28 Q 125.424,17.28 125.424,31.68 L 125.424,34.56 Q 125.424,48.96 134.064,48.96 L 142.704,48.96" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
+<path d="M204.106,48.96L219.946,48.96" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
+<path d="M111.024,17.28L139.824,17.28" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
+<path d="M191.318,17.28L207.158,17.28" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
+<path d="M392.515,17.28 L 399.715,17.28 Q 406.915,17.28 406.915,31.68 L 406.915,34.56 Q 406.915,48.96 415.555,48.96 L 424.195,48.96" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
+<path d="M392.515,17.28L421.315,17.28" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
+<path d="M482.717,17.28L498.557,17.28" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
+<path d="M718.243,17.28 L 725.443,17.28 Q 732.643,17.28 732.643,31.68 L 732.643,34.56 Q 732.643,48.96 741.283,48.96 L 749.923,48.96" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
+<path d="M718.243,17.28L747.043,17.28" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
+<path d="M881.136,17.28L896.976,17.28" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
+<path d="M233.712,89.28 L 240.912,89.28 Q 248.112,89.28 248.112,103.68 L 248.112,106.56 Q 248.112,120.96 256.752,120.96 L 265.392,120.96" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
+<path d="M233.712,89.28L262.512,89.28" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
+<path d="M310.32,89.28L326.16,89.28" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
+<path d="M499.997,120.96L528.797,120.96" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
+<path d="M590.198,120.96L606.038,120.96" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
+<polygon points="30.96,17.28 19.44,21.6 19.44,12.96" style="fill: #000"></polygon>
+<path d="M2.16,17.28L25.2,17.28" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<path d="M30.96,32.4L111.024,32.4L111.024,2.16L30.96,2.16Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<text x="70.992" y="17.28" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">GetUser</text>
+<path d="M157.824,64.08L188.986,64.08A15.12 15.12 0 0 0 204.106 48.96L204.106,48.96A15.12 15.12 0 0 0 188.986 33.84L157.824,33.84A15.12 15.12 0 0 0 142.704 48.96L142.704,48.96A15.12 15.12 0 0 0 157.824 64.08Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<text x="173.405" y="48.96" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">string</text>
+<path d="M154.944,32.4L176.198,32.4A15.12 15.12 0 0 0 191.318 17.28A15.12 15.12 0 0 0 176.198 2.16L154.944,2.16A15.12 15.12 0 0 0 139.824 17.28A15.12 15.12 0 0 0 154.944 32.4Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<text x="165.571" y="17.28" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">User</text>
+<polygon points="235.958,17.28 224.438,21.6 224.438,12.96" style="fill: #add8e6"></polygon>
+<path d="M207.158,17.28L230.198,17.28" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
+<path d="M235.958,32.4L392.515,32.4L392.515,2.16L235.958,2.16Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<text x="314.237" y="17.28" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">GetEmailAddress</text>
+<path d="M436.435,32.4L467.597,32.4A15.12 15.12 0 0 0 482.717 17.28A15.12 15.12 0 0 0 467.597 2.16L436.435,2.16A15.12 15.12 0 0 0 421.315 17.28A15.12 15.12 0 0 0 436.435 32.4Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<text x="452.016" y="17.28" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">string</text>
+<path d="M207.158,48.96L498.557,48.96" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
+<polygon points="527.357,17.28 515.837,21.6 515.837,12.96" style="fill: #add8e6"></polygon>
+<path d="M498.557,17.28L521.597,17.28" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
+<path d="M527.357,32.4L718.243,32.4L718.243,2.16L527.357,2.16Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<text x="622.8" y="17.28" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">CreateEmailMessage</text>
+<path d="M762.163,32.4L866.016,32.4A15.12 15.12 0 0 0 881.136 17.28A15.12 15.12 0 0 0 866.016 2.16L762.163,2.16A15.12 15.12 0 0 0 747.043 17.28A15.12 15.12 0 0 0 762.163 32.4Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<text x="814.09" y="17.28" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">EmailMessage</text>
+<path d="M498.557,48.96L896.976,48.96" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
+<path d="M896.976,17.28L925.776,17.28" style="fill: none; stroke-width: 2.16px; stroke: #add8e6; stroke-dasharray: 4.32 4.32"></path>
+<path d="M896.976,48.96L925.776,48.96" style="fill: none; stroke-width: 2.16px; stroke: orange; stroke-dasharray: 4.32 4.32"></path>
+<path d="M74.16,89.28L102.96,89.28" style="fill: none; stroke-width: 2.16px; stroke: #add8e6; stroke-dasharray: 4.32 4.32"></path>
+<path d="M74.16,120.96L102.96,120.96" style="fill: none; stroke-width: 2.16px; stroke: orange; stroke-dasharray: 4.32 4.32"></path>
+<polygon points="131.76,89.28 120.24,93.6 120.24,84.96" style="fill: #add8e6"></polygon>
+<path d="M102.96,89.28L126,89.28" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
+<path d="M131.76,104.4L233.712,104.4L233.712,74.16L131.76,74.16Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<text x="182.736" y="89.28" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">SendEmail</text>
+<path d="M277.632,104.4L295.2,104.4A15.12 15.12 0 0 0 310.32 89.28A15.12 15.12 0 0 0 295.2 74.16L277.632,74.16A15.12 15.12 0 0 0 262.512 89.28A15.12 15.12 0 0 0 277.632 104.4Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<text x="286.416" y="89.28" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">Unit</text>
+<path d="M102.96,120.96L326.16,120.96" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
+<polygon points="354.96,120.96 343.44,125.28 343.44,116.64" style="fill: orange"></polygon>
+<path d="M326.16,120.96L349.2,120.96" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
+<path d="M354.96,136.08L499.997,136.08L499.997,105.84L354.96,105.84Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<text x="427.478" y="120.96" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">TransformError</text>
+<path d="M543.917,136.08L575.078,136.08A15.12 15.12 0 0 0 590.198 120.96A15.12 15.12 0 0 0 575.078 105.84L543.917,105.84A15.12 15.12 0 0 0 528.797 120.96A15.12 15.12 0 0 0 543.917 136.08Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<text x="559.498" y="120.96" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">string</text>
+<path d="M326.16,89.28L606.038,89.28" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
+<polygon points="634.838,89.28 623.318,93.6 623.318,84.96" style="fill: #add8e6"></polygon>
+<path d="M606.038,89.28L629.078,89.28" style="fill: none; stroke-width: 2.16px; stroke: #add8e6"></path>
+<polygon points="634.838,120.96 623.318,125.28 623.318,116.64" style="fill: orange"></polygon>
+<path d="M606.038,120.96L629.078,120.96" style="fill: none; stroke-width: 2.16px; stroke: orange"></path>
+<path d="M634.838,120.24L707.184,120.24L707.184,90L634.838,90Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<text x="671.011" y="105.12" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">Handle</text>
+<path d="M707.184,105.12L735.984,105.12" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<path d="M751.104,120.24L782.266,120.24A15.12 15.12 0 0 0 797.386 105.12A15.12 15.12 0 0 0 782.266 90L751.104,90A15.12 15.12 0 0 0 735.984 105.12A15.12 15.12 0 0 0 751.104 120.24Z" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
+<text x="766.685" y="105.12" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">string</text>
+<polygon points="826.186,105.12 814.666,109.44 814.666,100.8" style="fill: #000"></polygon>
+<path d="M797.386,105.12L820.426,105.12" style="fill: none; stroke-width: 2.16px; stroke: #000"></path>
 </svg>
 
-</div>
-</div>
-<div class="paragraph">
-<p>We still need to deal with the awkward construction of <code>Result</code> instances, and we’ll do that in the <a href="/?page=rop-cs-3">next part</a>.</p>
-</div>
-</div>
-</div>
-</div>
-</div>
 
-</body></html>
+<p><a href="/?page=rop-cs-3">We still need to deal with the awkward
+construction of <code>Result</code> instances, and we’ll do that in the
+next part. ➤</a></p>
+</div>
+</body>
+</html>

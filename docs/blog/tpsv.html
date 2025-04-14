@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="generator" content="pandoc">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>tpsv</title>
+  <title>TPSV</title>
   <style>code {
   white-space: pre-wrap;
 }
@@ -111,7 +111,8 @@ pre.numberSource code > span > a:first-child:before {
   -webkit-user-select: none;
   user-select: none;
   -khtml-user-select: none;
-  color: #aaa;
+  color: #005661;
+  background-color: #fefaf2;
   border: none;
   width: 4em;
   padding: 0 4px;
@@ -121,9 +122,14 @@ pre.numberSource code > span > a:first-child:before {
 }
 
 pre.numberSource {
-  border-left: 1px solid #aaa;
+  border-left: 1px solid #005661;
   margin-left: 3em;
   padding-left: 4px;
+}
+
+div.sourceCode {
+  color: #005661;
+  background-color: #fef8ec;
 }
 
 @media screen {
@@ -132,152 +138,148 @@ pre.numberSource {
   }
 }
 
+code span {
+  color: #005661;
+}
+
 code span.al {
-  color: red;
-  font-weight: bold;
+  color: #e64100;
 }
 
 code span.an {
-  color: #60a0b0;
-  font-style: italic;
-  font-weight: bold;
+  color: #00bdd6;
 }
 
 code span.at {
-  color: #7d9029;
+  color: #b3694d;
 }
 
 code span.bn {
-  color: #40a070;
+  color: #e64100;
 }
 
 code span.bu {
-  color: green;
+  color: #fa8900;
 }
 
 code span.cf {
-  color: #007020;
+  color: #ff5792;
   font-weight: bold;
 }
 
-code span.ch {
-  color: #4070a0;
-}
-
-code span.cn {
-  color: #800;
+code span.ch, code span.cn {
+  color: #e5164a;
 }
 
 code span.co {
-  color: #60a0b0;
+  color: #8ca6a6;
   font-style: italic;
 }
 
 code span.cv {
-  color: #60a0b0;
-  font-style: italic;
-  font-weight: bold;
+  color: #8ca6a6;
 }
 
 code span.do {
-  color: #ba2121;
+  color: #8ca6a6;
   font-style: italic;
 }
 
 code span.dt {
-  color: #902000;
+  color: #fa8900;
 }
 
-code span.dv {
-  color: #40a070;
+code span.dv, code span.er {
+  color: #e64100;
 }
 
-code span.er {
-  color: red;
-  font-weight: bold;
+code span.ex {
+  color: #00bdd6;
 }
 
 code span.fl {
-  color: #40a070;
+  color: #0094f0;
 }
 
 code span.fu {
-  color: #06287e;
+  color: #0095a8;
 }
 
 code span.im {
-  color: green;
-  font-weight: bold;
+  color: #00bdd6;
 }
 
 code span.in {
-  color: #60a0b0;
-  font-style: italic;
-  font-weight: bold;
+  color: #8ca6a6;
 }
 
 code span.kw {
-  color: #007020;
+  color: #ff5792;
   font-weight: bold;
 }
 
 code span.op {
-  color: #666;
+  color: #0094f0;
 }
 
 code span.ot {
-  color: #007020;
+  color: #005661;
 }
 
 code span.pp {
-  color: #bc7a00;
+  color: #0095a8;
+}
+
+code span.re {
+  color: #00bdd6;
 }
 
 code span.sc {
-  color: #4070a0;
+  color: #e5164a;
 }
 
 code span.ss {
-  color: #b68;
+  color: #00bdd6;
 }
 
 code span.st {
-  color: #4070a0;
+  color: #00b368;
 }
 
-code span.va {
-  color: #19177c;
-}
-
-code span.vs {
-  color: #4070a0;
+code span.va, code span.vs {
+  color: #004d57;
 }
 
 code span.wa {
-  color: #60a0b0;
-  font-style: italic;
-  font-weight: bold;
+  color: #e64100;
 }
 </style>
   <style type="text/css"></style>
 </head>
 <body>
+<header id="title-block-header">
+<h1 class="title">TPSV</h1>
+</header>
 <div id="content">
-<h1 id="tpsv"><a class="anchor" href="#tpsv"></a>TPSV</h1>
+<p>Despite CSV being ubiquitous, TSV has direct advantages over CSV in
+many situations. Tab characters normally don’t occur in the data being
+encoded, which relieves the need for quoting. Moreover, if your columns
+all have a similar width, you can configure the tab-width in any text
+editor such that all columns align nicely. However, in many cases
+columns do not have a similar width.</p>
+<p>TPSV stands for Tab-Pipe-Separated-Values and aims to be an
+easier-to-work-with alternative to CSV and TSV. Like both of these
+formats, TPSV is able to describe tabular data where each cell contains
+a string value. TPSV is designed to be simple to parse and convenient to
+use for anyone with a text editor.</p>
 <ul>
-<li><a href="#tpsv">TPSV</a></li>
 <li><a href="#syntax">Syntax</a></li>
 <li><a href="#example">Example</a></li>
-<li><a href="#editor-compatibility">Editor compatibility</a></li>
+<li><a href="#editor-configuration">Editor configuration</a></li>
 <li><a href="#comparison-with-other-formats">Comparison with other
 formats</a></li>
 <li><a href="#parsing">Parsing</a></li>
 </ul>
-<p>TPSV stands for Tab-Pipe-Separated-Values. It is a human-readable
-alternative to CSV and TSV. Like both of these formats, TPSV is able to
-describe tabular data where each cell contains a string value. The
-primary design goal of TPSV is ease of parsing and ease of use such that
-anyone with a text editor can work with it, no plugins required.</p>
 <h2 id="syntax"><a class="anchor" href="#syntax"></a>Syntax</h2>
 <p>The basic syntax is simple.</p>
 <ol type="1">
@@ -305,31 +307,28 @@ character.</li>
 <h2 id="example"><a class="anchor" href="#example"></a>Example</h2>
 <p>This is a sample TPSV demonstrating the format. The gray arrows are
 tab characters.</p>
-<figure>
-<img src="/tpsv.4dc8995d.png" alt="Alt text">
-<figcaption aria-hidden="true">Alt text</figcaption>
-</figure>
+<p><img src="/tpsv.4dc8995d.png"></p>
 <p>This example highlights a few aspects.</p>
 <ul>
-<li>The first two lines are comments. The first line is a modeline,
-which can be interpreted by text editors that support them, and in this
-case sets the tab width to 4.</li>
-<li>The first row is usually a header, giving captions to the
-columns.</li>
-<li>The header separator does not start with <code>|</code> or
-<code>\</code>, so it is ignored.</li>
-<li>This choice of header separator makes the example compatible with
-Markdown pipe tables, which are recognized as tables in many contexts,
-including GitHub-flavored Markdown. Convenient if you want to paste it
-somewhere.</li>
-<li>The last column is ideal for long cell contents.</li>
+<li>The first two lines do not start with a cell, and thus are treated
+as comments.</li>
+<li>The first line is a modeline, which can be interpreted by text
+editors that support them. In this case it sets the tab width to 4.</li>
+<li>Like in this example, the first row will usually be a header.</li>
+<li>The dashed line under the header does not start with <code>|</code>
+or <code>\</code>, so it is ignored.</li>
+<li>This particular choice of header separator makes the example
+compatible with <a href="https://www.markdownguide.org/extended-syntax/#tables" class=" external" target="_blank">Markdown pipe tables</a>, which are
+recognized as tables in many contexts, including GitHub-flavored
+Markdown. This can be convenient if you want to paste it somewhere.</li>
+<li>In general, the last column is ideal for long cell contents.</li>
 <li>The cell with the “TODO” is beyond the last column, so it acts as a
 comment.</li>
-<li>The last line is a continuation, which can be nice if you don’t want
-the text to exceed a certain width.</li>
+<li>The last line is an example of a row continuation, which can be nice
+if you don’t want the text to exceed a certain width.</li>
 </ul>
-<h2 id="editor-compatibility"><a class="anchor" href="#editor-compatibility"></a>Editor
-compatibility</h2>
+<h2 id="editor-configuration"><a class="anchor" href="#editor-configuration"></a>Editor
+configuration</h2>
 <p>Recommendations:</p>
 <ul>
 <li>Use a monospaced text editor.</li>

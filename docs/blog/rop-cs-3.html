@@ -1,143 +1,365 @@
-<!DOCTYPE html><html lang="en"><head>
-<meta charset="UTF-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="generator" content="Asciidoctor 2.0.17">
-<title>Railroad Oriented Programming in C#: Part 3</title>
-
-
-<base target="_self">
-</head>
-<body class="article">
-<div id="header">
-<h1>Railroad Oriented Programming in C#: Part 3</h1>
-</div>
-<div id="content">
-<div id="preamble">
-<div class="sectionbody">
-<div class="paragraph">
-<p>In the <a href="/?page=rop-cs-2">previous part</a> we looked at an implementation of a <code>Result</code> type for explicit failure paths.
-In this part we’ll look at how we can improve the creation of these <code>Result</code> objects.</p>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_creating_result_instances"><a class="anchor" href="#_creating_result_instances"></a>Creating <code>Result</code> instances</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>When creating a <code>Result</code> instance we often find ourselves writing code like this.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-cs" data-lang="cs"><span class="hljs-function">Result&lt;User, <span class="hljs-built_in">string</span>&gt; <span class="hljs-title">GetUser</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> username</span>)</span> {
-  <span class="hljs-keyword">var</span> user = Datastore.FindUser(username);
-  <span class="hljs-keyword">if</span> (user == <span class="hljs-literal">null</span>)
-    <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> Result&lt;User, <span class="hljs-built_in">string</span>&gt;.Failure(<span class="hljs-string">"User not found"</span>);
-  <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> Result&lt;User, <span class="hljs-built_in">string</span>&gt;.Success(user);
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>There is not much wrong with it, except that it may become cumbersome to have to specify those generic parameters all the time.
-We’d much rather write the following.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-cs" data-lang="cs"><span class="hljs-function">Result&lt;User, <span class="hljs-built_in">string</span>&gt; <span class="hljs-title">GetUser</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> username</span>)</span> {
-  <span class="hljs-keyword">var</span> user = Datastore.FindUser(username);
-  <span class="hljs-keyword">if</span> (user == <span class="hljs-literal">null</span>)
-    <span class="hljs-keyword">return</span> Result.Fail(<span class="hljs-string">"User not found"</span>);
-  <span class="hljs-keyword">return</span> Result.Succeed(user);
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Unfortunately the C# compiler cannot infer type parameters on types, but only on methods.
-So we could introduce a static class <code>Result</code> and put some factory methods in there.
-But that still wouldn’t help us in the above example, because the C# compiler can’t infer type parameters based on the return type of the enclosing function.
-This is an annoying limitation, but something we have to live with for now.</p>
-</div>
-<div class="paragraph">
-<p>However, there are some clever tricks we can apply.
-Alexey Golub explains one neat approach in his article <a href="https://tyrrrz.me/blog/return-type-inference" target="_blank">Simulating Return Type Inference in C#</a>.
-The idea is that we introduce types <code>GenericSuccess</code> and <code>GenericFailure</code> which do not have all the type parameters yet.
-Then we introduce implicit cast operators to make it possible to cast it to a full result type with all the type parameters specified.
-The win here is that the casting can be done by the compiler in a context where the type parameters are all clear from the context, even when it’s based on the return type of the enclosing function.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-cs" data-lang="cs"><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">abstract</span> <span class="hljs-keyword">class</span> <span class="hljs-title">Result</span>&lt;<span class="hljs-title">TSuccess</span>, <span class="hljs-title">TFailure</span>&gt;</span> {
-
-  <span class="hljs-comment">// ...</span>
-
-  <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">implicit</span> <span class="hljs-keyword">operator</span> <span class="hljs-title">Result</span>&lt;<span class="hljs-title">TSuccess</span>, <span class="hljs-title">TFailure</span>&gt;(<span class="hljs-params">Result.GenericSuccess&lt;TSuccess&gt; ok</span>)</span>
-      =&gt; <span class="hljs-keyword">new</span> Success(ok.Value);
-  <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">implicit</span> <span class="hljs-keyword">operator</span> <span class="hljs-title">Result</span>&lt;<span class="hljs-title">TSuccess</span>, <span class="hljs-title">TFailure</span>&gt;(<span class="hljs-params">Result.GenericFailure&lt;TFailure&gt; error</span>)</span>
-      =&gt; <span class="hljs-keyword">new</span> Failure(error.Value);
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Railroad Oriented Programming in C#: Part 3</title>
+  <style>code {
+  white-space: pre-wrap;
 }
 
-<span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">class</span> <span class="hljs-title">Result</span> {
-  <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-title">GenericSuccess</span>&lt;<span class="hljs-title">TSuccess</span>&gt; <span class="hljs-title">Succeed</span>&lt;<span class="hljs-title">TSuccess</span>&gt;(<span class="hljs-params">TSuccess result</span>)</span> =&gt; <span class="hljs-keyword">new</span>(result);
-  <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-title">GenericFailure</span>&lt;<span class="hljs-title">TFailure</span>&gt; <span class="hljs-title">Fail</span>&lt;<span class="hljs-title">TFailure</span>&gt;(<span class="hljs-params">TFailure error</span>)</span> =&gt; <span class="hljs-keyword">new</span>(error);
-  <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-title">Result</span>&lt;<span class="hljs-title">TSuccess</span>, <span class="hljs-title">TFailure</span>&gt; <span class="hljs-title">Succeed</span>&lt;<span class="hljs-title">TSuccess</span>, <span class="hljs-title">TFailure</span>&gt;(<span class="hljs-params">TSuccess result</span>)</span> =&gt; Succeed(result);
-  <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-title">Result</span>&lt;<span class="hljs-title">TSuccess</span>, <span class="hljs-title">TFailure</span>&gt; <span class="hljs-title">Fail</span>&lt;<span class="hljs-title">TSuccess</span>, <span class="hljs-title">TFailure</span>&gt;(<span class="hljs-params">TFailure error</span>)</span> =&gt; Fail(error);
-  <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> GenericSuccess&lt;Unit&gt; <span class="hljs-title">Succeed</span>()</span> =&gt; Succeed(Unit.unit);
-  <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> GenericFailure&lt;Unit&gt; <span class="hljs-title">Fail</span>()</span> =&gt; Fail(Unit.unit);
+span.smallcaps {
+  font-variant: small-caps;
+}
 
-  <span class="hljs-keyword">public</span> <span class="hljs-keyword">readonly</span> <span class="hljs-keyword">struct</span> GenericFailure&lt;T&gt; {
-    <span class="hljs-keyword">public</span> T Value { <span class="hljs-keyword">get</span>; }
+div.columns {
+  gap: min(4vw, 1.5em);
+  display: flex;
+}
 
-    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">GenericFailure</span>(<span class="hljs-params">T <span class="hljs-keyword">value</span></span>)</span> {
-      Value = <span class="hljs-keyword">value</span>;
-    }
+div.column {
+  flex: auto;
+  overflow-x: auto;
+}
+
+div.hanging-indent {
+  text-indent: -1.5em;
+  margin-left: 1.5em;
+}
+
+ul.task-list[class] {
+  list-style: none;
+}
+
+ul.task-list li input[type="checkbox"] {
+  font-size: inherit;
+  vertical-align: middle;
+  width: .8em;
+  margin: 0 .8em .2em -1.6em;
+}
+
+.display.math {
+  text-align: center;
+  margin: .5rem auto;
+  display: block;
+}
+
+pre > code.sourceCode {
+  white-space: pre;
+  position: relative;
+}
+
+pre > code.sourceCode > span {
+  line-height: 1.25;
+}
+
+pre > code.sourceCode > span:empty {
+  height: 1.2em;
+}
+
+.sourceCode {
+  overflow: visible;
+}
+
+code.sourceCode > span {
+  color: inherit;
+  -webkit-text-decoration: inherit;
+  text-decoration: inherit;
+}
+
+div.sourceCode {
+  margin: 1em 0;
+}
+
+pre.sourceCode {
+  margin: 0;
+}
+
+@media screen {
+  div.sourceCode {
+    overflow: auto;
+  }
+}
+
+@media print {
+  pre > code.sourceCode {
+    white-space: pre-wrap;
   }
 
-  <span class="hljs-keyword">public</span> <span class="hljs-keyword">readonly</span> <span class="hljs-keyword">struct</span> GenericSuccess&lt;T&gt; {
-    <span class="hljs-keyword">public</span> T Value { <span class="hljs-keyword">get</span>; }
-
-    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">GenericSuccess</span>(<span class="hljs-params">T <span class="hljs-keyword">value</span></span>)</span> {
-      Value = <span class="hljs-keyword">value</span>;
-    }
+  pre > code.sourceCode > span {
+    text-indent: -5em;
+    padding-left: 5em;
   }
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>If we now attempt to compile the previous code snippet, we find that the compiler is happy with the type parameters being left out.
-However, there are still situations in which this will not infer all the types, for example when using a lambda expression, which has no explicit signature.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-cs" data-lang="cs"><span class="hljs-function">Result&lt;<span class="hljs-built_in">string</span>, <span class="hljs-built_in">string</span>&gt; <span class="hljs-title">GetEmail</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> username</span>)</span> {
-  <span class="hljs-keyword">return</span> GetUser(username)
-    .OnSuccess(user =&gt; {
-      <span class="hljs-keyword">return</span> Result.Succeed(<span class="hljs-string">"test@example.com"</span>);
-    });
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>This will give a compiler error saying that the type arguments could not be inferred.
-In that case we should provide the type argument to the <code>OnSuccess</code> method.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-cs" data-lang="cs"><span class="hljs-function"><span class="hljs-title">Result</span>&lt;<span class="hljs-title">string</span>, <span class="hljs-title">string</span>&gt; <span class="hljs-title">GetEmail</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> username</span>)</span> {
-  <span class="hljs-keyword">return</span> GetUser(username)
-    .OnSuccess&lt;<span class="hljs-built_in">string</span>&gt;(user =&gt; {
-      <span class="hljs-keyword">return</span> Result.Succeed(<span class="hljs-string">"test@example.com"</span>);
-    });
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>As a rule of thumb, if one encounters any confusing compile errors, try supplying the type parameters to the <code>OnSuccess</code>, <code>OnFailure</code> and <code>Handle</code> methods, and work from there.</p>
-</div>
-<div class="paragraph">
-<p>In the <a href="/?page=rop-cs-4">next part</a> we will look at more complex railway tracks and conclude this series.</p>
-</div>
-</div>
-</div>
-</div>
+}
 
-</body></html>
+pre.numberSource code {
+  counter-reset: source-line 0;
+}
+
+pre.numberSource code > span {
+  counter-increment: source-line;
+  position: relative;
+  left: -4em;
+}
+
+pre.numberSource code > span > a:first-child:before {
+  content: counter(source-line);
+  text-align: right;
+  vertical-align: baseline;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+  -khtml-user-select: none;
+  color: #005661;
+  background-color: #fefaf2;
+  border: none;
+  width: 4em;
+  padding: 0 4px;
+  display: inline-block;
+  position: relative;
+  left: -1em;
+}
+
+pre.numberSource {
+  border-left: 1px solid #005661;
+  margin-left: 3em;
+  padding-left: 4px;
+}
+
+div.sourceCode {
+  color: #005661;
+  background-color: #fef8ec;
+}
+
+@media screen {
+  pre > code.sourceCode > span > a:first-child:before {
+    text-decoration: underline;
+  }
+}
+
+code span {
+  color: #005661;
+}
+
+code span.al {
+  color: #e64100;
+}
+
+code span.an {
+  color: #00bdd6;
+}
+
+code span.at {
+  color: #b3694d;
+}
+
+code span.bn {
+  color: #e64100;
+}
+
+code span.bu {
+  color: #fa8900;
+}
+
+code span.cf {
+  color: #ff5792;
+  font-weight: bold;
+}
+
+code span.ch, code span.cn {
+  color: #e5164a;
+}
+
+code span.co {
+  color: #8ca6a6;
+  font-style: italic;
+}
+
+code span.cv {
+  color: #8ca6a6;
+}
+
+code span.do {
+  color: #8ca6a6;
+  font-style: italic;
+}
+
+code span.dt {
+  color: #fa8900;
+}
+
+code span.dv, code span.er {
+  color: #e64100;
+}
+
+code span.ex {
+  color: #00bdd6;
+}
+
+code span.fl {
+  color: #0094f0;
+}
+
+code span.fu {
+  color: #0095a8;
+}
+
+code span.im {
+  color: #00bdd6;
+}
+
+code span.in {
+  color: #8ca6a6;
+}
+
+code span.kw {
+  color: #ff5792;
+  font-weight: bold;
+}
+
+code span.op {
+  color: #0094f0;
+}
+
+code span.ot {
+  color: #005661;
+}
+
+code span.pp {
+  color: #0095a8;
+}
+
+code span.re {
+  color: #00bdd6;
+}
+
+code span.sc {
+  color: #e5164a;
+}
+
+code span.ss {
+  color: #00bdd6;
+}
+
+code span.st {
+  color: #00b368;
+}
+
+code span.va, code span.vs {
+  color: #004d57;
+}
+
+code span.wa {
+  color: #e64100;
+}
+</style>
+  <style type="text/css"></style>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">Railroad Oriented Programming in C#: Part 3</h1>
+</header>
+<div id="content">
+<p>In the <a href="/?page=rop-cs-2">previous part</a> we looked at an
+implementation of a <code>Result</code> type for explicit failure paths.
+In this part we’ll look at how we can improve the creation of these
+<code>Result</code> objects.</p>
+<h2 id="creating-result-instances"><a class="anchor" href="#creating-result-instances"></a>Creating
+<code>Result</code> instances</h2>
+<p>When creating a <code>Result</code> instance we often find ourselves
+writing code like this.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode cs"><code class="sourceCode cs"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>Result<span class="op">&lt;</span>User<span class="op">,</span> <span class="dt">string</span><span class="op">&gt;</span> <span class="fu">GetUser</span><span class="op">(</span><span class="dt">string</span> username<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">var</span> user <span class="op">=</span> Datastore<span class="op">.</span><span class="fu">FindUser</span><span class="op">(</span>username<span class="op">);</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="kw">if</span> <span class="op">(</span>user <span class="op">==</span> <span class="kw">null</span><span class="op">)</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">return</span> <span class="kw">new</span> Result<span class="op">&lt;</span>User<span class="op">,</span> <span class="dt">string</span><span class="op">&gt;.</span><span class="fu">Failure</span><span class="op">(</span><span class="st">&quot;User not found&quot;</span><span class="op">);</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="kw">return</span> <span class="kw">new</span> Result<span class="op">&lt;</span>User<span class="op">,</span> <span class="dt">string</span><span class="op">&gt;.</span><span class="fu">Success</span><span class="op">(</span>user<span class="op">);</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>There is not much wrong with it, except that it may become cumbersome
+to have to specify those generic parameters all the time. We’d much
+rather write the following.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode cs"><code class="sourceCode cs"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>Result<span class="op">&lt;</span>User<span class="op">,</span> <span class="dt">string</span><span class="op">&gt;</span> <span class="fu">GetUser</span><span class="op">(</span><span class="dt">string</span> username<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">var</span> user <span class="op">=</span> Datastore<span class="op">.</span><span class="fu">FindUser</span><span class="op">(</span>username<span class="op">);</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="kw">if</span> <span class="op">(</span>user <span class="op">==</span> <span class="kw">null</span><span class="op">)</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">return</span> Result<span class="op">.</span><span class="fu">Fail</span><span class="op">(</span><span class="st">&quot;User not found&quot;</span><span class="op">);</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  <span class="kw">return</span> Result<span class="op">.</span><span class="fu">Succeed</span><span class="op">(</span>user<span class="op">);</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>Unfortunately the C# compiler cannot infer type parameters on types,
+but only on methods. So we could introduce a static class
+<code>Result</code> and put some factory methods in there. But that
+still wouldn’t help us in the above example, because the C# compiler
+can’t infer type parameters based on the return type of the enclosing
+function. This is an annoying limitation, but something we have to live
+with for now.</p>
+<p>However, there are some clever tricks we can apply. Alexey Golub
+explains one neat approach in his article <a href="https://tyrrrz.me/blog/return-type-inference" class=" external" target="_blank">Simulating Return Type Inference in C#</a>. The idea is
+that we introduce types <code>GenericSuccess</code> and
+<code>GenericFailure</code> which do not have all the type parameters
+yet. Then we introduce implicit cast operators to make it possible to
+cast it to a full result type with all the type parameters specified.
+The win here is that the casting can be done by the compiler in a
+context where the type parameters are all clear from the context, even
+when it’s based on the return type of the enclosing function.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode cs"><code class="sourceCode cs"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">public</span> <span class="kw">abstract</span> <span class="kw">class</span> Result<span class="op">&lt;</span>TSuccess<span class="op">,</span> TFailure<span class="op">&gt;</span> <span class="op">{</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="co">// ...</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="kw">public</span> <span class="kw">static</span> <span class="kw">implicit</span> <span class="kw">operator</span> Result<span class="op">&lt;</span>TSuccess<span class="op">,</span> TFailure<span class="op">&gt;(</span>Result<span class="op">.</span><span class="fu">GenericSuccess</span><span class="op">&lt;</span>TSuccess<span class="op">&gt;</span> ok<span class="op">)</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>      <span class="op">=&gt;</span> <span class="kw">new</span> <span class="fu">Success</span><span class="op">(</span>ok<span class="op">.</span><span class="fu">Value</span><span class="op">);</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  <span class="kw">public</span> <span class="kw">static</span> <span class="kw">implicit</span> <span class="kw">operator</span> Result<span class="op">&lt;</span>TSuccess<span class="op">,</span> TFailure<span class="op">&gt;(</span>Result<span class="op">.</span><span class="fu">GenericFailure</span><span class="op">&lt;</span>TFailure<span class="op">&gt;</span> error<span class="op">)</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>      <span class="op">=&gt;</span> <span class="kw">new</span> <span class="fu">Failure</span><span class="op">(</span>error<span class="op">.</span><span class="fu">Value</span><span class="op">);</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="kw">public</span> <span class="kw">static</span> <span class="kw">class</span> Result <span class="op">{</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>  <span class="kw">public</span> <span class="kw">static</span> GenericSuccess<span class="op">&lt;</span>TSuccess<span class="op">&gt;</span> Succeed<span class="op">&lt;</span>TSuccess<span class="op">&gt;(</span>TSuccess result<span class="op">)</span> <span class="op">=&gt;</span> <span class="kw">new</span><span class="op">(</span>result<span class="op">);</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>  <span class="kw">public</span> <span class="kw">static</span> GenericFailure<span class="op">&lt;</span>TFailure<span class="op">&gt;</span> Fail<span class="op">&lt;</span>TFailure<span class="op">&gt;(</span>TFailure error<span class="op">)</span> <span class="op">=&gt;</span> <span class="kw">new</span><span class="op">(</span>error<span class="op">);</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>  <span class="kw">public</span> <span class="kw">static</span> Result<span class="op">&lt;</span>TSuccess<span class="op">,</span> TFailure<span class="op">&gt;</span> Succeed<span class="op">&lt;</span>TSuccess<span class="op">,</span> TFailure<span class="op">&gt;(</span>TSuccess result<span class="op">)</span> <span class="op">=&gt;</span> <span class="fu">Succeed</span><span class="op">(</span>result<span class="op">);</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>  <span class="kw">public</span> <span class="kw">static</span> Result<span class="op">&lt;</span>TSuccess<span class="op">,</span> TFailure<span class="op">&gt;</span> Fail<span class="op">&lt;</span>TSuccess<span class="op">,</span> TFailure<span class="op">&gt;(</span>TFailure error<span class="op">)</span> <span class="op">=&gt;</span> <span class="fu">Fail</span><span class="op">(</span>error<span class="op">);</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>  <span class="kw">public</span> <span class="kw">static</span> GenericSuccess<span class="op">&lt;</span>Unit<span class="op">&gt;</span> <span class="fu">Succeed</span><span class="op">()</span> <span class="op">=&gt;</span> <span class="fu">Succeed</span><span class="op">(</span>Unit<span class="op">.</span><span class="fu">unit</span><span class="op">);</span></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>  <span class="kw">public</span> <span class="kw">static</span> GenericFailure<span class="op">&lt;</span>Unit<span class="op">&gt;</span> <span class="fu">Fail</span><span class="op">()</span> <span class="op">=&gt;</span> <span class="fu">Fail</span><span class="op">(</span>Unit<span class="op">.</span><span class="fu">unit</span><span class="op">);</span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>  <span class="kw">public</span> <span class="kw">readonly</span> <span class="kw">struct</span> GenericFailure<span class="op">&lt;</span>T<span class="op">&gt;</span> <span class="op">{</span></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>    <span class="kw">public</span> T Value <span class="op">{</span> <span class="kw">get</span><span class="op">;</span> <span class="op">}</span></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>    <span class="kw">public</span> <span class="fu">GenericFailure</span><span class="op">(</span>T value<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>      Value <span class="op">=</span> value<span class="op">;</span></span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>  <span class="op">}</span></span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>  <span class="kw">public</span> <span class="kw">readonly</span> <span class="kw">struct</span> GenericSuccess<span class="op">&lt;</span>T<span class="op">&gt;</span> <span class="op">{</span></span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>    <span class="kw">public</span> T Value <span class="op">{</span> <span class="kw">get</span><span class="op">;</span> <span class="op">}</span></span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>    <span class="kw">public</span> <span class="fu">GenericSuccess</span><span class="op">(</span>T value<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a>      Value <span class="op">=</span> value<span class="op">;</span></span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a>  <span class="op">}</span></span>
+<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>If we now attempt to compile the previous code snippet, we find that
+the compiler is happy with the type parameters being left out. However,
+there are still situations in which this will not infer all the types,
+for example when using a lambda expression, which has no explicit
+signature.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode cs"><code class="sourceCode cs"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>Result<span class="op">&lt;</span><span class="dt">string</span><span class="op">,</span> <span class="dt">string</span><span class="op">&gt;</span> <span class="fu">GetEmail</span><span class="op">(</span><span class="dt">string</span> username<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="kw">return</span> <span class="fu">GetUser</span><span class="op">(</span>username<span class="op">)</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span><span class="fu">OnSuccess</span><span class="op">(</span>user <span class="op">=&gt;</span> <span class="op">{</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>      <span class="kw">return</span> Result<span class="op">.</span><span class="fu">Succeed</span><span class="op">(</span><span class="st">&quot;test@example.com&quot;</span><span class="op">);</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    <span class="op">});</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>This will give a compiler error saying that the type arguments could
+not be inferred. In that case we should provide the type argument to the
+<code>OnSuccess</code> method.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode cs"><code class="sourceCode cs"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>Result<span class="op">&lt;</span><span class="dt">string</span><span class="op">,</span> <span class="dt">string</span><span class="op">&gt;</span> <span class="fu">GetEmail</span><span class="op">(</span><span class="dt">string</span> username<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="kw">return</span> <span class="fu">GetUser</span><span class="op">(</span>username<span class="op">)</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span><span class="fu">OnSuccess</span><span class="op">&lt;</span><span class="dt">string</span><span class="op">&gt;(</span>user <span class="op">=&gt;</span> <span class="op">{</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>      <span class="kw">return</span> Result<span class="op">.</span><span class="fu">Succeed</span><span class="op">(</span><span class="st">&quot;test@example.com&quot;</span><span class="op">);</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    <span class="op">});</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>As a rule of thumb, if one encounters any confusing compile errors,
+try supplying the type parameters to the <code>OnSuccess</code>,
+<code>OnFailure</code> and <code>Handle</code> methods, and work from
+there.</p>
+<p><a href="/?page=rop-cs-4">In the next part we will look at more
+complex railway tracks and conclude this series. ➤</a></p>
+</div>
+</body>
+</html>

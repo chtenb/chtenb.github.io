@@ -510,9 +510,8 @@ List(id&lt;A&gt;)(Cons(x, xs)) = Cons(id&lt;A&gt;(x), List(id&lt;A&gt;)(xs))  (L
 <h4><a class="anchor" href="#haskell-functor"></a>Example 22. (Haskell
 Functor)</h4>
 <p>Any Haskell type constructor <code>F</code> that has an instance of
-the <a href="https://wiki.haskell.org/Functor">Haskell Functor class</a>
-forms an endofunctor in Set (ignoring exceptions and
-non-termination).</p>
+the <a href="https://wiki.haskell.org/Functor" class=" external" target="_blank">Haskell Functor class</a> forms an endofunctor in Set
+(ignoring exceptions and non-termination).</p>
 <p><em>Proof.</em></p>
 <p>We are given a type constructor <code>F</code> with one argument, and
 a function <code>fmap : (a → b) → (F a → F b)</code>, where fmap obeys
