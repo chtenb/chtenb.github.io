@@ -1,4 +1,5 @@
-% Railroad Oriented Programming in C#: Part 1
+Railroad Oriented Programming in C#: Part 1
+===========================================
 
 The term _Railroad Oriented Programming_ has been https://fsharpforfunandprofit.com/rop/[popularized by Scott Wlaschin as a term for a certain programming style for handling failure].
 In this article series we will look at how we can implement this style of programming in C#.

@@ -1,4 +1,5 @@
-% Railroad Oriented Programming in C#: Part 2
+Railroad Oriented Programming in C#: Part 2
+===========================================
 
 In the [previous part](/?page=rop-cs-1) we looked at problems with traditional forms of handling failure.
 Here we will look at one solution to deal with these problems: a `Result` type that allows for a success case and a failure case.

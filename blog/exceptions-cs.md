@@ -1,4 +1,5 @@
-% On Exception Throwing and Catching in OO
+On Exception Throwing and Catching in OO
+========================================
 
 Exceptions are a well-established feature of almost every Object Oriented programming language these days.
 However, exceptions are tricky.

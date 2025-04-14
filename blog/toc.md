@@ -1,4 +1,4 @@
-% Table of Contents
+# Table of Contents
 
 - [The missing C# built-in type: void](/?page=unit-cs)
 

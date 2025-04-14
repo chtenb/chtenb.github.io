@@ -1,6 +1,5 @@
----
-title: TPSV
-...
+TPSV
+====
 
 Despite CSV being ubiquitous, TSV has direct advantages over CSV in many situations.
 Tab characters normally don't occur in the data being encoded, which relieves the need for quoting.

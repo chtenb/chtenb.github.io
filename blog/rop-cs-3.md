@@ -1,4 +1,5 @@
-% Railroad Oriented Programming in C#: Part 3
+Railroad Oriented Programming in C#: Part 3
+===========================================
 
 In the [previous part](/?page=rop-cs-2) we looked at an implementation of a `Result` type for explicit failure paths.
 In this part we'll look at how we can improve the creation of these `Result` objects.

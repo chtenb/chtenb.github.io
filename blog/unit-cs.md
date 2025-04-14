@@ -1,4 +1,5 @@
-% The missing C# built-in type: void
+The missing C# built-in type: void
+==================================
 
 ## The problem: void is not a type
 

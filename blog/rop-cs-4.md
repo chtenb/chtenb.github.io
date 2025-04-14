@@ -1,4 +1,5 @@
-% Railroad Oriented Programming in C#: Part 4
+Railroad Oriented Programming in C#: Part 4
+===========================================
 
 In the [previous part](/?page=rop-cs-3) we looked at how we could construct `Result` instances more easily.
 In this part we will look at slightly more complex railway tracks and wrap up the series.

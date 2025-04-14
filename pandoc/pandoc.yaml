@@ -25,5 +25,6 @@ filters:
   - "pandoc/theorems.lua"
   - "pandoc/toc.lua"
   - "pandoc/header-anchor-links.lua"
+  - "pandoc/header-to-title.lua"
   - "pandoc/adoc-compat.lua"
 
