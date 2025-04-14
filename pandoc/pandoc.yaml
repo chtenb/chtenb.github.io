@@ -6,11 +6,13 @@ to: html
 
 standalone: true
 self-contained: true
-# table-of-contents: true
-# toc-depth: 4
 number-sections: false
 
 highlight-style: pandoc/lux.theme
+
+metadata:
+  toc: false
+
 
 # html-math-method:
 #   method: mathjax
@@ -23,8 +25,8 @@ css:
 filters: 
   - "pandoc/diagrams.lua"
   - "pandoc/theorems.lua"
+  - "pandoc/header-to-title.lua"
   - "pandoc/toc.lua"
   - "pandoc/header-anchor-links.lua"
-  - "pandoc/header-to-title.lua"
   - "pandoc/adoc-compat.lua"
 

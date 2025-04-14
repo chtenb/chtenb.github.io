@@ -35,7 +35,7 @@ But that still wouldn't help us in the above example, because the C# compiler ca
 This is an annoying limitation, but something we have to live with for now.
 
 However, there are some clever tricks we can apply.
-Alexey Golub explains one neat approach in his article https://tyrrrz.me/blog/return-type-inference[Simulating Return Type Inference in C#].
+Alexey Golub explains one neat approach in his article [Simulating Return Type Inference in C#](https://tyrrrz.me/blog/return-type-inference).
 The idea is that we introduce types `GenericSuccess` and `GenericFailure` which do not have all the type parameters yet.
 Then we introduce implicit cast operators to make it possible to cast it to a full result type with all the type parameters specified.
 The win here is that the casting can be done by the compiler in a context where the type parameters are all clear from the context, even when it's based on the return type of the enclosing function.

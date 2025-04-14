@@ -108,7 +108,7 @@ We would like to
 ### A fluent result type
 
 To resolve the complaints about our previous implementation, we'll define an `OnSuccess` function and a `Handle` function.
-They will do the unwrapping for us and form a https://en.wikipedia.org/wiki/Fluent_interface[Fluent Interface] and thereby removing the nesting.
+They will do the unwrapping for us and form a [Fluent Interface](https://en.wikipedia.org/wiki/Fluent_interface) and thereby removing the nesting.
 Moreover, the OnSuccess function will "shortcircuit" the failure path, such that we only have to handle the failure path once.
 
 

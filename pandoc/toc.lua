@@ -17,12 +17,28 @@ end
 
 -- Function to insert the TOC at the beginning of the document
 function Pandoc(doc)
-  -- Only proceed if the TOC is not empty
-  if #toc > 0 then
-    -- Convert the TOC entries into a BulletList
-    local tocList = pandoc.BulletList(toc)
-    -- Create a block for the TOC title
-    table.insert(doc.blocks, 2, tocList)
+  if doc.meta["toc"] ~= nil then
+    enabled = doc.meta["toc"]
+  end
+
+  -- Allow override from document
+  if doc.meta["toc-override"] ~= nil then
+    enabled = doc.meta["toc-override"]
+  end
+
+  if not enabled or #toc == 0 then
+    return doc
+  end
+
+  -- Convert the TOC entries into a BulletList
+  local tocList = pandoc.BulletList(toc)
+  -- Create a block for the TOC title
+  for i, block in ipairs(doc.blocks) do
+    if block.t == "Header" then
+      -- Splice TOC blocks in before this header
+      table.insert(doc.blocks, i, tocList)
+      break
+    end
   end
   return pandoc.Pandoc(doc.blocks, doc.meta)
 end

@@ -58,7 +58,7 @@ And don't forget that the `Action` and `Task` void cases also had to be written 
 
 ## A poor man's solution: the unit type
 
-The https://en.wikipedia.org/wiki/Unit_type[unit type] is nothing but a type with only one value.
+The [unit type](https://en.wikipedia.org/wiki/Unit_type) is nothing but a type with only one value.
 Many functional programming languages do not actually support void functions like C# does.
 Instead they have a builtin unit type, which is used whenever a function doesn't return any actual data.
 We can create our own C# version of a `Unit` and use it instead of `void`.

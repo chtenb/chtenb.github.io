@@ -1,7 +1,7 @@
 Railroad Oriented Programming in C#: Part 1
 ===========================================
 
-The term _Railroad Oriented Programming_ has been https://fsharpforfunandprofit.com/rop/[popularized by Scott Wlaschin as a term for a certain programming style for handling failure].
+The term _Railroad Oriented Programming_ has been [popularized by Scott Wlaschin as a term for a certain programming style for handling failure](https://fsharpforfunandprofit.com/rop/).
 In this article series we will look at how we can implement this style of programming in C#.
 Let's start by talking about the problems it is trying to solve.
 
@@ -43,7 +43,7 @@ If a function fails, usually one of the following things happens.
 
 2. An exception is thrown.
 
-3. A boolean or enum value is returned indicating success/failure cases while the actual result data is propagated through one or more https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/out-parameter-modifier[`out` parameters].
+3. A boolean or enum value is returned indicating success/failure cases while the actual result data is propagated through one or more [`out` parameters](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/out-parameter-modifier).
     * A particular variant of this pattern that is regularly encountered in .NET libraries is referred to as the [Try-Parse Pattern in the Microsoft docs](https://docs.microsoft.com/en-us/dotnet/standard/design-guidelines/exceptions-and-performance#try-parse-pattern).
 
 
@@ -95,7 +95,7 @@ oval "Failure" fit fill orange
 Since this idea sounds so trivial, why isn't this done traditionally?
 At least part of that has to do with the fact C-like languages do not make it easy to do this.
 You would need to have a return type that can be _either_ the success type _or_ the failure type.
-In functional programming languages such a construct _does_ exist and is called a https://en.wikipedia.org/wiki/Tagged_union[Discriminated Union].
+In functional programming languages such a construct _does_ exist and is called a [Discriminated Union](https://en.wikipedia.org/wiki/Tagged_union).
 But C-like languages, including C#, do not have support for such a type.
 Luckily C# has had added lots of language features over the years that make it possible to emulate discriminated unions and use them in a relatively convenient and type-safe way.
 In the [next part](/?page=rop-cs-2) of this series we will have a look at one way of implementing explicit failure in C#: a `Result` type with two subtypes, the `Success` type for the success path and the `Failure` type for the failure path.

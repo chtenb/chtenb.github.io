@@ -1,3 +1,7 @@
+---
+toc-override: true
+---
+
 Category Theory
 ===============
 
