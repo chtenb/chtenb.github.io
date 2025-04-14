@@ -125,6 +125,12 @@ local function graphviz(code, filetype)
   return pandoc.pipe(dot_path, {"-T" .. filetype}, code)
 end
 
+-- Pikchr: render ASCII diagrams to SVG
+local function pikchr(code, filetype)
+  return pandoc.pipe("pikchr", {"--svg-only", "--dont-stop", "-"}, code)
+end
+
+
 --
 -- TikZ
 --
@@ -298,6 +304,43 @@ local function asymptote(code, filetype)
   end)
 end
 
+-- Gets the directory of the currently processed Markdown file
+local function source_dir()
+  local input_files = PANDOC_STATE and PANDOC_STATE.input_files or {}
+  if #input_files > 0 then
+    return input_files[1]:match("^(.*[/\\])") or "./"
+  else
+    return "./"
+  end
+end
+
+
+-- Expands `<!-- include: filename -->` inside code block text
+local function expand_includes(code)
+  local expanded_lines = {}
+  local base_path = source_dir()
+
+  for line in code:gmatch("[^\r\n]+") do
+    local include_path = line:match("^%s*<!%-%-%s*include:%s*(.-)%s*%-%->%s*$")
+    if include_path then
+      local full_path = base_path .. include_path
+      local f = io.open(full_path, "r")
+      if f then
+        for included_line in f:lines() do
+          table.insert(expanded_lines, included_line)
+        end
+        f:close()
+      else
+        io.stderr:write("Could not include file: " .. full_path .. "\n")
+      end
+    else
+      table.insert(expanded_lines, line)
+    end
+  end
+  return table.concat(expanded_lines, "\n")
+end
+
+
 -- Executes each document's code block to find matching code blocks:
 function CodeBlock(block)
   -- Using a table with all known generators i.e. converters:
@@ -307,6 +350,7 @@ function CodeBlock(block)
     tikz = tikz2image,
     py2image = py2image,
     asymptote = asymptote,
+    pikchr = pikchr,
   }
 
   -- Check if a converter exists for this block. If not, return the block
@@ -316,9 +360,12 @@ function CodeBlock(block)
     return nil
   end
 
+  -- First expand any include directives
+  local expanded_block_text = expand_includes(block.text)
+
   -- Call the correct converter which belongs to the used class:
-  local success, img = pcall(img_converter, block.text,
-      filetype, block.attributes["additionalPackages"] or nil)
+  local success, img = pcall(img_converter, expanded_block_text,
+    filetype, block.attributes["additionalPackages"] or nil)
 
   -- Bail if an error occured; img contains the error message when that
   -- happens.
@@ -330,6 +377,11 @@ function CodeBlock(block)
 
   -- If we got here, then the transformation went ok and `img` contains
   -- the image data.
+
+  -- 🔥 Inline raw SVG into HTML output
+  if filetype == "svg" and FORMAT:match("^html") then
+    return pandoc.RawBlock("html", img)
+  end
 
   -- Create figure name by hashing the image content
   local fname = pandoc.sha1(img) .. "." .. filetype

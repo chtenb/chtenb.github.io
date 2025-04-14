@@ -49,7 +49,7 @@ The function `MailMessageToUser` having two mail servers as parameters is a litt
 But it demonstrates having subtracks and failure recovery very well in the context of our email example.
 
 ~~~~pikchr
-include::rop.pikchr[]
+<!-- include: rop.pikchr -->
 
 startResult("GetUser","User","string")
 onSuccess("GetEmailAddress","string")

@@ -9,8 +9,8 @@
 #   ^pandoc blog/exceptions-cs.md -o blog/exceptions-cs.html -d pandoc/pandoc.yaml
 # }
 def main [] {
-  print "building pandoc"
   ls blog/*.md | each {|file|
+    print $"Converting ($file.name) to html"
     let output = ($file.name | str replace ".md" ".html")
     ^pandoc $file.name -o $output -d pandoc/pandoc.yaml
   }

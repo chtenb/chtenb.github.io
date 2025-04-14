@@ -180,14 +180,14 @@ And the `OnSuccess` and `Handle` methods form trackpieces.
 
 
 ~~~~pikchr
-include::rop.pikchr[]
+<!-- include: rop.pikchr -->
 
 onSuccess("OnSuccess", "SuccessValue")
 ~~~~
 
 
 ~~~~pikchr
-include::rop.pikchr[]
+<!-- include: rop.pikchr -->
 
 handle("Handle", "EndValue")
 ~~~~
@@ -196,7 +196,7 @@ The railway of the example code would look like
 
 
 ~~~~pikchr
-include::rop.pikchr[]
+<!-- include: rop.pikchr -->
 
 startResult("GetUser","User","string")
 onSuccess("GetEmailAddress","string")
@@ -250,7 +250,7 @@ The railway of the example code would look like
 
 
 ~~~~pikchr
-include::rop.pikchr[]
+<!-- include: rop.pikchr -->
 
 startResult("GetUser","User","string")
 onSuccess("GetEmailAddress","string")
@@ -310,7 +310,7 @@ This would allow us to do operations on the failure track, such as modifying the
 
 
 ~~~~pikchr
-include::rop.pikchr[]
+<!-- include: rop.pikchr -->
 
 onFailure("OnFailure","ErrorValue")
 ~~~~
@@ -336,7 +336,7 @@ string MailMessageToUser(string username, string msg) {
 
 
 ~~~~pikchr
-include::rop.pikchr[]
+<!-- include: rop.pikchr -->
 
 startResult("GetUser","User","string")
 onSuccess("GetEmailAddress","string")

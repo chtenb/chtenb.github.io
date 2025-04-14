@@ -21,7 +21,10 @@ But sometimes the function isn't able to meet this expectation.
 - ...
 
 ~~~~pikchr
-include::rop.pikchr[]
+scale = 0.8
+linewid = .5cm
+lineht = .5cm
+boxwid = 3.5cm
 
 X0: oval "username" fit
 arrow
