@@ -1,2 +1,1 @@
-- Fixup syntax highlighting
 - make mobile friendly

@@ -2,12 +2,16 @@
 title: TPSV
 ...
 
-TPSV stands for Tab-Pipe-Separated-Values. It is a human-readable alternative to CSV and TSV.
+Despite CSV being ubiquitous, TSV has direct advantages over CSV in many situations.
+Tab characters normally don't occur in the data being encoded, which relieves the need for quoting.
+Moreover, if your columns all have a similar width, you can configure the tab-width in any text editor such that all columns align nicely.
+However, in many cases columns do not have a similar width.
+
+TPSV stands for Tab-Pipe-Separated-Values and aims to be an easier-to-work-with alternative to CSV and TSV.
 Like both of these formats, TPSV is able to describe tabular data where each cell contains a string value.
-The primary design goal of TPSV is ease of parsing and ease of use such that anyone with a text editor can work with it, no plugins required.
+TPSV is designed to be simple to parse and convenient to use for anyone with a text editor.
 
 ## Syntax
-
 The basic syntax is simple.
 
 1. A cell starts with `|` and ends with one or more tabs.
@@ -26,7 +30,6 @@ Then there is one last optional rule, the multiline extension.
    The non-empty contents of its cells are appended to the cells of the previous row, delimited by a newline character.
 
 ## Example
-
 This is a sample TPSV demonstrating the format.
 The gray arrows are tab characters.
 
@@ -34,16 +37,18 @@ The gray arrows are tab characters.
 
 This example highlights a few aspects.
 
-- The first two lines are comments. The first line is a modeline, which can be interpreted by text editors that support them, and in this case sets the tab width to 4.
-- The first row is usually a header, giving captions to the columns.
-- The header separator does not start with `|` or `\`, so it is ignored.
-- This choice of header separator makes the example compatible with Markdown pipe tables, which are recognized as tables in many contexts, including GitHub-flavored Markdown.
-  Convenient if you want to paste it somewhere.
-- The last column is ideal for long cell contents.
+- The first two lines do not start with a cell, and thus are treated as comments. 
+- The first line is a modeline, which can be interpreted by text editors that support them. 
+  In this case it sets the tab width to 4.
+- Like in this example, the first row will usually be a header.
+- The dashed line under the header does not start with `|` or `\`, so it is ignored.
+- This particular choice of header separator makes the example compatible with [Markdown pipe tables](https://www.markdownguide.org/extended-syntax/#tables), which are recognized as tables in many contexts, including GitHub-flavored Markdown.
+  This can be convenient if you want to paste it somewhere.
+- In general, the last column is ideal for long cell contents.
 - The cell with the "TODO" is beyond the last column, so it acts as a comment.
-- The last line is a continuation, which can be nice if you don't want the text to exceed a certain width.
+- The last line is an example of a row continuation, which can be nice if you don't want the text to exceed a certain width.
 
-## Editor compatibility
+## Editor configuration
 
 Recommendations:
 
