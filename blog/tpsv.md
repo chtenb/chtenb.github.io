@@ -6,7 +6,7 @@ TPSV
 ====
 
 Despite CSV being ubiquitous, TSV has direct advantages over CSV in many situations.
-Tab characters normally don't occur in the data being encoded, which relieves the need for quoting.
+Tab characters don't normally occur in the data being encoded, which relieves the need for quoting.
 Moreover, if your columns all have a similar width, you can configure the tab-width in any text editor such that all columns align nicely.
 However, in many cases columns do not have a similar width.
 

@@ -6,13 +6,14 @@
   },
   "scripts": {
     "restore": "npm install && spago install",
-    "build": "npm exec spago build && nu build.nu",
-    "test": "npm exec spago test",
-    "serve": "parcel serve --watch-backend=watchman index.html blog/*.html",
-    "dev": "nu build.nu watch & parcel serve index.html --watch-backend=watchman",
-    "release": "rm -rf docs && nu build.nu && npm run build && parcel build --no-optimize --no-source-maps --dist-dir docs/ './index.html' './blog/*.html' && git checkout -- docs/CNAME docs/.nojekyll",
+    "build": "npm exec spago build",
+    "dev": "nu build.nu watch & parcel serve --watch-backend=watchman index.html blog/*.html",
     "publish": "npm run release && git add . && git commit -m publish",
-    "clean": "rm -rf .cache .spago .psci_modules node_modules output .parcel-cache"
+
+    "release": "rm -rf docs && nu build.nu && npm run build && parcel build --no-optimize --no-source-maps --dist-dir docs/ './index.html' './blog/*.html' && git checkout -- docs/CNAME docs/.nojekyll",
+    "clean": "rm -rf .cache .spago .psci_modules node_modules output .parcel-cache",
+    "test": "npm exec spago test",
+    "serve": "parcel serve --watch-backend=watchman index.html blog/*.html"
   },
   "repository": {
     "type": "git",
