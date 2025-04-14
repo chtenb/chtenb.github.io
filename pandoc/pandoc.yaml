@@ -10,6 +10,8 @@ self-contained: true
 # toc-depth: 4
 number-sections: false
 
+highlight-style: pandoc/highlight.theme
+
 # html-math-method:
 #   method: mathjax
 #   url: "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"

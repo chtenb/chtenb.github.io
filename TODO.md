@@ -1,4 +1,2 @@
 - Fixup syntax highlighting
-- write lua filter for pikchr
-- remove old adoc stuff
 - make mobile friendly

@@ -6,10 +6,8 @@
   },
   "scripts": {
     "restore": "npm install && spago install",
-    "adoc": "node asciidoctor.js",
-    "build": "npm exec spago build && npm run adoc && echo Ctrl-f5 your browser if non-purescript changes were made!",
+    "build": "npm exec spago build && nu build.nu",
     "test": "npm exec spago test",
-    "adocw": "watchexec -w blog/ -e adoc,pikchr npm run adoc",
     "serve": "parcel serve --no-cache index.html blog/*.html",
     "release": "rm -rf docs && nu build.nu && npm run build && parcel build --no-optimize --no-source-maps --dist-dir docs/ './index.html' './blog/*.html' && git checkout -- docs/CNAME docs/.nojekyll",
     "publish": "npm run release && git add . && git commit -m publish",
@@ -29,13 +27,8 @@
     "parcel": "2.12.0",
     "@parcel/transformer-image": "2.12.0",
     "@parcel/config-default": "2.12.0",
-    "asciidoctor": "2.2.6",
-    "asciidoctor-highlight.js": "0.4.0",
-    "asciidoctor-kroki": "0.17.0",
-    "highlight.js": "11.7.0",
     "purescript": "0.15.7",
     "purs-tidy": "latest",
-    "spago": "0.20.9",
-    "cheerio": "^1.0.0-rc.12"
+    "spago": "0.20.9"
   }
 }

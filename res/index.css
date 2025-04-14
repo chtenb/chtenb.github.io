@@ -2,7 +2,6 @@
 @import 'colorscheme.css';
 @import 'scrollbars.css';
 @import 'fonts.css';
-@import 'highlight.css';
 
 :root {
   --title-width: 130px;
