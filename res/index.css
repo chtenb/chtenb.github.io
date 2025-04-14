@@ -114,6 +114,7 @@ body {
 }
 
 a.external::after {
+  /* content: "🌐"; */
   content: "⧉";
   font-size: 0.65em;
   vertical-align: super;
