@@ -1,3 +1,4 @@
+import './index.css';
 import * as Main from '../output/Main';
 
 function main () {

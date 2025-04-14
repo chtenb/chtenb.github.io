@@ -8,7 +8,8 @@
     "restore": "npm install && spago install",
     "build": "npm exec spago build && nu build.nu",
     "test": "npm exec spago test",
-    "serve": "parcel serve --no-cache index.html blog/*.html",
+    "serve": "parcel serve --watch-backend=watchman index.html blog/*.html",
+    "dev": "nu build.nu watch & parcel serve index.html --watch-backend=watchman",
     "release": "rm -rf docs && nu build.nu && npm run build && parcel build --no-optimize --no-source-maps --dist-dir docs/ './index.html' './blog/*.html' && git checkout -- docs/CNAME docs/.nojekyll",
     "publish": "npm run release && git add . && git commit -m publish",
     "clean": "rm -rf .cache .spago .psci_modules node_modules output .parcel-cache"
@@ -24,9 +25,7 @@
   "license": "ISC",
   "description": "",
   "devDependencies": {
-    "parcel": "2.12.0",
-    "@parcel/transformer-image": "2.12.0",
-    "@parcel/config-default": "2.12.0",
+    "parcel": "2.14.4",
     "purescript": "0.15.7",
     "purs-tidy": "latest",
     "spago": "0.20.9"
