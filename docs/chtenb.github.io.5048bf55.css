@@ -2007,92 +2007,94 @@ p {
   outline: none;
 }
 
-body {
-  background-color: var(--tab-bg);
-  border: 0;
-  margin: 0;
-  padding: 0;
-}
+@media not print {
+  body {
+    background-color: var(--tab-bg);
+    border: 0;
+    margin: 0;
+    padding: 0;
+  }
 
-.main {
-  height: var(--app-height);
-  border: 0;
-  grid-template-rows: 40px auto;
-  margin: 0;
-  padding: 0;
-  display: grid;
-}
+  .main {
+    height: var(--app-height);
+    border: 0;
+    grid-template-rows: 40px auto;
+    margin: 0;
+    padding: 0;
+    display: grid;
+  }
 
-.pageHeader * {
-  font-family: Local Cascadia Mono;
-  font-weight: 400;
-}
+  .pageHeader * {
+    font-family: Local Cascadia Mono;
+    font-weight: 400;
+  }
 
-.pageHeader {
-  z-index: 100;
-  box-shadow: 0 0 6px 0 var(--shadow);
-  background-color: var(--header-bg);
-  border: 0;
-  flex-wrap: wrap;
-  justify-content: center;
-  margin: 0;
-  display: flex;
-}
+  .pageHeader {
+    z-index: 100;
+    box-shadow: 0 0 6px 0 var(--shadow);
+    background-color: var(--header-bg);
+    border: 0;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin: 0;
+    display: flex;
+  }
 
-.pageTitle {
-  width: var(--title-width);
-  margin: auto 0;
-  padding: 0 10px;
-}
+  .pageTitle {
+    width: var(--title-width);
+    margin: auto 0;
+    padding: 0 10px;
+  }
 
-.pageTitle a {
-  text-decoration: none;
-}
+  .pageTitle a {
+    text-decoration: none;
+  }
 
-.pageTitle h1 {
-  color: var(--fg);
-  margin: auto;
-  font-size: 24px;
-}
+  .pageTitle h1 {
+    color: var(--fg);
+    margin: auto;
+    font-size: 24px;
+  }
 
-.controls {
-  max-width: var(--controls-max-width);
-  border: 0;
-  margin: 0;
-  display: flex;
-}
+  .controls {
+    max-width: var(--controls-max-width);
+    border: 0;
+    margin: 0;
+    display: flex;
+  }
 
-.controls button {
-  background-color: var(--button-bg);
-  height: 100%;
-  color: var(--fg);
-  cursor: pointer;
-  box-shadow: 0 0 2px 0 var(--shadow);
-  border: 0;
-  padding: 10px 25px;
-  font-family: Local Cascadia Mono;
-  font-size: 13px;
-}
+  .controls button {
+    background-color: var(--button-bg);
+    height: 100%;
+    color: var(--fg);
+    cursor: pointer;
+    box-shadow: 0 0 2px 0 var(--shadow);
+    border: 0;
+    padding: 10px 25px;
+    font-family: Local Cascadia Mono;
+    font-size: 13px;
+  }
 
-.controls button:hover, .controls button:focus {
-  background-color: var(--button-hover-bg);
-}
+  .controls button:hover, .controls button:focus {
+    background-color: var(--button-hover-bg);
+  }
 
-.controls button:active {
-  background-color: var(--button-active-bg);
-}
+  .controls button:active {
+    background-color: var(--button-active-bg);
+  }
 
-.loadingIcon {
-  padding: 18px 0;
-}
+  .loadingIcon {
+    padding: 18px 0;
+  }
 
-.pageContent {
-  background-color: var(--bg);
-  border: 0;
-  margin: 0;
-  padding: 30px;
-  display: flex;
-  overflow: auto;
+  .pageContent {
+    background-color: var(--bg);
+    border: 0;
+    margin: 0;
+    padding: 30px;
+    display: flex;
+    overflow: auto;
+  }
 }
 
 a.external:after {
