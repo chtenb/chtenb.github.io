@@ -104,4 +104,4 @@ Result<string, string> GetEmail(string username) {
 
 As a rule of thumb, if one encounters any confusing compile errors, try supplying the type parameters to the `OnSuccess`, `OnFailure` and `Handle` methods, and work from there.
 
-In the [next part](/?page=rop-cs-4) we will look at more complex railway tracks and conclude this series.
+[In the next part we will look at more complex railway tracks and conclude this series. ➤](/?page=rop-cs-4)

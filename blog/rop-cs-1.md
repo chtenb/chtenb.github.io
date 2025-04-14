@@ -115,5 +115,5 @@ If the answer is yes, then it is probably appropriate to handle the failure by t
 If the answer is no, then it is probably better to handle the failure by incorporating it in the function return type, such that the caller is forced to make an explicit decision about how to handle the failure path.
 For a more elaborate discussion of when and how to use exceptions, again refer to [this short article about exceptions](/?page=exceptions-cs).
 
-In the [next part](/?page=rop-cs-2) of this series we will implement a `Result` type for C#.
+[In the next part of this series we will implement a `Result` type for C#. ➤](/?page=rop-cs-2)
 

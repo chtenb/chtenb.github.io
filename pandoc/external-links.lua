@@ -3,7 +3,10 @@ function Link(link)
 
   -- Check if it's an external link
   if href:match("^https?://") then
-    -- Add or modify the 'target' attribute
+    -- Add a CSS class
+    link.attributes["class"] = (link.attributes["class"] or "") .. " external"
+
+    -- Open external links in a new tab
     link.attributes["target"] = "_blank"
   end
 

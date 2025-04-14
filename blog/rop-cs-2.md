@@ -348,4 +348,4 @@ onFailureF("TransformError","string")
 handle("Handle","string")
 ~~~~
 
-We still need to deal with the awkward construction of `Result` instances, and we'll do that in the [next part](/?page=rop-cs-3).
+[We still need to deal with the awkward construction of `Result` instances, and we'll do that in the next part. ➤](/?page=rop-cs-3)

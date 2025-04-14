@@ -113,6 +113,16 @@ body {
   background-color: var(--bg);
 }
 
+a.external::after {
+  content: "⧉";
+  font-size: 0.65em;
+  vertical-align: super;
+  margin-left: 0.1em;
+  color: #888;
+  text-decoration: none;     /* prevent underline */
+  display: inline-block;     /* needed for consistent styling across browsers */
+}
+
 
 /* max-width must be larger that sum of --title-width and --controls-max-width */
 @media only screen and (max-width: 767px) {
