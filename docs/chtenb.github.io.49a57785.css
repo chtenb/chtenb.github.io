@@ -53,7 +53,7 @@ pre {
 h1, h2, h3, #toctitle, .sidebarblock > .content > .title, h4, h5, h6 {
   font-family: var(--header-font);
   color: var(--accent);
-  text-rendering: optimizelegibility;
+  text-rendering: optimizeLegibility;
   margin-top: 1em;
   margin-bottom: .5em;
   font-style: normal;
@@ -98,13 +98,13 @@ body {
 .verseblock pre {
   font-family: var(--header-font);
   color: #000000d9;
-  text-rendering: optimizelegibility;
+  text-rendering: optimizeLegibility;
   font-size: 1rem;
   font-weight: 300;
 }
 
 .admonitionblock td.content > .title, .audioblock > .title, .exampleblock > .title, .imageblock > .title, .listingblock > .title, .literalblock > .title, .stemblock > .title, .openblock > .title, .paragraph > .title, .quoteblock > .title, table.tableblock > .title, .verseblock > .title, .videoblock > .title, .dlist > .title, .olist > .title, .ulist > .title, .qlist > .title, .hdlist > .title {
-  text-rendering: optimizelegibility;
+  text-rendering: optimizeLegibility;
   text-align: left;
   font-family: var(--prose-font);
   font-size: 1rem;
@@ -353,7 +353,7 @@ a img {
 }
 
 p {
-  text-rendering: optimizelegibility;
+  text-rendering: optimizeLegibility;
   margin-bottom: 1.25em;
   font-family: inherit;
   font-size: 1em;
@@ -1873,7 +1873,7 @@ b.conum * {
 }
 
 dt, th.tableblock, td.content, div.footnote {
-  text-rendering: optimizelegibility;
+  text-rendering: optimizeLegibility;
 }
 
 h1, h2, p, td.content, span.alt {
@@ -2064,11 +2064,11 @@ body {
 
 .controls button {
   background-color: var(--button-bg);
+  height: 100%;
   color: var(--fg);
   cursor: pointer;
   box-shadow: 0 0 2px 0 var(--shadow);
   border: 0;
-  height: 100%;
   padding: 10px 25px;
   font-family: Local Cascadia Mono;
   font-size: 13px;
