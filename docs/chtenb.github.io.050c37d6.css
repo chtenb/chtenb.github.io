@@ -196,10 +196,6 @@ img {
   border: 0;
 }
 
-svg:not(:root) {
-  overflow: hidden;
-}
-
 figure {
   margin: 0;
 }
@@ -317,7 +313,8 @@ img {
 }
 
 img, object, svg {
-  vertical-align: middle;
+  vertical-align: middle overflow-x: auto;
+  max-width: 100%;
   display: inline-block;
 }
 
