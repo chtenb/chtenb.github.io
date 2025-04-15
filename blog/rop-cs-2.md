@@ -27,14 +27,14 @@ public abstract class Result<TSuccess, TFailure> {
 
   public sealed class Success : Result<TSuccess, TFailure> {
     public readonly TSuccess SuccessValue;
-    public Success(TSuccess result){
+    public Success(TSuccess result) {
       SuccessValue = result;
     }
   }
 
   public sealed class Failure : Result<TSuccess, TFailure> {
     public readonly TFailure FailureValue;
-    public Failure(TFailure error){
+    public Failure(TFailure error) {
       FailureValue = error;
     }
   }
