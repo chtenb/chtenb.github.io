@@ -652,7 +652,8 @@ p a > code:hover {
 #header, #content, #footnotes, #footer {
   width: 100%;
   max-width: 62.5em;
-  margin: 0 auto;
+  margin-top: 0;
+  margin-bottom: 0;
   padding-left: .9375em;
   padding-right: .9375em;
   position: relative;
@@ -1995,7 +1996,6 @@ p {
 :root {
   --title-width: 130px;
   --controls-max-width: 560px;
-  --app-height: 100vh;
 }
 
 .smallViewport {
@@ -2009,19 +2009,10 @@ p {
 
 @media not print {
   body {
-    background-color: var(--tab-bg);
+    background-color: var(--bg);
     border: 0;
     margin: 0;
     padding: 0;
-  }
-
-  .main {
-    height: var(--app-height);
-    border: 0;
-    grid-template-rows: 40px auto;
-    margin: 0;
-    padding: 0;
-    display: grid;
   }
 
   .pageHeader * {
@@ -2031,7 +2022,6 @@ p {
 
   .pageHeader {
     z-index: 100;
-    box-shadow: 0 0 6px 0 var(--shadow);
     background-color: var(--header-bg);
     border: 0;
     flex-wrap: wrap;
@@ -2068,7 +2058,6 @@ p {
     height: 100%;
     color: var(--fg);
     cursor: pointer;
-    box-shadow: 0 0 2px 0 var(--shadow);
     border: 0;
     padding: 10px 25px;
     font-family: Local Cascadia Mono;
@@ -2088,12 +2077,9 @@ p {
   }
 
   .pageContent {
-    background-color: var(--bg);
     border: 0;
     margin: 0;
     padding: 30px;
-    display: flex;
-    overflow: auto;
   }
 }
 
