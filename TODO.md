@@ -1,2 +1,0 @@
-- Fix black pikchr glitches
-- make mobile friendly

@@ -6,7 +6,6 @@
 :root {
   --title-width: 130px;
   --controls-max-width: 560px;
-  --app-height: 100vh;
 }
 
 .smallViewport {
@@ -24,18 +23,10 @@
     border: 0;
     margin: 0;
     padding: 0;
-    background-color: var(--tab-bg);
+    background-color: var(--bg);
   }
 
-  .main {
-    display: grid;
-    grid-template-rows: 40px auto;
-    border: 0;
-    margin: 0;
-    padding: 0;
-    height: var(--app-height);
-  }
-
+  /* Header */
   .pageHeader * {
     font-family: Local Cascadia Mono;
     font-weight: 400;
@@ -49,7 +40,6 @@
     z-index: 100;
 
     justify-content: center;
-    box-shadow: 0 0 6px 0 var(--shadow);
     background-color: var(--header-bg);
   }
 
@@ -87,7 +77,6 @@
     font-size: 13px;
     color: var(--fg);
     cursor: pointer;
-    box-shadow: 0 0 2px 0 var(--shadow);
   }
 
   .controls button:hover {
@@ -106,13 +95,11 @@
     padding: 18px 0px;
   }
 
+  /* Content */
   .pageContent {
-    display: flex;
-    overflow: auto;
     border: 0;
     margin: 0;
     padding: 30px;
-    background-color: var(--bg);
   }
 
 }
