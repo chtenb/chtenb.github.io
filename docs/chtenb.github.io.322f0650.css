@@ -212,12 +212,12 @@ body {
 }
 
 h1, h2, h3, h4, h5, h6 {
-  color: var(--ac08);
+  color: var(--ac04);
   opacity: .9;
 }
 
 a {
-  color: var(--blue);
+  color: var(--bright-blue);
   background: none;
   text-decoration: underline;
 }
@@ -231,7 +231,7 @@ a:active, a:hover {
 }
 
 a:hover, a:focus {
-  color: var(--bright-green);
+  color: var(--blue);
 }
 
 hr {
