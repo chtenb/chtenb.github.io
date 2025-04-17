@@ -1,0 +1,350 @@
+.big {
+  font-size: larger;
+}
+
+.small {
+  font-size: smaller;
+}
+
+.underline {
+  text-decoration: underline;
+}
+
+.overline {
+  text-decoration: overline;
+}
+
+.line-through {
+  text-decoration: line-through;
+}
+
+.hidden {
+  display: none;
+}
+
+:root {
+  --shadow: #0003;
+  --background: #fef8ec;
+  --foreground: #005661;
+  --cursor-bg: #005661;
+  --cursor-border: #005661;
+  --cursor-fg: #fff;
+  --selection-bg: #d6f3fa;
+  --selection-fg: #005661;
+  --black: #8ca6a6;
+  --red: #e64100;
+  --green: #00b368;
+  --yellow: #fa8900;
+  --blue: #0095a8;
+  --magenta: #ff5792;
+  --cyan: #00bdd6;
+  --white: #005661;
+  --bright-black: #8ca6a6;
+  --bright-red: #e5164a;
+  --bright-green: #00b368;
+  --bright-yellow: #b3694d;
+  --bright-blue: #0094f0;
+  --bright-magenta: #ff5792;
+  --bright-cyan: #00bdd6;
+  --bright-white: #004d57;
+  --git-bg-red: #fbdada;
+  --git-bg-red-emph: #f6b6b6;
+  --git-bg-green: #d6ffd6;
+  --git-bg-green-emph: #adffad;
+  --git-bg-purple: #feecf7;
+  --git-bg-blue: #e5dff6;
+  --git-bg-cyan: #d8fdf6;
+  --git-bg-yellow: #f4ffe0;
+  --bg01: #fefaf2;
+  --bg02: #faf1e1;
+  --bg03: #f5e9d1;
+  --bg04: #f0e0c0;
+  --bg05: #f4eee2;
+  --bg06: #eae3d7;
+  --bg07: #e0dacc;
+  --bg08: #d6cfc0;
+  --bg09: #d6f3fa;
+  --bg10: #d8f0f4;
+  --bg11: #dbedef;
+  --bg12: #ddeae9;
+  --ac12: #8ca6a6;
+  --ac11: #819d9e;
+  --ac10: #769597;
+  --ac09: #6b8d90;
+  --ac08: #608488;
+  --ac07: #557c81;
+  --ac06: #4a747a;
+  --ac05: #3e6c73;
+  --ac04: #33646c;
+  --ac03: #265c65;
+  --ac02: #17545e;
+  --ac01: #004d57;
+  --ui-yellow: #fa8900;
+}
+
+* {
+  scrollbar-color: var(--ac12) var(--background);
+}
+
+::-webkit-scrollbar {
+  background-color: var(--ac12);
+  cursor: pointer;
+}
+
+::-webkit-scrollbar-button {
+  width: 0;
+  height: 0;
+}
+
+::-webkit-scrollbar-corner {
+  background-color: var(--background);
+}
+
+::-webkit-scrollbar-track-piece {
+  background-color: var(--background);
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--ac12);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--ac12);
+}
+
+::-webkit-scrollbar-thumb:active {
+  background-color: var(--ac12);
+}
+
+@font-face {
+  font-family: Local Cascadia Mono;
+  src: url("CascadiaMono.946196d0.woff2");
+}
+
+@font-face {
+  font-family: Local Cascadia Mono Italic;
+  src: url("CascadiaMonoItalic.f1f6fb9b.woff2");
+}
+
+@font-face {
+  font-family: Local Open Sans;
+  src: url("OpenSans-Regular.4e2aea0d.woff2");
+}
+
+@font-face {
+  font-family: Local Open Sans Italic;
+  src: url("OpenSans-Italic.21d61329.woff2");
+}
+
+@font-face {
+  font-family: Local Open Sans Light;
+  src: url("OpenSans-Light.e0b2a08e.woff2");
+}
+
+@font-face {
+  font-family: Local Open Sans Light Italic;
+  src: url("OpenSans-LightItalic.f71c2d37.woff2");
+}
+
+:root {
+  --code-font: "Local Cascadia Mono", monospace;
+  --prose-font: "Local Open Sans", sans-serif;
+  --header-font: "Local Open Sans Light", sans-serif;
+  --code-fontsize: 1rem;
+  --prose-fontsize: 1rem;
+}
+
+h1 > a.anchor, h2 > a.anchor, h3 > a.anchor, h4 > a.anchor, h5 > a.anchor, h6 > a.anchor {
+  z-index: 1001;
+  visibility: hidden;
+  text-align: center;
+  width: 1.5ex;
+  margin-left: -1.5ex;
+  font-weight: 400;
+  display: block;
+  position: absolute;
+  text-decoration: none !important;
+}
+
+@media only screen and (width <= 767px) {
+  h1 > a.anchor, h2 > a.anchor, h3 > a.anchor, h4 > a.anchor, h5 > a.anchor, h6 > a.anchor {
+    margin-left: -1ex;
+  }
+}
+
+h1 > a.anchor:before, h2 > a.anchor:before, h3 > a.anchor:before, h4 > a.anchor:before, h5 > a.anchor:before, h6 > a.anchor:before {
+  content: "§";
+  padding-top: .1em;
+  font-size: .85em;
+  display: block;
+}
+
+h1:hover > a.anchor, h1 > a.anchor:hover, h2:hover > a.anchor, h2 > a.anchor:hover, h3:hover > a.anchor, h3 > a.anchor:hover, h4:hover > a.anchor, h4 > a.anchor:hover, h5:hover > a.anchor, h5 > a.anchor:hover, h6:hover > a.anchor, h6 > a.anchor:hover, h1:focus > a.anchor, h1 > a.anchor:focus, h2:focus > a.anchor, h2 > a.anchor:focus, h3:focus > a.anchor, h3 > a.anchor:focus, h4:focus > a.anchor, h4 > a.anchor:focus, h5:focus > a.anchor, h5 > a.anchor:focus, h6:focus > a.anchor, h6 > a.anchor:focus {
+  visibility: visible;
+}
+
+:root {
+  --title-width: 130px;
+  --controls-max-width: 560px;
+}
+
+.smallViewport {
+  display: none;
+}
+
+* {
+  box-sizing: border-box;
+  outline: none;
+}
+
+body {
+  color: var(--foreground);
+  font-family: var(--prose-font);
+  cursor: auto;
+  tab-size: 4;
+  word-wrap: anywhere;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  margin: 0;
+  padding: 0;
+  font-style: normal;
+  font-weight: 400;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: var(--ac08);
+  opacity: .9;
+}
+
+a {
+  color: var(--blue);
+  background: none;
+  text-decoration: underline;
+}
+
+a:focus {
+  outline: thin dotted;
+}
+
+a:active, a:hover {
+  outline: 0;
+}
+
+a:hover, a:focus {
+  color: var(--bright-green);
+}
+
+hr {
+  border: solid var(--foreground);
+  clear: both;
+  border-width: 1px 0 0;
+  height: 0;
+  margin: 1.25em 0 1.1875em;
+}
+
+@media not print {
+  body {
+    background-color: var(--background);
+    border: 0;
+    margin: 0;
+    padding: 0;
+  }
+
+  .pageHeader * {
+    color: var(--ac04);
+    opacity: .9;
+    font-family: Local Cascadia Mono;
+    font-weight: 400;
+  }
+
+  .pageHeader {
+    z-index: 100;
+    background-color: var(--bg02);
+    border: 0;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin: 0;
+    display: flex;
+  }
+
+  .pageTitle {
+    width: var(--title-width);
+    margin: auto 0;
+    padding: 0 10px;
+  }
+
+  .pageTitle a {
+    text-decoration: none;
+  }
+
+  .pageTitle h1 {
+    margin: auto;
+    font-size: 24px;
+  }
+
+  .controls {
+    max-width: var(--controls-max-width);
+    border: 0;
+    margin: 0;
+    display: flex;
+  }
+
+  .controls button {
+    background-color: var(--bg02);
+    cursor: pointer;
+    border: 0;
+    height: 100%;
+    padding: 10px 25px;
+    font-family: Local Cascadia Mono;
+    font-size: 13px;
+  }
+
+  .controls button:hover, .controls button:focus {
+    background-color: var(--bg09);
+  }
+
+  .controls button:active {
+    background-color: var(--bg12);
+  }
+
+  .loadingIcon {
+    padding: 18px 0;
+  }
+
+  .pageContent {
+    border: 0;
+    margin: 0;
+    padding: 30px;
+  }
+}
+
+a.external:after {
+  content: "🌐";
+  margin-left: .1em;
+  font-size: .85em;
+  display: inline-block;
+}
+
+@media only screen and (width <= 767px) {
+  .smallViewport {
+    display: inline;
+  }
+
+  .largeViewport {
+    display: none;
+  }
+
+  .pageContent {
+    padding: 10px 0 10px 10px;
+  }
+
+  #content {
+    padding: 0;
+  }
+}
+
+@media print {
+  .pageHeader {
+    display: none;
+  }
+}
