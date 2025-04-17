@@ -242,6 +242,12 @@ hr {
   margin: 1.25em 0 1.1875em;
 }
 
+img, object, svg {
+  vertical-align: middle overflow-x: auto;
+  max-width: 100%;
+  display: inline-block;
+}
+
 @media not print {
   body {
     background-color: var(--background);
