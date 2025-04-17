@@ -1,0 +1,24 @@
+.big {
+  font-size: larger
+}
+
+.small {
+  font-size: smaller
+}
+
+.underline {
+  text-decoration: underline
+}
+
+.overline {
+  text-decoration: overline
+}
+
+.line-through {
+  text-decoration: line-through
+}
+
+.hidden {
+  display: none
+}
+

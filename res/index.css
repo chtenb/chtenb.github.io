@@ -1,7 +1,9 @@
-@import 'asciidoc.css';
-@import 'colorscheme.css';
+@import 'util.css';
+@import 'lux.css';
 @import 'scrollbars.css';
 @import 'fonts.css';
+@import 'header-anchor.css';
+
 
 :root {
   --title-width: 130px;
@@ -17,19 +19,68 @@
   outline: none;
 }
 
+body {
+  /* color: rgba(0, 0, 0, .8); */
+  color: var(--foreground);
+  padding: 0;
+  margin: 0;
+  font-family: var(--prose-font);
+  font-weight: 400;
+  font-style: normal;
+  cursor: auto;
+  tab-size: 4;
+  word-wrap: anywhere;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: var(--ac08);
+  opacity: 0.9;
+}
+
+a {
+  background: none;
+  color: var(--blue);
+  text-decoration: underline;
+}
+
+a:focus {
+  outline: thin dotted;
+}
+
+a:active, a:hover {
+  outline: 0;
+}
+
+a:hover, a:focus {
+  color: var(--bright-green);
+}
+
+hr {
+  border: solid var(--foreground);
+  border-width: 1px 0 0;
+  clear: both;
+  margin: 1.25em 0 1.1875em;
+  height: 0;
+}
+
+
 @media not print {
 
   body {
     border: 0;
     margin: 0;
     padding: 0;
-    background-color: var(--bg);
+    background-color: var(--background);
   }
 
   /* Header */
   .pageHeader * {
     font-family: Local Cascadia Mono;
     font-weight: 400;
+    color: var(--ac04);
+    opacity: 0.9;
   }
 
   .pageHeader {
@@ -40,7 +91,7 @@
     z-index: 100;
 
     justify-content: center;
-    background-color: var(--header-bg);
+    background-color: var(--bg02);
   }
 
   .pageTitle {
@@ -55,8 +106,6 @@
 
   .pageTitle h1 {
     margin: auto auto;
-
-    color: var(--fg);
     font-size: 24px;
   }
 
@@ -72,23 +121,19 @@
     border: 0;
     padding: 10px 25px;
 
-    background-color: var(--button-bg);
+    background-color: var(--bg02);
     font-family: Local Cascadia Mono;
     font-size: 13px;
-    color: var(--fg);
     cursor: pointer;
   }
 
-  .controls button:hover {
-    background-color: var(--button-hover-bg);
-  }
-
+  .controls button:hover,
   .controls button:focus {
-    background-color: var(--button-hover-bg);
+    background-color: var(--bg09);
   }
 
   .controls button:active {
-    background-color: var(--button-active-bg);
+    background-color: var(--bg12);
   }
 
   .loadingIcon {
@@ -108,7 +153,6 @@ a.external::after {
   content: "🌐";
   font-size: 0.85em;
   margin-left: 0.1em;
-  color: #888;
   display: inline-block;
 }
 
@@ -138,8 +182,5 @@ a.external::after {
   }
 }
 
-.hidden {
-  display: none
-}
 
 

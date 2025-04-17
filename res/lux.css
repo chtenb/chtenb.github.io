@@ -1,0 +1,70 @@
+:root {
+  --shadow:rgba(0, 0, 0, 0.2);
+
+  /* --background: #fefaf2; */
+  /* Darker background: */
+  --background: #fef8ec;
+  --foreground: #005661;
+
+  --cursor-bg: #005661;
+  --cursor-border: #005661;
+  --cursor-fg: #ffffff;
+  --selection-bg: #d6f3fa;
+  --selection-fg: #005661;
+
+  --black: #8ca6a6;
+  --red: #e64100;
+  --green: #00b368;
+  --yellow: #fa8900;
+  --blue: #0095a8;
+  --magenta: #ff5792;
+  --cyan: #00bdd6;
+  --white: #005661;
+
+  --bright-black: #8ca6a6;
+  --bright-red: #e5164a;
+  --bright-green: #00b368;
+  --bright-yellow: #b3694d;
+  --bright-blue: #0094f0;
+  --bright-magenta: #ff5792;
+  --bright-cyan: #00bdd6;
+  --bright-white: #004d57;
+
+
+  --git-bg-red: #fbdada;
+  --git-bg-red-emph: #f6b6b6;
+  --git-bg-green: #d6ffd6;
+  --git-bg-green-emph: #adffad;
+  --git-bg-purple: #feecf7;
+  --git-bg-blue: #e5dff6;
+  --git-bg-cyan: #d8fdf6;
+  --git-bg-yellow: #f4ffe0;
+
+  --bg01: #fefaf2;
+  --bg02: #faf1e1;
+  --bg03: #f5e9d1;
+  --bg04: #f0e0c0;
+  --bg05: #f4eee2;
+  --bg06: #eae3d7;
+  --bg07: #e0dacc;
+  --bg08: #d6cfc0;
+  --bg09: #d6f3fa;
+  --bg10: #d8f0f4;
+  --bg11: #dbedef;
+  --bg12: #ddeae9;
+
+  --ac12: #8ca6a6;
+  --ac11: #819d9e;
+  --ac10: #769597;
+  --ac09: #6b8d90;
+  --ac08: #608488;
+  --ac07: #557c81;
+  --ac06: #4a747a;
+  --ac05: #3e6c73;
+  --ac04: #33646c;
+  --ac03: #265c65;
+  --ac02: #17545e;
+  --ac01: #004d57;
+
+  --ui-yellow: #fa8900;
+}
