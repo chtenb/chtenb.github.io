@@ -139,7 +139,7 @@ public abstract class Result<TSuccess, TFailure> {
 
     public override Result<TNextSuccess, TFailure> OnSuccess<TNextSuccess>(
       Func<TSuccess, Result<TNextSuccess, TFailure>> onSuccess)
-        => Result.Fail(FailureValue);
+        => new Failure(FailureValue);
 
     public override TReturn Handle<TReturn>(Func<TSuccess, TReturn> onSuccess, Func<TFailure, TReturn> onFailure)
         => onFailure(FailureValue);
