@@ -1,4 +1,4 @@
-= Property Testing
+# Property Testing
 
 from https://fsharpforfunandprofit.com/posts/property-based-testing-2/:
 

@@ -18,7 +18,7 @@ TPSV is designed to be simple to parse and convenient to use for anyone with a t
 The basic syntax is simple.
 
 1. A cell starts with `|` and ends with one or more tabs.
-2. A line that starts with a cell is a row. Any other lines are ignored.
+2. A line that starts with a cell is a row. *Any other lines are ignored.*
 3. The first row defines the number of columns.
 
 That's all you need, but there are a few more rules to make life easier.
@@ -45,7 +45,7 @@ This example highlights a few aspects.
   In this case it sets the tab width to 8.)
 - Just like in this example, the first row will usually be used as a header for the columns.
 - The next line under the header is ignored, becaused it also does not start with a cell.
-  This particular choice of header separator makes the example compatible with [Markdown pipe tables](https://www.markdownguide.org/extended-syntax/#tables), which are recognized as tables in many contexts, including GitHub-flavored Markdown.
+  This particular choice of header separator makes the example compatible with [Markdown pipe tables](https://www.markdownguide.org/extended-syntax/#tables), which are recognized as tables in many contexts, including **GitHub-flavored Markdown**.
   This can be convenient if you want to paste the tabular data somewhere.
 - In general, the last column is ideal for long cell contents.
 - The cell with the "TODO" is beyond the last column, so it acts as a comment.
