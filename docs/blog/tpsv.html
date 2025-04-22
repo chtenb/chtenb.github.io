@@ -261,12 +261,13 @@ code span.wa {
 <h1 class="title">TPSV</h1>
 </header>
 <div id="content">
-<p>Despite CSV being ubiquitous, TSV has direct advantages over CSV in
-many situations. Tab characters don’t normally occur in the data being
-encoded, which relieves the need for quoting. Moreover, if your columns
-all have a similar width, you can configure the tab-width in any text
-editor such that all columns align nicely. However, in many cases
-columns do not have a similar width.</p>
+<p>Despite CSV (Comma-Separated-Values) being ubiquitous, its cousin <a href="https://en.wikipedia.org/wiki/Tab-separated_values" class=" external" target="_blank">TSV (Tab-Separated-Values)</a> has
+direct advantages over CSV in many situations. Tab characters don’t
+normally occur in the data being encoded, which avoids the need for
+quoting. Moreover, if your columns all have a similar width, you can
+configure the tab-width in any text editor such that all columns align
+nicely. Unfortunately, in many cases columns do not have a similar
+width.</p>
 <p>TPSV stands for Tab-Pipe-Separated-Values and aims to be an
 easier-to-work-with alternative to CSV and TSV. Like both of these
 formats, TPSV is able to describe tabular data where each cell contains
@@ -307,20 +308,21 @@ character.</li>
 <h2 id="example"><a class="anchor" href="#example"></a>Example</h2>
 <p>This is a sample TPSV demonstrating the format. The gray arrows are
 tab characters.</p>
-<p><img src="/tpsv.4dc8995d.png"></p>
+<p><img src="/tpsv.695f26ba.png"></p>
 <p>This example highlights a few aspects.</p>
 <ul>
 <li>The first two lines do not start with a cell, and thus are treated
-as comments.</li>
-<li>The first line is a modeline, which can be interpreted by text
-editors that support them. In this case it sets the tab width to 4.</li>
-<li>Like in this example, the first row will usually be a header.</li>
-<li>The dashed line under the header does not start with <code>|</code>
-or <code>\</code>, so it is ignored.</li>
-<li>This particular choice of header separator makes the example
-compatible with <a href="https://www.markdownguide.org/extended-syntax/#tables" class=" external" target="_blank">Markdown pipe tables</a>, which are
+as comments. (The first line is a modeline, which can be interpreted by
+text editors that support them. In this case it sets the tab width to
+8.)</li>
+<li>Just like in this example, the first row will usually be used as a
+header for the columns.</li>
+<li>The next line under the header is ignored, becaused it also does not
+start with a cell. This particular choice of header separator makes the
+example compatible with <a href="https://www.markdownguide.org/extended-syntax/#tables" class=" external" target="_blank">Markdown pipe tables</a>, which are
 recognized as tables in many contexts, including GitHub-flavored
-Markdown. This can be convenient if you want to paste it somewhere.</li>
+Markdown. This can be convenient if you want to paste the tabular data
+somewhere.</li>
 <li>In general, the last column is ideal for long cell contents.</li>
 <li>The cell with the “TODO” is beyond the last column, so it acts as a
 comment.</li>
@@ -338,9 +340,8 @@ distinguish them from spaces).</li>
 modelines like <code>vim: tw=8</code>, which are supported by several
 editors.</li>
 <li>A smaller tab-width gives you finer control over column widths, but
-requires more manual width management. I would generally recommend a
-tab-width of 8 for TPSV files, but other choices can make a lot of sense
-too.</li>
+requires more width management. I would generally recommend a tab-width
+of 8 for TPSV files, but other choices can make a lot of sense too.</li>
 </ul>
 <p>Example .editorconfig for generic tpsv files:</p>
 <pre><code>[*.tpsv]
