@@ -53,7 +53,7 @@ A return code of 0 signals an uneventful execution, while any other values have 
 
 A *macro* is a callable entity that is not a program.
 
-**Data**
+## Data
 
 There are two types of data values: lists and constants, each defined as usual in Lisp languages.
 The only supported constant is currently the string. A constant is conceptually the same as a program that takes no arguments and writes that value to stdout. 
@@ -63,38 +63,44 @@ The args list is a list of the argument values supplied to the command.
 The stdin is a readable stream of values, whereas the stdout is a writeable stream of values.
 The stderr is normally used for communicating with the user, such a log messaging.
 
-**Syntax**
+## Syntax
+
+Programs are defined like
+```r
+(program args <command>)
+```
+
+Programs are installed (named) into the current scope like
+```r
+(install name <program>)
+```
 
 Commands are invoked like
 ```r
 (<program> [arg1 [arg2 ...]])
 ```
 
-Program are definited like
-```r
-(program args <command>)
-```
+Comments start with `#`.
 
-Programs are installed (named) into the current scope like
+At the top level, the outermost parameters are optional if the command is typed on one line.
 
-```r
-(install name <program>)
-```
+## Builtin Macros
 
 There are two macros to write data: `out` and `err`. They both take any number of values as argument and write them to stdout and stderr respectively.
 
-**Evaluation**
+## Evaluation
 
-When a command is invoked, its arguments are first evaluated from left to right.
+An expression of the form `(x y z ...)` is evaluated.
 
-- When an argument is a command invocation, it is executed and its stdout is captured as used as argument values.
-Since stdout is a stream of values, this can result in more than one argument being passed.
-- When an argument is a constant, it evaluates to itself. Note that this is the same as invoking a parameterless program writing that value to stdout.
-- When an argument is a macro invocation, it follows macro-specific rules for evaluation.
+- When the first term is a program, the evaluation results in an invocation where the program `x` is called with the arguments `y`, `z`, etc.
+The arguments are first evaluated from left to right, and their stdout is captured and used as argument values.
+Since stdout is a stream of values, this can result in more than one argument being passed per evaluation.
+
+- When the first term is a macro, it follows macro-specific rules for evaluation.
+
+- When an expression is a constant, it evaluates to itself. This evaluates in the same manner as invoking a parameterless program writing that value to stdout.
 
 ## Example programs
-Comments start with `#`.
-At the top level, the outermost parameters are optional if the command is typed on one line.
 
 ```r
 program args (out "hello world") # A program that writes hello world to stdout

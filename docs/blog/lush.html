@@ -330,7 +330,7 @@ how the execution went. A return code of 0 signals an uneventful
 execution, while any other values have program specific meanings and
 usually indicate something went wrong.</p>
 <p>A <em>macro</em> is a callable entity that is not a program.</p>
-<p><strong>Data</strong></p>
+<h2 id="data"><a class="anchor" href="#data"></a>Data</h2>
 <p>There are two types of data values: lists and constants, each defined
 as usual in Lisp languages. The only supported constant is currently the
 string. A constant is conceptually the same as a program that takes no
@@ -340,33 +340,38 @@ arguments. The args list is a list of the argument values supplied to
 the command. The stdin is a readable stream of values, whereas the
 stdout is a writeable stream of values. The stderr is normally used for
 communicating with the user, such a log messaging.</p>
-<p><strong>Syntax</strong></p>
-<p>Commands are invoked like</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>(<span class="sc">&lt;</span>program<span class="sc">&gt;</span> [arg1 [arg2 ...]])</span></code></pre></div>
-<p>Program are definited like</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>(program args <span class="sc">&lt;</span>command<span class="sc">&gt;</span>)</span></code></pre></div>
+<h2 id="syntax"><a class="anchor" href="#syntax"></a>Syntax</h2>
+<p>Programs are defined like</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>(program args <span class="sc">&lt;</span>command<span class="sc">&gt;</span>)</span></code></pre></div>
 <p>Programs are installed (named) into the current scope like</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>(install name <span class="sc">&lt;</span>program<span class="sc">&gt;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>(install name <span class="sc">&lt;</span>program<span class="sc">&gt;</span>)</span></code></pre></div>
+<p>Commands are invoked like</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>(<span class="sc">&lt;</span>program<span class="sc">&gt;</span> [arg1 [arg2 ...]])</span></code></pre></div>
+<p>Comments start with <code>#</code>.</p>
+<p>At the top level, the outermost parameters are optional if the
+command is typed on one line.</p>
+<h2 id="builtin-macros"><a class="anchor" href="#builtin-macros"></a>Builtin
+Macros</h2>
 <p>There are two macros to write data: <code>out</code> and
 <code>err</code>. They both take any number of values as argument and
 write them to stdout and stderr respectively.</p>
-<p><strong>Evaluation</strong></p>
-<p>When a command is invoked, its arguments are first evaluated from
-left to right.</p>
+<h2 id="evaluation"><a class="anchor" href="#evaluation"></a>Evaluation</h2>
+<p>An expression of the form <code>(x y z ...)</code> is evaluated.</p>
 <ul>
-<li>When an argument is a command invocation, it is executed and its
-stdout is captured as used as argument values. Since stdout is a stream
-of values, this can result in more than one argument being passed.</li>
-<li>When an argument is a constant, it evaluates to itself. Note that
-this is the same as invoking a parameterless program writing that value
-to stdout.</li>
-<li>When an argument is a macro invocation, it follows macro-specific
-rules for evaluation.</li>
+<li><p>When the first term is a program, the evaluation results in an
+invocation where the program <code>x</code> is called with the arguments
+<code>y</code>, <code>z</code>, etc. The arguments are first evaluated
+from left to right, and their stdout is captured and used as argument
+values. Since stdout is a stream of values, this can result in more than
+one argument being passed per evaluation.</p></li>
+<li><p>When the first term is a macro, it follows macro-specific rules
+for evaluation.</p></li>
+<li><p>When an expression is a constant, it evaluates to itself. This
+evaluates in the same manner as invoking a parameterless program writing
+that value to stdout.</p></li>
 </ul>
 <h2 id="example-programs"><a class="anchor" href="#example-programs"></a>Example
 programs</h2>
-<p>Comments start with <code>#</code>. At the top level, the outermost
-parameters are optional if the command is typed on one line.</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>program <span class="fu">args</span> (out <span class="st">&quot;hello world&quot;</span>) <span class="co"># A program that writes hello world to stdout</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="st">&quot;hello world&quot;</span> <span class="co"># Also a program that writes hello world to stdout</span></span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>install <span class="fu">l</span> (program <span class="fu">args</span> (ls <span class="sc">-</span><span class="fu">al</span> (args <span class="sc">|</span> expand))) <span class="co"># Makes alias of the `ls -al` command available in the current scope</span></span></code></pre></div>

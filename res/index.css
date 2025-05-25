@@ -44,6 +44,7 @@ h1, h2, h3, h4, h5, h6 {
   color: var(--ac04);
   /* color: var(--red); */
   opacity: 0.9;
+  font-weight: var(--header-font-weight);
 }
 
 strong {
