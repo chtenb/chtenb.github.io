@@ -24,7 +24,7 @@
 
 :root {
   --shadow: #0003;
-  --background: #fef8ec;
+  --background: #fefaf2;
   --foreground: #005661;
   --cursor-bg: #005661;
   --cursor-border: #005661;
@@ -56,7 +56,7 @@
   --git-bg-cyan: #d8fdf6;
   --git-bg-yellow: #f4ffe0;
   --bg01: #fefaf2;
-  --bg02: #faf1e1;
+  --bg02: #fbf3e5;
   --bg03: #f5e9d1;
   --bg04: #f0e0c0;
   --bg05: #f4eee2;
@@ -128,29 +128,23 @@
 
 @font-face {
   font-family: Local Open Sans;
-  src: url("OpenSans-Regular.4e2aea0d.woff2");
+  src: url("OpenSans-VariableFont_wdth,wght.b9910659.ttf") format("truetype-variations");
+  font-weight: 300 900;
+  font-style: normal;
 }
 
 @font-face {
-  font-family: Local Open Sans Italic;
-  src: url("OpenSans-Italic.21d61329.woff2");
-}
-
-@font-face {
-  font-family: Local Open Sans Light;
-  src: url("OpenSans-Light.e0b2a08e.woff2");
-}
-
-@font-face {
-  font-family: Local Open Sans Light Italic;
-  src: url("OpenSans-LightItalic.f71c2d37.woff2");
+  font-family: Local Open Sans;
+  src: url("OpenSans-Italic-VariableFont_wdth,wght.b09f0178.ttf") format("truetype-variations");
+  font-weight: 300 900;
+  font-style: italic;
 }
 
 :root {
   --code-font: "Local Cascadia Mono", monospace;
   --prose-font: "Local Open Sans", sans-serif;
-  --header-font: "Local Open Sans Light", sans-serif;
-  --code-fontsize: 1rem;
+  --header-font: "Local Open Sans", sans-serif;
+  --code-fontsize: .9rem;
   --prose-fontsize: 1rem;
 }
 
@@ -200,6 +194,7 @@ h1:hover > a.anchor, h1 > a.anchor:hover, h2:hover > a.anchor, h2 > a.anchor:hov
 body {
   color: var(--foreground);
   font-family: var(--prose-font);
+  font-size: var(--prose-fontsize);
   cursor: auto;
   tab-size: 4;
   word-wrap: anywhere;
@@ -211,9 +206,27 @@ body {
   font-weight: 400;
 }
 
+code {
+  font-family: var(--code-font);
+  font-size: var(--code-fontsize);
+}
+
 h1, h2, h3, h4, h5, h6 {
   color: var(--ac04);
   opacity: .9;
+}
+
+strong {
+  color: var(--red);
+  font-weight: 600;
+}
+
+em {
+  color: var(--magenta);
+}
+
+li::marker {
+  color: var(--bright-yellow);
 }
 
 a {
