@@ -102,6 +102,39 @@ program args (out "hello world") # A program that writes hello world to stdout
 install l (program args (ls -al (args | expand))) # Makes alias of the `ls -al` command available in the current scope
 ```
 
+## Command algebra
+Commands can be composed to produce more complex commands.
+
+*`&`*: If `A` and `B` are commands, then so is `A & B`. This command first runs A passing the stdin onto A and waits for completion. Both output streams of `A` are directed to the corresponding output streams of the compound program. Then `B` is invoked in the same manner as `A`. The return code is that of B.
+*`;`*: The same as `A & B` except `B` is only invoked when the return code of `A` is 0.
+*`?`*: The same as `A & B` except `B` is only invoked when the return code of `A` is not 0.
+*`|`*: If `A` and `B` are commands, then so is `A | B`. The command invokes both `A` and `B` (they are started in order, but will usually run concurrently). The stdin of the compound command is directed to A, the stdout of A is directed to the stdin of B. The stdout of B is directed to the stdout of the compound command. The stderr of both A and B are directed to the stderr of the compound command. The return code is the first non-zero return code of the chain.
+
+The precedence of these operators is `&` > `?` > `|`  > `;`.
+
+Identifiers may be bound to programs or arguments.
+
+```r
+(program (dir) (cd dir ; (ls | grep README) ? echo "No readme found"))
+```
+
+This program attempts to enter the given directory and search for a file with a name that contains "README" in it. If the directory does not exist, the program exits with the return code of `cd`. If no readme has been found, the program writes a messages to stdout.
+
+
+## I/O redirections
+Standard redirections are postfix macros:
+
+```sh
+(<cmd> > file.txt)
+(<cmd> >> file.txt)
+(<cmd> err> file.txt)
+(<cmd> err>> file.txt)
+(<cmd> < file.txt)
+(<cmd> err>out) # points fd (file descriptor) 2 to the same file description as fd 1.
+(<cmd> err<>out) # swaps file descriptions of fds 1 and 2.
+(<cmd> err+>out) # points fd 2 to a pipe that writes to fd 1 and the original file description of fd 2.
+```
+
 <!--
 
 ### Output capture
@@ -119,40 +152,6 @@ The program `echo` takes a bytestring as argument and writes this to stdout.
 (program b) ≡ (program (echo b))
 ```
 
-### Command algebra
-Commands can be composed to produce more complex commands.
-
-*`&`*: If `A` and `B` are commands, then so is `A & B`. This command first runs A passing the stdin onto A and waits for completion. Both output streams of `A` are directed to the corresponding output streams of the compound program. Then `B` is invoked in the same manner as `A`. The return code is that of B.
-*`;`*: The same as `A & B` except `B` is only invoked when the return code of `A` is 0.
-*`?`*: The same as `A & B` except `B` is only invoked when the return code of `A` is not 0.
-*`|`*: If `A` and `B` are commands, then so is `A | B`. The command invokes both `A` and `B` (they are started in order, but will usually run concurrently). The stdin of the compound command is directed to A, the stdout of A is directed to the stdin of B. The stdout of B is directed to the stdout of the compound command. The stderr of both A and B are directed to the stderr of the compound command. The return code is the first non-zero return code of the chain.
-
-The precedence of these operators is `&` > `?` > `|`  > `;`.
-
-Identifiers may be bound to programs or arguments.
-
-```py
-(program (dir) (cd dir ; (ls | grep README) ? echo "No readme found"))
-```
-
-This program attempts to enter the given directory and search for a file with a name that contains "README" in it. If the directory does not exist, the program exits with the return code of `cd`. If no readme has been found, the program writes a messages to stdout.
-
-### I/O redirections
-
-Standard redirections are postfix macros:
-
-```sh
-(cmd > file.txt)
-(cmd >> file.txt)
-(cmd err> file.txt)
-(cmd err>> file.txt)
-(cmd < file.txt)
-(cmd err>out) # points fd (file descriptor) 2 to the same file description as fd 1.
-(cmd err<>out) # swaps file descriptions of fds 1 and 2.
-(cmd err+>out) # points fd 2 to a pipe that writes to fd 1 and the original file description of fd 2.
-```
-
-
 ## Wire format
 A *byte* is a number between 0 and 255 (inclusive).
 A *value* is a sequence of bytes that does not contain the byte 0.
@@ -166,3 +165,4 @@ Lists are represented in memory by a series of bytestrings, separated by a US (U
 Lists can be nested, where byte SI (Shift In/14/E) opens a nested list, and byte SO (Shift Out/15/F) closes it.
 
 -->
+
