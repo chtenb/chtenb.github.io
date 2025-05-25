@@ -1,9 +1,9 @@
 :root {
   --shadow:rgba(0, 0, 0, 0.2);
 
-  /* --background: #fefaf2; */
+  --background: #fefaf2;
   /* Darker background: */
-  --background: #fef8ec;
+  /* --background: #fef8ec; */
   --foreground: #005661;
 
   --cursor-bg: #005661;
@@ -41,7 +41,7 @@
   --git-bg-yellow: #f4ffe0;
 
   --bg01: #fefaf2;
-  --bg02: #faf1e1;
+  --bg02: #fbf3e5;
   --bg03: #f5e9d1;
   --bg04: #f0e0c0;
   --bg05: #f4eee2;
