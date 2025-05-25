@@ -26,6 +26,6 @@
   --header-font: 'Local Open Sans', sans-serif;
   --header-font-weight: 600;
 
-  --code-fontsize: 0.9rem;
-  --prose-fontsize: 1rem;
+  --code-fontsize: 0.9em;
+  --prose-fontsize: 1em;
 }
