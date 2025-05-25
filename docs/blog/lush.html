@@ -378,18 +378,20 @@ programs</h2>
 <h2 id="command-algebra"><a class="anchor" href="#command-algebra"></a>Command
 algebra</h2>
 <p>Commands can be composed to produce more complex commands.</p>
-<p><em><code>&amp;</code></em>: If <code>A</code> and <code>B</code> are
-commands, then so is <code>A &amp; B</code>. This command first runs A
-passing the stdin onto A and waits for completion. Both output streams
-of <code>A</code> are directed to the corresponding output streams of
-the compound program. Then <code>B</code> is invoked in the same manner
-as <code>A</code>. The return code is that of B.
-<em><code>;</code></em>: The same as <code>A &amp; B</code> except
-<code>B</code> is only invoked when the return code of <code>A</code> is
-0. <em><code>?</code></em>: The same as <code>A &amp; B</code> except
-<code>B</code> is only invoked when the return code of <code>A</code> is
-not 0. <em><code>|</code></em>: If <code>A</code> and <code>B</code> are
-commands, then so is <code>A | B</code>. The command invokes both
+<p><strong><code>&amp;</code></strong>: If <code>A</code> and
+<code>B</code> are commands, then so is <code>A &amp; B</code>. This
+command first runs A passing the stdin onto A and waits for completion.
+Both output streams of <code>A</code> are directed to the corresponding
+output streams of the compound program. Then <code>B</code> is invoked
+in the same manner as <code>A</code>. The return code is that of B.</p>
+<p><strong><code>;</code></strong>: The same as <code>A &amp; B</code>
+except <code>B</code> is only invoked when the return code of
+<code>A</code> is 0.</p>
+<p><strong><code>?</code></strong>: The same as <code>A &amp; B</code>
+except <code>B</code> is only invoked when the return code of
+<code>A</code> is not 0.</p>
+<p><strong><code>|</code></strong>: If <code>A</code> and <code>B</code>
+are commands, then so is <code>A | B</code>. The command invokes both
 <code>A</code> and <code>B</code> (they are started in order, but will
 usually run concurrently). The stdin of the compound command is directed
 to A, the stdout of A is directed to the stdin of B. The stdout of B is
@@ -398,7 +400,6 @@ B are directed to the stderr of the compound command. The return code is
 the first non-zero return code of the chain.</p>
 <p>The precedence of these operators is <code>&amp;</code> &gt;
 <code>?</code> &gt; <code>|</code> &gt; <code>;</code>.</p>
-<p>Identifiers may be bound to programs or arguments.</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>(<span class="fu">program</span> (dir) (cd dir ; (ls <span class="sc">|</span> grep README) ? echo <span class="st">&quot;No readme found&quot;</span>))</span></code></pre></div>
 <p>This program attempts to enter the given directory and search for a
 file with a name that contains “README” in it. If the directory does not

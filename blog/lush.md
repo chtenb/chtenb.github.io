@@ -111,14 +111,15 @@ install l (program args (ls -al (args | expand))) # Makes alias of the `ls -al` 
 ## Command algebra
 Commands can be composed to produce more complex commands.
 
-*`&`*: If `A` and `B` are commands, then so is `A & B`. This command first runs A passing the stdin onto A and waits for completion. Both output streams of `A` are directed to the corresponding output streams of the compound program. Then `B` is invoked in the same manner as `A`. The return code is that of B.
-*`;`*: The same as `A & B` except `B` is only invoked when the return code of `A` is 0.
-*`?`*: The same as `A & B` except `B` is only invoked when the return code of `A` is not 0.
-*`|`*: If `A` and `B` are commands, then so is `A | B`. The command invokes both `A` and `B` (they are started in order, but will usually run concurrently). The stdin of the compound command is directed to A, the stdout of A is directed to the stdin of B. The stdout of B is directed to the stdout of the compound command. The stderr of both A and B are directed to the stderr of the compound command. The return code is the first non-zero return code of the chain.
+**`&`**: If `A` and `B` are commands, then so is `A & B`. This command first runs A passing the stdin onto A and waits for completion. Both output streams of `A` are directed to the corresponding output streams of the compound program. Then `B` is invoked in the same manner as `A`. The return code is that of B.
+
+**`;`**: The same as `A & B` except `B` is only invoked when the return code of `A` is 0.
+
+**`?`**: The same as `A & B` except `B` is only invoked when the return code of `A` is not 0.
+
+**`|`**: If `A` and `B` are commands, then so is `A | B`. The command invokes both `A` and `B` (they are started in order, but will usually run concurrently). The stdin of the compound command is directed to A, the stdout of A is directed to the stdin of B. The stdout of B is directed to the stdout of the compound command. The stderr of both A and B are directed to the stderr of the compound command. The return code is the first non-zero return code of the chain.
 
 The precedence of these operators is `&` > `?` > `|`  > `;`.
-
-Identifiers may be bound to programs or arguments.
 
 ```r
 (program (dir) (cd dir ; (ls | grep README) ? echo "No readme found"))
