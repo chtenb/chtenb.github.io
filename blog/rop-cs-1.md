@@ -109,7 +109,7 @@ Moreover, using the `Result` type as your function return type makes the functio
 ### Exception throwing vs the `Failure` type
 When writing a function, a good way for deciding whether to propagate a failure by throwing an exception is by asking the following question.
 
-_Should the failure always cause the entire transaction to be aborted in any reasonably conceivable context in which the function might be called_?
+_Should the failure always cause the entire transaction to be aborted in any reasonably conceivable context in which the function might be called?_
 
 If the answer is yes, then it is probably appropriate to handle the failure by throwing an exception.
 If the answer is no, then it is probably better to handle the failure by incorporating it in the function return type, such that the caller is forced to make an explicit decision about how to handle the failure path.

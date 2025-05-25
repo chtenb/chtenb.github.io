@@ -225,10 +225,6 @@ em {
   color: var(--magenta);
 }
 
-li::marker {
-  color: var(--bright-yellow);
-}
-
 a {
   color: var(--bright-blue);
   background: none;
