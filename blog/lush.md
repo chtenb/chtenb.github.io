@@ -40,12 +40,12 @@ An *invocation* is the execution instance of a command.
 An invocation receives its environment variables as a copy of its parent's, possibly with invocation-specific modifications.
 An invocation receives its standard file descriptors as a copy of its parent's, possibly with invocation-specific redirections.
 
-The *scope* of an invocation is the set of available programs to be called.
-This does not include running a program explicitly via it's absolute path (which is considered a filesystem interaction, and thus a side effect).
-Invocations inherit scopes automatically from the parent invocation, in the same manner as the environment.
-
 The *variables* of an invocation are the environment variables inherited from the parent invocation.
 The scope and variables together form the *environment* of the invocation.
+
+The *scope* of an invocation (also called *dynamic scope*) is the set of available programs to be called and files to be accessed, mainly defined by the $PATH variable and the current working directory.
+This definition does not include running a program or accessing a file explicitly via it's absolute path (which is considered a filesystem interaction, and thus a side effect).
+Invocations inherit scopes automatically from the parent invocation, because $PATH is a variable and the CWD is inherited too.
 
 The *exit code* of an invocation is a byte that indicates how the execution went.
 A exit code of 0 signals an uneventful execution, while any other values have program specific meanings and usually indicate something went wrong.
@@ -56,10 +56,10 @@ A *macro* is an operator that is not a program.
 ## Data
 In Lush, data is represented by values. There are several kinds of values.
 
-A *bytestring* is a sequence of bytes that does not contain the byte 0. Syntax: `"Hello world"`.
-A *word* is a similar to a bytestring, but has special evaluation rules. Syntax: `hello`.
-A *list* is a sequence of values. Syntax: `("hello world" hello (a b c))`.
-An *operator* is an opaque value that can be invoked with arguments.
+- A *bytestring* is a sequence of bytes that does not contain the byte 0. Syntax: `"Hello world"`.
+- A *word* is a similar to a bytestring, but has special evaluation rules. Syntax: `hello`.
+- A *list* is a sequence of values. Syntax: `("hello world" hello (a b c))`.
+- An *operator* is an opaque value that can be invoked with arguments.
 
 Programs communicate data by default through stdin/stdout and arguments.
 The args list is a list of the argument values supplied to the command.
@@ -68,21 +68,23 @@ The stderr is normally used for communicating with the user, such a log messagin
 The exit code of a program is represented by an ascii bytestring containing a decimal number.
 
 ## Evaluation
-A bytestring is a so-called constant, meaning that when it is evaluated, it returns itself.
+A *bytestring* is a so-called constant, meaning that when it is evaluated, it returns itself.
 
-When a word is evaluated, the following rules apply:
+When a *word* is evaluated, the following rules apply:
+
 1. If it starts with a `$`, it is interpreted as a variable and is substituted by the value in that variable.
 2. If it contains `*` characters, it is interpreted as a glob pattern and is evaluated to all the filenames matching the pattern.
 3. Otherwise it evaluates to a bytestring.
 
-When a list `(x y z ...)` is evaluated, all the list elements are first scanned if there is a word matching a macro name.
-If that is the case, the macro is evaluated with two list arguments: the elements to the left and to the right of the macro.
-If there are no macros present, the list is evaluated recursively from left to right.
-Then, if the first element is a word that matches a program name, it is invoked with the remaining elemens as arguments, and the entire expression evaluates to the values in the stdout of the program.
-Note that stdout can have multiple values, so a program evaluation can result in multiple values (and thus also result in multiple arguments when passed to another program).
-If the first element is not a program, the expression evaluates to a list again, but with the elements evaluated.
+When a *list* `(x y z ...)` is evaluated, all the list elements are first scanned if there is a word matching a macro name.
 
-When an operator is evaluated, an error is signaled, because operators can only be evaluated in the context of a list.
+1. For the first macro that is found, the macro is evaluated with two list arguments: the elements to the left and to the right of the macro.
+2. If there are no macros present, the list is evaluated recursively from left to right.
+3. Then, if the first element is a word that matches a program name, it is invoked with the remaining elemens as arguments, and the entire expression evaluates to the values in the stdout of the program.
+4. Note that stdout can have multiple values, so a program evaluation can result in multiple values (and thus also result in multiple arguments when passed to another program).
+5. If the first element is not a program, the expression evaluates to a list again, but with the elements evaluated.
+
+When an *operator* is evaluated, an error is signaled, because operators can only be evaluated in the context of a list.
 
 ## Syntax
 Commands are invoked like
@@ -114,8 +116,8 @@ Comments start with `#`.
 At the top level, the outermost parameters are optional if the command is typed on one line.
 
 ## Builtin Macros
-- `program`: Define a program
-- `install`: Make a program available under a given name
+- `program`: Define a program.
+- `install`: Make a program available under a given name.
 - `out` / `err`: They both take any number of values as argument and write them to stdout and stderr respectively.
 - `case`: takes one command to run and then one or more programs (continuations) to run for each possible exit code, starting with 0. The case command itself exits with code 1 if there is no matching branch for the received exit code, and otherwise with the exit code returned by the activated continuation.
 
@@ -177,13 +179,13 @@ The root program will usually be the shell, which uses the currently connected t
 
 ### Builtin Programs
 
-## Private storage
+## Private storage and lexical scoping
 Values can be stored in files and variables.
 Files can store more than one value and are global and globally mutable.
 Variables are copied from the parent to a child invocation, and so child invocations cannot mutate variables of their parents, and vice versa, a parent can also not mutate variables of their children.
 
-It is possible to write values into private files or variables.
-Private files and variables are prefix with an underscore, like `_priv.txt` and `$_priv`, and behave just like their normal counterparts, except their names will be modified by the shell as to not collide with any files and variables outside the lexical scope.
+It is possible to write values into *private* files or variables.
+Private files and variables are prefix with an underscore, like `_priv.txt` and `$_priv`, and behave just like their normal counterparts, except their names will be modified by the shell as to not collide with any files and variables outside the *lexical scope*.
 Moreover, the files will not be placed in the CWD, but in a temporary location.
 
 In the same vein, programs can be privately installed.
@@ -198,13 +200,13 @@ They can be serialized in human readable way, just like how you type commands, o
 The human readable format is called "lush", where as the binary format is called "blush".
 
 ## Example programs
-
 ```r
 program args (out "hello world") # A program that writes hello world to stdout
-"hello world" # Also a program that writes hello world to stdout
-install l (program args (ls -al (args | expand))) # Makes alias of the `ls -al` command available in the current scope
-install mytemp (tmp) # Bind a new temp file name to the program name `mytemp`
+
+install l (program args (ls -al (args | expand))) # Makes alias of the `ls -al` command available in the current dynamic scope
+
 install hw ("hello world") ; python -c "import subprocess;subprocess.call('hw', shell=True)" # Install program hw into the current scope, and then call it from a python script
+
 case (test -d "foo") ("foo is a folder") ("foo is not a folder") ("something went wrong") ("this is unreachable, as test never returns a code higher than 2")
 ```
 

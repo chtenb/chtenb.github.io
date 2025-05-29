@@ -316,14 +316,17 @@ as a copy of its parent’s, possibly with invocation-specific
 modifications. An invocation receives its standard file descriptors as a
 copy of its parent’s, possibly with invocation-specific
 redirections.</p>
-<p>The <em>scope</em> of an invocation is the set of available programs
-to be called. This does not include running a program explicitly via
-it’s absolute path (which is considered a filesystem interaction, and
-thus a side effect). Invocations inherit scopes automatically from the
-parent invocation, in the same manner as the environment.</p>
 <p>The <em>variables</em> of an invocation are the environment variables
 inherited from the parent invocation. The scope and variables together
 form the <em>environment</em> of the invocation.</p>
+<p>The <em>scope</em> of an invocation (also called <em>dynamic
+scope</em>) is the set of available programs to be called and files to
+be accessed, mainly defined by the $PATH variable and the current
+working directory. This definition does not include running a program or
+accessing a file explicitly via it’s absolute path (which is considered
+a filesystem interaction, and thus a side effect). Invocations inherit
+scopes automatically from the parent invocation, because $PATH is a
+variable and the CWD is inherited too.</p>
 <p>The <em>exit code</em> of an invocation is a byte that indicates how
 the execution went. A exit code of 0 signals an uneventful execution,
 while any other values have program specific meanings and usually
@@ -333,12 +336,16 @@ operator that is not a program.</p>
 <h2 id="data"><a class="anchor" href="#data"></a>Data</h2>
 <p>In Lush, data is represented by values. There are several kinds of
 values.</p>
-<p>A <em>bytestring</em> is a sequence of bytes that does not contain
-the byte 0. Syntax: <code>&quot;Hello world&quot;</code>. A <em>word</em> is a
-similar to a bytestring, but has special evaluation rules. Syntax:
-<code>hello</code>. A <em>list</em> is a sequence of values. Syntax:
-<code>(&quot;hello world&quot; hello (a b c))</code>. An <em>operator</em> is an
-opaque value that can be invoked with arguments.</p>
+<ul>
+<li>A <em>bytestring</em> is a sequence of bytes that does not contain
+the byte 0. Syntax: <code>&quot;Hello world&quot;</code>.</li>
+<li>A <em>word</em> is a similar to a bytestring, but has special
+evaluation rules. Syntax: <code>hello</code>.</li>
+<li>A <em>list</em> is a sequence of values. Syntax:
+<code>(&quot;hello world&quot; hello (a b c))</code>.</li>
+<li>An <em>operator</em> is an opaque value that can be invoked with
+arguments.</li>
+</ul>
 <p>Programs communicate data by default through stdin/stdout and
 arguments. The args list is a list of the argument values supplied to
 the command. The stdin is a readable stream of values, whereas the
@@ -347,28 +354,36 @@ communicating with the user, such a log messaging. The exit code of a
 program is represented by an ascii bytestring containing a decimal
 number.</p>
 <h2 id="evaluation"><a class="anchor" href="#evaluation"></a>Evaluation</h2>
-<p>A bytestring is a so-called constant, meaning that when it is
-evaluated, it returns itself.</p>
-<p>When a word is evaluated, the following rules apply: 1. If it starts
-with a <code>$</code>, it is interpreted as a variable and is
-substituted by the value in that variable. 2. If it contains
-<code>*</code> characters, it is interpreted as a glob pattern and is
-evaluated to all the filenames matching the pattern. 3. Otherwise it
-evaluates to a bytestring.</p>
-<p>When a list <code>(x y z ...)</code> is evaluated, all the list
-elements are first scanned if there is a word matching a macro name. If
-that is the case, the macro is evaluated with two list arguments: the
-elements to the left and to the right of the macro. If there are no
-macros present, the list is evaluated recursively from left to right.
-Then, if the first element is a word that matches a program name, it is
-invoked with the remaining elemens as arguments, and the entire
-expression evaluates to the values in the stdout of the program. Note
-that stdout can have multiple values, so a program evaluation can result
-in multiple values (and thus also result in multiple arguments when
-passed to another program). If the first element is not a program, the
-expression evaluates to a list again, but with the elements
-evaluated.</p>
-<p>When an operator is evaluated, an error is signaled, because
+<p>A <em>bytestring</em> is a so-called constant, meaning that when it
+is evaluated, it returns itself.</p>
+<p>When a <em>word</em> is evaluated, the following rules apply:</p>
+<ol type="1">
+<li>If it starts with a <code>$</code>, it is interpreted as a variable
+and is substituted by the value in that variable.</li>
+<li>If it contains <code>*</code> characters, it is interpreted as a
+glob pattern and is evaluated to all the filenames matching the
+pattern.</li>
+<li>Otherwise it evaluates to a bytestring.</li>
+</ol>
+<p>When a <em>list</em> <code>(x y z ...)</code> is evaluated, all the
+list elements are first scanned if there is a word matching a macro
+name.</p>
+<ol type="1">
+<li>For the first macro that is found, the macro is evaluated with two
+list arguments: the elements to the left and to the right of the
+macro.</li>
+<li>If there are no macros present, the list is evaluated recursively
+from left to right.</li>
+<li>Then, if the first element is a word that matches a program name, it
+is invoked with the remaining elemens as arguments, and the entire
+expression evaluates to the values in the stdout of the program.</li>
+<li>Note that stdout can have multiple values, so a program evaluation
+can result in multiple values (and thus also result in multiple
+arguments when passed to another program).</li>
+<li>If the first element is not a program, the expression evaluates to a
+list again, but with the elements evaluated.</li>
+</ol>
+<p>When an <em>operator</em> is evaluated, an error is signaled, because
 operators can only be evaluated in the context of a list.</p>
 <h2 id="syntax"><a class="anchor" href="#syntax"></a>Syntax</h2>
 <p>Commands are invoked like</p>
@@ -391,9 +406,9 @@ command is typed on one line.</p>
 <h2 id="builtin-macros"><a class="anchor" href="#builtin-macros"></a>Builtin
 Macros</h2>
 <ul>
-<li><code>program</code>: Define a program</li>
+<li><code>program</code>: Define a program.</li>
 <li><code>install</code>: Make a program available under a given
-name</li>
+name.</li>
 <li><code>out</code> / <code>err</code>: They both take any number of
 values as argument and write them to stdout and stderr
 respectively.</li>
@@ -462,20 +477,20 @@ connected tty for stdin/stdout/stderr, and writes the exit code to
 <code>$?</code>.</p>
 <h3 id="builtin-programs"><a class="anchor" href="#builtin-programs"></a>Builtin
 Programs</h3>
-<h2 id="private-storage"><a class="anchor" href="#private-storage"></a>Private
-storage</h2>
+<h2 id="private-storage-and-lexical-scoping"><a class="anchor" href="#private-storage-and-lexical-scoping"></a>Private
+storage and lexical scoping</h2>
 <p>Values can be stored in files and variables. Files can store more
 than one value and are global and globally mutable. Variables are copied
 from the parent to a child invocation, and so child invocations cannot
 mutate variables of their parents, and vice versa, a parent can also not
 mutate variables of their children.</p>
-<p>It is possible to write values into private files or variables.
-Private files and variables are prefix with an underscore, like
-<code>_priv.txt</code> and <code>$_priv</code>, and behave just like
-their normal counterparts, except their names will be modified by the
-shell as to not collide with any files and variables outside the lexical
-scope. Moreover, the files will not be placed in the CWD, but in a
-temporary location.</p>
+<p>It is possible to write values into <em>private</em> files or
+variables. Private files and variables are prefix with an underscore,
+like <code>_priv.txt</code> and <code>$_priv</code>, and behave just
+like their normal counterparts, except their names will be modified by
+the shell as to not collide with any files and variables outside the
+<em>lexical scope</em>. Moreover, the files will not be placed in the
+CWD, but in a temporary location.</p>
 <p>In the same vein, programs can be privately installed.</p>
 <div class="sourceCode" id="cb9"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="fu">install</span> _hw <span class="er">(</span><span class="fu">program ()</span> <span class="kw">(</span><span class="ex">out</span> <span class="st">&quot;Hello world)))</span></span></code></pre></div>
 <p>Now the program <code>_hw</code> is only available to be called from
@@ -490,11 +505,12 @@ binary format is called “blush”.</p>
 <h2 id="example-programs"><a class="anchor" href="#example-programs"></a>Example
 programs</h2>
 <div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>program <span class="fu">args</span> (out <span class="st">&quot;hello world&quot;</span>) <span class="co"># A program that writes hello world to stdout</span></span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="st">&quot;hello world&quot;</span> <span class="co"># Also a program that writes hello world to stdout</span></span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>install <span class="fu">l</span> (program <span class="fu">args</span> (ls <span class="sc">-</span><span class="fu">al</span> (args <span class="sc">|</span> expand))) <span class="co"># Makes alias of the `ls -al` command available in the current scope</span></span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>install <span class="fu">mytemp</span> (tmp) <span class="co"># Bind a new temp file name to the program name `mytemp`</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>install <span class="fu">l</span> (program <span class="fu">args</span> (ls <span class="sc">-</span><span class="fu">al</span> (args <span class="sc">|</span> expand))) <span class="co"># Makes alias of the `ls -al` command available in the current dynamic scope</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>install <span class="fu">hw</span> (<span class="st">&quot;hello world&quot;</span>) ; python <span class="sc">-</span>c <span class="st">&quot;import subprocess;subprocess.call(&#39;hw&#39;, shell=True)&quot;</span> <span class="co"># Install program hw into the current scope, and then call it from a python script</span></span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a><span class="fu">case</span> (test <span class="sc">-</span>d <span class="st">&quot;foo&quot;</span>) (<span class="st">&quot;foo is a folder&quot;</span>) (<span class="st">&quot;foo is not a folder&quot;</span>) (<span class="st">&quot;something went wrong&quot;</span>) (<span class="st">&quot;this is unreachable, as test never returns a code higher than 2&quot;</span>)</span></code></pre></div>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a><span class="fu">case</span> (test <span class="sc">-</span>d <span class="st">&quot;foo&quot;</span>) (<span class="st">&quot;foo is a folder&quot;</span>) (<span class="st">&quot;foo is not a folder&quot;</span>) (<span class="st">&quot;something went wrong&quot;</span>) (<span class="st">&quot;this is unreachable, as test never returns a code higher than 2&quot;</span>)</span></code></pre></div>
 <!--
 
 ### List encoding
