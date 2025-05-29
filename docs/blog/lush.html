@@ -337,10 +337,10 @@ operator that is not a program.</p>
 <p>In Lush, data is represented by values. There are several kinds of
 values.</p>
 <ul>
-<li>A <em>bytestring</em> is a sequence of bytes that does not contain
-the byte 0. Syntax: <code>&quot;Hello world&quot;</code>.</li>
-<li>A <em>word</em> is a similar to a bytestring, but has special
-evaluation rules. Syntax: <code>hello</code>.</li>
+<li>A <em>string</em> is a sequence of bytes that contains utf-8 text.
+Syntax: <code>&quot;Hello world&quot;</code>.</li>
+<li>A <em>word</em> is a similar to a string, but has special evaluation
+rules. Syntax: <code>hello</code>.</li>
 <li>A <em>list</em> is a sequence of values. Syntax:
 <code>(&quot;hello world&quot; hello (a b c))</code>.</li>
 <li>An <em>operator</em> is an opaque value that can be invoked with
@@ -351,11 +351,11 @@ arguments. The args list is a list of the argument values supplied to
 the command. The stdin is a readable stream of values, whereas the
 stdout is a writeable stream of values. The stderr is normally used for
 communicating with the user, such a log messaging. The exit code of a
-program is represented by an ascii bytestring containing a decimal
+program is represented by an ascii string containing a decimal
 number.</p>
 <h2 id="evaluation"><a class="anchor" href="#evaluation"></a>Evaluation</h2>
-<p>A <em>bytestring</em> is a so-called constant, meaning that when it
-is evaluated, it returns itself.</p>
+<p>A <em>string</em> is a so-called constant, meaning that when it is
+evaluated, it returns itself.</p>
 <p>When a <em>word</em> is evaluated, the following rules apply:</p>
 <ol type="1">
 <li>If it starts with a <code>$</code>, it is interpreted as a variable
@@ -363,7 +363,7 @@ and is substituted by the value in that variable.</li>
 <li>If it contains <code>*</code> characters, it is interpreted as a
 glob pattern and is evaluated to all the filenames matching the
 pattern.</li>
-<li>Otherwise it evaluates to a bytestring.</li>
+<li>Otherwise it evaluates to a string.</li>
 </ol>
 <p>When a <em>list</em> <code>(x y z ...)</code> is evaluated, all the
 list elements are first scanned if there is a word matching a macro
@@ -502,6 +502,14 @@ serialized in human readable way, just like how you type commands, or in
 a binary way, which is easier and more efficient for external
 interaction. The human readable format is called “lush”, where as the
 binary format is called “blush”.</p>
+<h3 id="blush-specification"><a class="anchor" href="#blush-specification"></a>Blush
+specification</h3>
+<p>Values are delimited by NULL (0) bytes. Bytestrings are not quoted
+with <code>&quot;</code>, but just serialized as their bare bytes. Words are
+prefixed by SOH (1). Lists are not delimited by parentheses, but instead
+by SO (14) and SI (15).</p>
+<p>This implies that bytestrings are not allowed to contain bytes 0, 1,
+14 or 15.</p>
 <h2 id="example-programs"><a class="anchor" href="#example-programs"></a>Example
 programs</h2>
 <div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>program <span class="fu">args</span> (out <span class="st">&quot;hello world&quot;</span>) <span class="co"># A program that writes hello world to stdout</span></span>
@@ -515,7 +523,7 @@ programs</h2>
 
 ### List encoding
 Lists are supported by Lush.
-It also acts as a mapping by the following convention: a list entry that contains an `=` character can be treated as a key-value pair, whereby the bytestring before the first `=` is treated as key.
+It also acts as a mapping by the following convention: a list entry that contains an `=` character can be treated as a key-value pair, whereby the string before the first `=` is treated as key.
 Lists are represented in memory by a series of bytestrings, separated by a US (Unit Separator/31/1F) byte.
 Lists can be nested, where byte SI (Shift In/14/E) opens a nested list, and byte SO (Shift Out/15/F) closes it.
 

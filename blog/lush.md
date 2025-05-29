@@ -56,8 +56,8 @@ A *macro* is an operator that is not a program.
 ## Data
 In Lush, data is represented by values. There are several kinds of values.
 
-- A *bytestring* is a sequence of bytes that does not contain the byte 0. Syntax: `"Hello world"`.
-- A *word* is a similar to a bytestring, but has special evaluation rules. Syntax: `hello`.
+- A *string* is a sequence of bytes that contains utf-8 text. Syntax: `"Hello world"`.
+- A *word* is a similar to a string, but has special evaluation rules. Syntax: `hello`.
 - A *list* is a sequence of values. Syntax: `("hello world" hello (a b c))`.
 - An *operator* is an opaque value that can be invoked with arguments.
 
@@ -65,16 +65,16 @@ Programs communicate data by default through stdin/stdout and arguments.
 The args list is a list of the argument values supplied to the command.
 The stdin is a readable stream of values, whereas the stdout is a writeable stream of values.
 The stderr is normally used for communicating with the user, such a log messaging.
-The exit code of a program is represented by an ascii bytestring containing a decimal number.
+The exit code of a program is represented by an ascii string containing a decimal number.
 
 ## Evaluation
-A *bytestring* is a so-called constant, meaning that when it is evaluated, it returns itself.
+A *string* is a so-called constant, meaning that when it is evaluated, it returns itself.
 
 When a *word* is evaluated, the following rules apply:
 
 1. If it starts with a `$`, it is interpreted as a variable and is substituted by the value in that variable.
 2. If it contains `*` characters, it is interpreted as a glob pattern and is evaluated to all the filenames matching the pattern.
-3. Otherwise it evaluates to a bytestring.
+3. Otherwise it evaluates to a string.
 
 When a *list* `(x y z ...)` is evaluated, all the list elements are first scanned if there is a word matching a macro name.
 
@@ -199,6 +199,14 @@ Lush has two different notions of serializing values.
 They can be serialized in human readable way, just like how you type commands, or in a binary way, which is easier and more efficient for external interaction.
 The human readable format is called "lush", where as the binary format is called "blush".
 
+### Blush specification
+Values are delimited by NULL (0) bytes.
+Bytestrings are not quoted with `"`, but just serialized as their bare bytes.
+Words are prefixed by SOH (1).
+Lists are not delimited by parentheses, but instead by SO (14) and SI (15).
+
+This implies that bytestrings are not allowed to contain bytes 0, 1, 14 or 15.
+
 ## Example programs
 ```r
 program args (out "hello world") # A program that writes hello world to stdout
@@ -214,7 +222,7 @@ case (test -d "foo") ("foo is a folder") ("foo is not a folder") ("something wen
 
 ### List encoding
 Lists are supported by Lush.
-It also acts as a mapping by the following convention: a list entry that contains an `=` character can be treated as a key-value pair, whereby the bytestring before the first `=` is treated as key.
+It also acts as a mapping by the following convention: a list entry that contains an `=` character can be treated as a key-value pair, whereby the string before the first `=` is treated as key.
 Lists are represented in memory by a series of bytestrings, separated by a US (Unit Separator/31/1F) byte.
 Lists can be nested, where byte SI (Shift In/14/E) opens a nested list, and byte SO (Shift Out/15/F) closes it.
 
