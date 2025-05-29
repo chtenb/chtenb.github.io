@@ -387,14 +387,14 @@ list again, but with the elements evaluated.</li>
 operators can only be evaluated in the context of a list.</p>
 <h2 id="syntax"><a class="anchor" href="#syntax"></a>Syntax</h2>
 <p>Commands are invoked like</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="op">&lt;</span>program<span class="op">&gt;</span> <span class="ex">[arg1</span> [arg2 ...]]<span class="kw">)</span></span></code></pre></div>
+<pre><code>(&lt;program&gt; [arg1 [arg2 ...]])</code></pre>
 <p>where <code>&lt;program&gt;</code> is either a program definition or
 a program name.</p>
 <p>Programs are defined like</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="ex">program</span> <span class="op">&lt;</span>args<span class="op">&gt;</span> <span class="op">&lt;</span>body<span class="op">&gt;</span><span class="kw">)</span></span></code></pre></div>
+<pre><code>(program &lt;args&gt; &lt;body&gt;)</code></pre>
 <p>Programs are installed (named) into the current runtime scope and all
 child runtime scopes like</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="fu">install</span> name <span class="op">&lt;</span>program<span class="op">&gt;</span><span class="kw">)</span></span></code></pre></div>
+<pre><code>(install name &lt;program&gt;)</code></pre>
 <p>The body of a program consists of an optional number of installations
 followed by a command.</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="fu">program ()</span></span>
@@ -453,24 +453,24 @@ readme has been found, the program writes a messages to stdout.</p>
 redirections</h3>
 <p>I/O redirections are postfix macros.</p>
 <p>I/O can interact with files as follows.</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="op">&lt;</span>cmd<span class="op">&gt;</span> <span class="op">&gt;</span> file.txt<span class="kw">)</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="op">&lt;</span>cmd<span class="op">&gt;</span> <span class="op">&gt;&gt;</span> file.txt<span class="kw">)</span></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="op">&lt;</span>cmd<span class="op">&gt;</span> err<span class="op">&gt;</span> file.txt<span class="kw">)</span></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="op">&lt;</span>cmd<span class="op">&gt;</span> err<span class="op">&gt;&gt;</span> file.txt<span class="kw">)</span></span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="op">&lt;</span>cmd<span class="op">&gt;</span> <span class="op">&lt;</span> file.txt<span class="kw">)</span></span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="op">&lt;</span>cmd<span class="op">&gt;</span> <span class="ex">?</span><span class="op">&gt;</span> file.txt<span class="kw">)</span> <span class="co"># Writes the exit code to rc.txt</span></span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>(<span class="sc">&lt;</span>cmd<span class="sc">&gt;</span> <span class="er">&gt;</span> file.txt)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>(<span class="sc">&lt;</span>cmd<span class="sc">&gt;</span> <span class="er">&gt;&gt;</span> file.txt)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>(<span class="sc">&lt;</span>cmd<span class="sc">&gt;</span> err<span class="sc">&gt;</span> file.txt)</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>(<span class="sc">&lt;</span>cmd<span class="sc">&gt;</span> err<span class="sc">&gt;</span><span class="er">&gt;</span> file.txt)</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>(<span class="sc">&lt;</span>cmd<span class="sc">&gt;</span> <span class="er">&lt;</span> file.txt)</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>(<span class="sc">&lt;</span>cmd<span class="sc">&gt;</span> ?<span class="sc">&gt;</span> file.txt) <span class="co"># Writes the exit code to rc.txt</span></span></code></pre></div>
 <p>The same interactions are allowed with variables, which have to be
 prefixed with a <code>$</code> sign.</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="op">&lt;</span>cmd<span class="op">&gt;</span> <span class="op">&gt;</span> <span class="va">$myvar</span><span class="kw">)</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="op">&lt;</span>cmd<span class="op">&gt;</span> <span class="op">&gt;&gt;</span> <span class="va">$myvar</span><span class="kw">)</span></span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="op">&lt;</span>cmd<span class="op">&gt;</span> err<span class="op">&gt;</span> <span class="va">$myvar</span><span class="kw">)</span></span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="op">&lt;</span>cmd<span class="op">&gt;</span> err<span class="op">&gt;&gt;</span> <span class="va">$myvar</span><span class="kw">)</span></span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="op">&lt;</span>cmd<span class="op">&gt;</span> <span class="op">&lt;</span> <span class="va">$myvar</span><span class="kw">)</span></span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="op">&lt;</span>cmd<span class="op">&gt;</span> <span class="ex">?</span><span class="op">&gt;</span> <span class="va">$myvar</span><span class="kw">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>(<span class="sc">&lt;</span>cmd<span class="sc">&gt;</span> <span class="er">&gt;</span> <span class="er">$</span>myvar)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>(<span class="sc">&lt;</span>cmd<span class="sc">&gt;</span> <span class="er">&gt;&gt;</span> <span class="er">$</span>myvar)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>(<span class="sc">&lt;</span>cmd<span class="sc">&gt;</span> err<span class="sc">&gt;</span> <span class="er">$</span>myvar)</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>(<span class="sc">&lt;</span>cmd<span class="sc">&gt;</span> err<span class="sc">&gt;</span><span class="er">&gt;</span> <span class="er">$</span>myvar)</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>(<span class="sc">&lt;</span>cmd<span class="sc">&gt;</span> <span class="er">&lt;</span> <span class="er">$</span>myvar)</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>(<span class="sc">&lt;</span>cmd<span class="sc">&gt;</span> ?<span class="sc">&gt;</span> <span class="er">$</span>myvar)</span></code></pre></div>
 <p>Output streams allow the following mutual redirections.</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="op">&lt;</span>cmd<span class="op">&gt;</span> err<span class="op">&gt;</span>out<span class="kw">)</span> <span class="co"># Points fd (file descriptor) 2 to the same file description as fd 1.</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="op">&lt;</span>cmd<span class="op">&gt;</span> err<span class="op">&lt;&gt;</span>out<span class="kw">)</span> <span class="co"># Swaps file descriptions of fds 1 and 2.</span></span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="op">&lt;</span>cmd<span class="op">&gt;</span> err+<span class="op">&gt;</span>out<span class="kw">)</span> <span class="co"># Points fd 2 to a pipe that writes to fd 1 and the original file description of fd 2.</span></span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>(<span class="sc">&lt;</span>cmd<span class="sc">&gt;</span> err<span class="sc">&gt;</span>out) <span class="co"># Points fd (file descriptor) 2 to the same file description as fd 1.</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>(<span class="sc">&lt;</span>cmd<span class="sc">&gt;</span> err<span class="sc">&lt;</span><span class="er">&gt;</span>out) <span class="co"># Swaps file descriptions of fds 1 and 2.</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>(<span class="sc">&lt;</span>cmd<span class="sc">&gt;</span> err<span class="sc">+</span><span class="er">&gt;</span>out) <span class="co"># Points fd 2 to a pipe that writes to fd 1 and the original file description of fd 2.</span></span></code></pre></div>
 <p>The default I/O directions are inherited from the parent program. The
 root program will usually be the shell, which uses the currently
 connected tty for stdin/stdout/stderr, and writes the exit code to

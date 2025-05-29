@@ -88,18 +88,18 @@ When an *operator* is evaluated, an error is signaled, because operators can onl
 
 ## Syntax
 Commands are invoked like
-```sh
+```
 (<program> [arg1 [arg2 ...]])
 ```
 where `<program>` is either a program definition or a program name.
 
 Programs are defined like
-```sh
+```
 (program <args> <body>)
 ```
 
 Programs are installed (named) into the current runtime scope and all child runtime scopes like
-```sh
+```
 (install name <program>)
 ```
 
@@ -146,7 +146,7 @@ I/O redirections are postfix macros.
 
 I/O can interact with files as follows.
 
-```sh
+```r
 (<cmd> > file.txt)
 (<cmd> >> file.txt)
 (<cmd> err> file.txt)
@@ -157,7 +157,7 @@ I/O can interact with files as follows.
 
 The same interactions are allowed with variables, which have to be prefixed with a `$` sign.
 
-```sh
+```r
 (<cmd> > $myvar)
 (<cmd> >> $myvar)
 (<cmd> err> $myvar)
@@ -168,7 +168,7 @@ The same interactions are allowed with variables, which have to be prefixed with
 
 Output streams allow the following mutual redirections.
 
-```sh
+```r
 (<cmd> err>out) # Points fd (file descriptor) 2 to the same file description as fd 1.
 (<cmd> err<>out) # Swaps file descriptions of fds 1 and 2.
 (<cmd> err+>out) # Points fd 2 to a pipe that writes to fd 1 and the original file description of fd 2.
