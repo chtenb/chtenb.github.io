@@ -119,7 +119,9 @@ At the top level, the outermost parameters are optional if the command is typed 
 - `program`: Define a program.
 - `install`: Make a program available under a given name.
 - `out` / `err`: They both take any number of values as argument and write them to stdout and stderr respectively.
-- `case`: takes one command to run and then one or more programs (continuations) to run for each possible exit code, starting with 0. The case command itself exits with code 1 if there is no matching branch for the received exit code, and otherwise with the exit code returned by the activated continuation.
+- `case`: takes one command to run and then two or more commands (continuations) to run for each possible exit code, starting with 0. The last command is the "else" case.
+- `return`: exits the current command with the given code.
+- `exit`: Only valid with a program definition. Exits the currently defined program with the given code.
 
 ### Command algebra
 Commands can be composed to produce more complex commands.
@@ -213,17 +215,65 @@ This implies that strings are not allowed to contain bytes 0, 1, 14, 15 or 31.
 program args (out "hello world")
 
 # Makes alias of the `ls -al` command available in the current dynamic scope
-install l (program args (ls -al (args | expand)));
+install l (program args (ls -al (args | expand))) ;
 
 # Install program hw into the current scope, and then call it from a python script
 install hw ("hello world") ; python -c "import subprocess;subprocess.call('hw', shell=True)"
 
 # Branch on whether a directory exists
 case (test -d "foo") ("foo is a folder") ("foo is not a folder") ("something went wrong") ("this is unreachable, as test never returns a code higher than 2")
+
+# Interactively checkout a git branch
+install "g c" () (
+  (git branch --color=never | lines | where (program (it) (starts-with "*" it))) > $_branches ;
+  (out $_branches) ;
+  (read-line "Type branch number to checkout and press enter to move on: " | trim) > $_input ;
+  (case (test -n $_input)
+    ((list $_branches) | index $_input | trim) > $_branch) ; git checkout $_branch)
+    (out "Aborting..")
+  )
+)
+
+install "git state" () (
+  (cd (git rev-parse --show-toplevel)) ;
+  (cond
+    [(test -f .git/BISECT_LOG) (out BISECTING)]
+    [(test -f .git/MERGE_HEAD) (out MERGING)]
+    [(test -d .git/rebase-merge ? test -d .git/rebase-apply) (out REBASING)]
+    [(test -f .git/CHERRY_PICK_HEAD) (out CHERRY-PICKING)]
+    [(test -f .git/REVERT_HEAD (out REVERTING)]
+    [else (out NORMAL) 
+  )
+)
+
+install "g st" () (
+  (git state) > $_state ;
+  (if (substr "NORMAL" $_state)
+    (out (fg magenta) $_state (ansi reset))) ;
+  (list (git status -sb | lines)) > $_statuslines ;
+  ($_statuslines | index 0) ;
+  ($_statuslines
+    | drop 1
+    | sort (program (line)
+      (switch (line | ansi strip | substr 0 2)
+        ((= "??") 0)
+        ((= "UU") 1)
+        ((= "UD") 2)
+        ((match " \S") 3)
+        ((match "\S\S") 4)
+        ((match "\S ") 5)
+        (else 5)
+      )
+  )
+)
 ```
 
 <!--
 ### Datastructures
 Lists also act as mappings by the following convention: a list entry that contains an `=` character can be treated as a key-value pair, whereby the string before the first `=` is treated as key.
+
+### Questions
+What is evaluation really?
+And should constants indeed behave like programs when evaluated?
 -->
 
