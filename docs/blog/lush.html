@@ -262,9 +262,9 @@ code span.wa {
 </header>
 <div id="content">
 <p>Lispy Unix SHell</p>
-<p>Design in one sentence: type CLI pipelines with POSIX syntax, but any
-higher order pipeline logic is done using s-expressions. Interactive
-features are configured with lisp code.</p>
+<p>Design in one sentence: type shell invocations with a UNIX-like
+syntax, but based on a lisp dialect that has programs and files as main
+language primitives.</p>
 <h2 id="program-model"><a class="anchor" href="#program-model"></a>Program
 model</h2>
 <p><strong>Primary Ways a Program Receives Input</strong></p>
@@ -391,18 +391,20 @@ command is typed on one line.</p>
 <h2 id="builtin-macros"><a class="anchor" href="#builtin-macros"></a>Builtin
 Macros</h2>
 <ul>
+<li><code>program</code>: Define a program</li>
+<li><code>install</code>: Make a program available under a given
+name</li>
 <li><code>out</code> / <code>err</code>: They both take any number of
 values as argument and write them to stdout and stderr
 respectively.</li>
-<li><code>tmp</code>: return the path of a new temporary file</li>
 <li><code>case</code>: takes one command to run and then one or more
 programs (continuations) to run for each possible exit code, starting
 with 0. The case command itself exits with code 1 if there is no
 matching branch for the received exit code, and otherwise with the exit
 code returned by the activated continuation.</li>
 </ul>
-<h2 id="command-algebra"><a class="anchor" href="#command-algebra"></a>Command
-algebra</h2>
+<h3 id="command-algebra"><a class="anchor" href="#command-algebra"></a>Command
+algebra</h3>
 <p>Commands can be composed to produce more complex commands.</p>
 <p><strong><code>&amp;</code></strong>: If <code>A</code> and
 <code>B</code> are commands, then so is <code>A &amp; B</code>. This
@@ -432,8 +434,8 @@ order of evaluation.</p>
 file with a name that contains “README” in it. If the directory does not
 exist, the program exits with the exit code of <code>cd</code>. If no
 readme has been found, the program writes a messages to stdout.</p>
-<h2 id="io-redirections"><a class="anchor" href="#io-redirections"></a>I/O
-redirections</h2>
+<h3 id="io-redirections"><a class="anchor" href="#io-redirections"></a>I/O
+redirections</h3>
 <p>I/O redirections are postfix macros.</p>
 <p>I/O can interact with files as follows.</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="op">&lt;</span>cmd<span class="op">&gt;</span> <span class="op">&gt;</span> file.txt<span class="kw">)</span></span>
@@ -458,6 +460,8 @@ prefixed with a <code>$</code> sign.</p>
 root program will usually be the shell, which uses the currently
 connected tty for stdin/stdout/stderr, and writes the exit code to
 <code>$?</code>.</p>
+<h3 id="builtin-programs"><a class="anchor" href="#builtin-programs"></a>Builtin
+Programs</h3>
 <h2 id="private-storage"><a class="anchor" href="#private-storage"></a>Private
 storage</h2>
 <p>Values can be stored in files and variables. Files can store more

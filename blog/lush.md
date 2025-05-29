@@ -2,8 +2,7 @@ LUSH
 ====
 Lispy Unix SHell
 
-Design in one sentence: type CLI pipelines with POSIX syntax, but any higher order pipeline logic is done using s-expressions.
-Interactive features are configured with lisp code.
+Design in one sentence: type shell invocations with a UNIX-like syntax, but based on a lisp dialect that has programs and files as main language primitives.
 
 ## Program model
 
@@ -115,11 +114,12 @@ Comments start with `#`.
 At the top level, the outermost parameters are optional if the command is typed on one line.
 
 ## Builtin Macros
+- `program`: Define a program
+- `install`: Make a program available under a given name
 - `out` / `err`: They both take any number of values as argument and write them to stdout and stderr respectively.
-- `tmp`: return the path of a new temporary file
 - `case`: takes one command to run and then one or more programs (continuations) to run for each possible exit code, starting with 0. The case command itself exits with code 1 if there is no matching branch for the received exit code, and otherwise with the exit code returned by the activated continuation.
 
-## Command algebra
+### Command algebra
 Commands can be composed to produce more complex commands.
 
 **`&`**: If `A` and `B` are commands, then so is `A & B`. This command first runs A passing the stdin onto A and waits for completion. Both output streams of `A` are directed to the corresponding output streams of the compound program. Then `B` is invoked in the same manner as `A`. The exit code is that of B.
@@ -139,7 +139,7 @@ The precedence of these operators are all the same. They are always evaluated fr
 This program attempts to enter the given directory and search for a file with a name that contains "README" in it. If the directory does not exist, the program exits with the exit code of `cd`. If no readme has been found, the program writes a messages to stdout.
 
 
-## I/O redirections
+### I/O redirections
 I/O redirections are postfix macros.
 
 I/O can interact with files as follows.
@@ -174,6 +174,8 @@ Output streams allow the following mutual redirections.
 
 The default I/O directions are inherited from the parent program.
 The root program will usually be the shell, which uses the currently connected tty for stdin/stdout/stderr, and writes the exit code to `$?`.
+
+### Builtin Programs
 
 ## Private storage
 Values can be stored in files and variables.
