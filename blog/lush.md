@@ -200,31 +200,30 @@ They can be serialized in human readable way, just like how you type commands, o
 The human readable format is called "lush", where as the binary format is called "blush".
 
 ### Blush specification
-Values are delimited by NULL (0) bytes.
-Bytestrings are not quoted with `"`, but just serialized as their bare bytes.
-Words are prefixed by SOH (1).
-Lists are not delimited by parentheses, but instead by SO (14) and SI (15).
+Values are delimited by NULL (00) bytes.
+Strings are not quoted with `"`, but just serialized as their bare bytes.
+Words are prefixed by SOH (01).
+Lists are not delimited by parentheses, but instead by SO (0E) and SI (0F), and list elements are separated by US (1F).
 
-This implies that bytestrings are not allowed to contain bytes 0, 1, 14 or 15.
+This implies that strings are not allowed to contain bytes 0, 1, 14, 15 or 31.
 
 ## Example programs
 ```sh
-program args (out "hello world") # A program that writes hello world to stdout
+# A program that writes hello world to stdout
+program args (out "hello world")
 
-install l (program args (ls -al (args | expand))) # Makes alias of the `ls -al` command available in the current dynamic scope
+# Makes alias of the `ls -al` command available in the current dynamic scope
+install l (program args (ls -al (args | expand)));
 
-install hw ("hello world") ; python -c "import subprocess;subprocess.call('hw', shell=True)" # Install program hw into the current scope, and then call it from a python script
+# Install program hw into the current scope, and then call it from a python script
+install hw ("hello world") ; python -c "import subprocess;subprocess.call('hw', shell=True)"
 
+# Branch on whether a directory exists
 case (test -d "foo") ("foo is a folder") ("foo is not a folder") ("something went wrong") ("this is unreachable, as test never returns a code higher than 2")
 ```
 
 <!--
-
-### List encoding
-Lists are supported by Lush.
-It also acts as a mapping by the following convention: a list entry that contains an `=` character can be treated as a key-value pair, whereby the string before the first `=` is treated as key.
-Lists are represented in memory by a series of bytestrings, separated by a US (Unit Separator/31/1F) byte.
-Lists can be nested, where byte SI (Shift In/14/E) opens a nested list, and byte SO (Shift Out/15/F) closes it.
-
+### Datastructures
+Lists also act as mappings by the following convention: a list entry that contains an `=` character can be treated as a key-value pair, whereby the string before the first `=` is treated as key.
 -->
 

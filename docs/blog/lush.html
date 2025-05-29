@@ -504,29 +504,29 @@ interaction. The human readable format is called “lush”, where as the
 binary format is called “blush”.</p>
 <h3 id="blush-specification"><a class="anchor" href="#blush-specification"></a>Blush
 specification</h3>
-<p>Values are delimited by NULL (0) bytes. Bytestrings are not quoted
-with <code>&quot;</code>, but just serialized as their bare bytes. Words are
-prefixed by SOH (1). Lists are not delimited by parentheses, but instead
-by SO (14) and SI (15).</p>
-<p>This implies that bytestrings are not allowed to contain bytes 0, 1,
-14 or 15.</p>
+<p>Values are delimited by NULL (00) bytes. Strings are not quoted with
+<code>&quot;</code>, but just serialized as their bare bytes. Words are
+prefixed by SOH (01). Lists are not delimited by parentheses, but
+instead by SO (0E) and SI (0F), and list elements are separated by US
+(1F).</p>
+<p>This implies that strings are not allowed to contain bytes 0, 1, 14,
+15 or 31.</p>
 <h2 id="example-programs"><a class="anchor" href="#example-programs"></a>Example
 programs</h2>
-<div class="sourceCode" id="cb10"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="ex">program</span> args <span class="er">(</span><span class="ex">out</span> <span class="st">&quot;hello world&quot;</span><span class="kw">)</span> <span class="co"># A program that writes hello world to stdout</span></span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="fu">install</span> l <span class="er">(</span><span class="ex">program</span> args <span class="er">(</span><span class="fu">ls</span> <span class="at">-al</span> <span class="er">(</span><span class="ex">args</span> <span class="kw">|</span> <span class="fu">expand</span><span class="kw">)))</span> <span class="co"># Makes alias of the `ls -al` command available in the current dynamic scope</span></span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="fu">install</span> hw <span class="er">(</span><span class="st">&quot;hello world&quot;</span><span class="kw">)</span> <span class="kw">;</span> <span class="ex">python</span> <span class="at">-c</span> <span class="st">&quot;import subprocess;subprocess.call(&#39;hw&#39;, shell=True)&quot;</span> <span class="co"># Install program hw into the current scope, and then call it from a python script</span></span>
+<div class="sourceCode" id="cb10"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># A program that writes hello world to stdout</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="ex">program</span> args <span class="er">(</span><span class="ex">out</span> <span class="st">&quot;hello world&quot;</span><span class="kw">)</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Makes alias of the `ls -al` command available in the current dynamic scope</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="fu">install</span> l <span class="er">(</span><span class="ex">program</span> args <span class="er">(</span><span class="fu">ls</span> <span class="at">-al</span> <span class="er">(</span><span class="ex">args</span> <span class="kw">|</span> <span class="fu">expand</span><span class="kw">)));</span></span>
 <span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a><span class="cf">case</span> (test -d <span class="st">&quot;foo&quot;</span>) (<span class="st">&quot;foo is a folder&quot;</span>) (<span class="st">&quot;foo is not a folder&quot;</span>) (<span class="st">&quot;something went wrong&quot;</span>) (<span class="st">&quot;this is unreachable, as test never returns a code higher than 2&quot;</span>)</span></code></pre></div>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Install program hw into the current scope, and then call it from a python script</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a><span class="fu">install</span> hw <span class="er">(</span><span class="st">&quot;hello world&quot;</span><span class="kw">)</span> <span class="kw">;</span> <span class="ex">python</span> <span class="at">-c</span> <span class="st">&quot;import subprocess;subprocess.call(&#39;hw&#39;, shell=True)&quot;</span></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Branch on whether a directory exists</span></span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a><span class="cf">case</span> (test -d <span class="st">&quot;foo&quot;</span>) (<span class="st">&quot;foo is a folder&quot;</span>) (<span class="st">&quot;foo is not a folder&quot;</span>) (<span class="st">&quot;something went wrong&quot;</span>) (<span class="st">&quot;this is unreachable, as test never returns a code higher than 2&quot;</span>)</span></code></pre></div>
 <!--
-
-### List encoding
-Lists are supported by Lush.
-It also acts as a mapping by the following convention: a list entry that contains an `=` character can be treated as a key-value pair, whereby the string before the first `=` is treated as key.
-Lists are represented in memory by a series of bytestrings, separated by a US (Unit Separator/31/1F) byte.
-Lists can be nested, where byte SI (Shift In/14/E) opens a nested list, and byte SO (Shift Out/15/F) closes it.
-
+### Datastructures
+Lists also act as mappings by the following convention: a list entry that contains an `=` character can be treated as a key-value pair, whereby the string before the first `=` is treated as key.
 -->
 </div>
 </body>
