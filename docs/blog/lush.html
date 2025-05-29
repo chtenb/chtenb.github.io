@@ -387,14 +387,14 @@ list again, but with the elements evaluated.</li>
 operators can only be evaluated in the context of a list.</p>
 <h2 id="syntax"><a class="anchor" href="#syntax"></a>Syntax</h2>
 <p>Commands are invoked like</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>(<span class="sc">&lt;</span>program<span class="sc">&gt;</span> [arg1 [arg2 ...]])</span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="op">&lt;</span>program<span class="op">&gt;</span> <span class="ex">[arg1</span> [arg2 ...]]<span class="kw">)</span></span></code></pre></div>
 <p>where <code>&lt;program&gt;</code> is either a program definition or
 a program name.</p>
 <p>Programs are defined like</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>(program <span class="sc">&lt;</span>args<span class="sc">&gt;</span> <span class="er">&lt;</span>body<span class="sc">&gt;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="ex">program</span> <span class="op">&lt;</span>args<span class="op">&gt;</span> <span class="op">&lt;</span>body<span class="op">&gt;</span><span class="kw">)</span></span></code></pre></div>
 <p>Programs are installed (named) into the current runtime scope and all
 child runtime scopes like</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>(install name <span class="sc">&lt;</span>program<span class="sc">&gt;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="fu">install</span> name <span class="op">&lt;</span>program<span class="op">&gt;</span><span class="kw">)</span></span></code></pre></div>
 <p>The body of a program consists of an optional number of installations
 followed by a command.</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="fu">program ()</span></span>
@@ -444,7 +444,7 @@ the first non-zero exit code of the chain.</p>
 <p>The precedence of these operators are all the same. They are always
 evaluated from left to right. Parentheses can be used to change the
 order of evaluation.</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>(<span class="fu">program</span> (dir) (cd dir ; (ls <span class="sc">|</span> grep README) ? echo <span class="st">&quot;No readme found&quot;</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="ex">program</span> <span class="er">(</span><span class="fu">dir</span><span class="kw">)</span> <span class="kw">(</span><span class="bu">cd</span> dir <span class="kw">;</span> <span class="fu">ls</span> <span class="kw">|</span> <span class="fu">grep</span> README <span class="pp">?</span> echo <span class="st">&quot;No readme found&quot;</span><span class="kw">))</span></span></code></pre></div>
 <p>This program attempts to enter the given directory and search for a
 file with a name that contains “README” in it. If the directory does not
 exist, the program exits with the exit code of <code>cd</code>. If no
@@ -512,13 +512,13 @@ by SO (14) and SI (15).</p>
 14 or 15.</p>
 <h2 id="example-programs"><a class="anchor" href="#example-programs"></a>Example
 programs</h2>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>program <span class="fu">args</span> (out <span class="st">&quot;hello world&quot;</span>) <span class="co"># A program that writes hello world to stdout</span></span>
+<div class="sourceCode" id="cb10"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="ex">program</span> args <span class="er">(</span><span class="ex">out</span> <span class="st">&quot;hello world&quot;</span><span class="kw">)</span> <span class="co"># A program that writes hello world to stdout</span></span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>install <span class="fu">l</span> (program <span class="fu">args</span> (ls <span class="sc">-</span><span class="fu">al</span> (args <span class="sc">|</span> expand))) <span class="co"># Makes alias of the `ls -al` command available in the current dynamic scope</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="fu">install</span> l <span class="er">(</span><span class="ex">program</span> args <span class="er">(</span><span class="fu">ls</span> <span class="at">-al</span> <span class="er">(</span><span class="ex">args</span> <span class="kw">|</span> <span class="fu">expand</span><span class="kw">)))</span> <span class="co"># Makes alias of the `ls -al` command available in the current dynamic scope</span></span>
 <span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>install <span class="fu">hw</span> (<span class="st">&quot;hello world&quot;</span>) ; python <span class="sc">-</span>c <span class="st">&quot;import subprocess;subprocess.call(&#39;hw&#39;, shell=True)&quot;</span> <span class="co"># Install program hw into the current scope, and then call it from a python script</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="fu">install</span> hw <span class="er">(</span><span class="st">&quot;hello world&quot;</span><span class="kw">)</span> <span class="kw">;</span> <span class="ex">python</span> <span class="at">-c</span> <span class="st">&quot;import subprocess;subprocess.call(&#39;hw&#39;, shell=True)&quot;</span> <span class="co"># Install program hw into the current scope, and then call it from a python script</span></span>
 <span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a><span class="fu">case</span> (test <span class="sc">-</span>d <span class="st">&quot;foo&quot;</span>) (<span class="st">&quot;foo is a folder&quot;</span>) (<span class="st">&quot;foo is not a folder&quot;</span>) (<span class="st">&quot;something went wrong&quot;</span>) (<span class="st">&quot;this is unreachable, as test never returns a code higher than 2&quot;</span>)</span></code></pre></div>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a><span class="cf">case</span> (test -d <span class="st">&quot;foo&quot;</span>) (<span class="st">&quot;foo is a folder&quot;</span>) (<span class="st">&quot;foo is not a folder&quot;</span>) (<span class="st">&quot;something went wrong&quot;</span>) (<span class="st">&quot;this is unreachable, as test never returns a code higher than 2&quot;</span>)</span></code></pre></div>
 <!--
 
 ### List encoding

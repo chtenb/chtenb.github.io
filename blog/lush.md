@@ -88,18 +88,18 @@ When an *operator* is evaluated, an error is signaled, because operators can onl
 
 ## Syntax
 Commands are invoked like
-```r
+```sh
 (<program> [arg1 [arg2 ...]])
 ```
 where `<program>` is either a program definition or a program name.
 
 Programs are defined like
-```r
+```sh
 (program <args> <body>)
 ```
 
 Programs are installed (named) into the current runtime scope and all child runtime scopes like
-```r
+```sh
 (install name <program>)
 ```
 
@@ -134,8 +134,8 @@ Commands can be composed to produce more complex commands.
 
 The precedence of these operators are all the same. They are always evaluated from left to right. Parentheses can be used to change the order of evaluation.
 
-```r
-(program (dir) (cd dir ; (ls | grep README) ? echo "No readme found"))
+```sh
+(program (dir) (cd dir ; ls | grep README ? echo "No readme found"))
 ```
 
 This program attempts to enter the given directory and search for a file with a name that contains "README" in it. If the directory does not exist, the program exits with the exit code of `cd`. If no readme has been found, the program writes a messages to stdout.
@@ -208,7 +208,7 @@ Lists are not delimited by parentheses, but instead by SO (14) and SI (15).
 This implies that bytestrings are not allowed to contain bytes 0, 1, 14 or 15.
 
 ## Example programs
-```r
+```sh
 program args (out "hello world") # A program that writes hello world to stdout
 
 install l (program args (ls -al (args | expand))) # Makes alias of the `ls -al` command available in the current dynamic scope
