@@ -389,7 +389,9 @@ operators can only be evaluated in the context of a list.</p>
 <p>Commands are invoked like</p>
 <pre><code>(&lt;program&gt; [arg1 [arg2 ...]])</code></pre>
 <p>where <code>&lt;program&gt;</code> is either a program definition or
-a program name.</p>
+a program name. Arguments can be variables or again a command
+invocation. When an argument is a command invocation, the stdout is used
+as arguments.</p>
 <p>Programs are defined like</p>
 <pre><code>(program &lt;args&gt; &lt;body&gt;)</code></pre>
 <p>Programs are installed (named) into the current runtime scope and all
@@ -462,7 +464,8 @@ redirections</h3>
 <span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>(<span class="sc">&lt;</span>cmd<span class="sc">&gt;</span> <span class="er">&lt;</span> file.txt)</span>
 <span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>(<span class="sc">&lt;</span>cmd<span class="sc">&gt;</span> ?<span class="sc">&gt;</span> file.txt) <span class="co"># Writes the exit code to rc.txt</span></span></code></pre></div>
 <p>The same interactions are allowed with variables, which have to be
-prefixed with a <code>$</code> sign.</p>
+prefixed with a <code>$</code> sign. Variables can contain more than one
+value.</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>(<span class="sc">&lt;</span>cmd<span class="sc">&gt;</span> <span class="er">&gt;</span> <span class="er">$</span>myvar)</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>(<span class="sc">&lt;</span>cmd<span class="sc">&gt;</span> <span class="er">&gt;&gt;</span> <span class="er">$</span>myvar)</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>(<span class="sc">&lt;</span>cmd<span class="sc">&gt;</span> err<span class="sc">&gt;</span> <span class="er">$</span>myvar)</span>
@@ -504,13 +507,15 @@ serialized in human readable way, just like how you type commands, or in
 a binary way, which is easier and more efficient for external
 interaction. The human readable format is called “lush”, where as the
 binary format is called “blush”.</p>
+<p>Every I/O boundary is crossed by reading and writing all the values
+in blush. The interpreter may optimize this away when possible.</p>
 <h3 id="blush-specification"><a class="anchor" href="#blush-specification"></a>Blush
 specification</h3>
-<p>Values are delimited by NULL (00) bytes. Strings are not quoted with
-<code>&quot;</code>, but just serialized as their bare bytes. Words are
-prefixed by SOH (01). Lists are not delimited by parentheses, but
-instead by SO (0E) and SI (0F), and list elements are separated by US
-(1F).</p>
+<p>Values are delimited by NULL (00) or US (1F) bytes. Strings are not
+quoted with <code>&quot;</code>, but just serialized as their bare bytes.
+Words are prefixed by SOH (01). Lists are not delimited by parentheses,
+but instead by SO (0E) and SI (0F), and list elements are again
+separated by US (1F) or NULL (00).</p>
 <p>This implies that strings are not allowed to contain bytes 0, 1, 14,
 15 or 31.</p>
 <h2 id="example-programs"><a class="anchor" href="#example-programs"></a>Example

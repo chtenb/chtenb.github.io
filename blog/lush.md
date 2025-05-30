@@ -92,6 +92,8 @@ Commands are invoked like
 (<program> [arg1 [arg2 ...]])
 ```
 where `<program>` is either a program definition or a program name.
+Arguments can be variables or again a command invocation.
+When an argument is a command invocation, the stdout is used as arguments.
 
 Programs are defined like
 ```
@@ -158,6 +160,7 @@ I/O can interact with files as follows.
 ```
 
 The same interactions are allowed with variables, which have to be prefixed with a `$` sign.
+Variables can contain more than one value.
 
 ```r
 (<cmd> > $myvar)
@@ -201,11 +204,14 @@ Lush has two different notions of serializing values.
 They can be serialized in human readable way, just like how you type commands, or in a binary way, which is easier and more efficient for external interaction.
 The human readable format is called "lush", where as the binary format is called "blush".
 
+Every I/O boundary is crossed by reading and writing all the values in blush.
+The interpreter may optimize this away when possible.
+
 ### Blush specification
-Values are delimited by NULL (00) bytes.
+Values are delimited by NULL (00) or US (1F) bytes.
 Strings are not quoted with `"`, but just serialized as their bare bytes.
 Words are prefixed by SOH (01).
-Lists are not delimited by parentheses, but instead by SO (0E) and SI (0F), and list elements are separated by US (1F).
+Lists are not delimited by parentheses, but instead by SO (0E) and SI (0F), and list elements are again separated by US (1F) or NULL (00).
 
 This implies that strings are not allowed to contain bytes 0, 1, 14, 15 or 31.
 
