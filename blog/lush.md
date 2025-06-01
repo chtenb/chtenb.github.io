@@ -4,6 +4,9 @@ Lispy Unix SHell
 
 Design in one sentence: type shell invocations with a UNIX-like syntax, but based on a lisp dialect that has programs and files as main language primitives.
 
+Lush is not intended as general purpose programming language.
+It's a shell language to link programs together.
+
 ## Program model
 
 **Primary Ways a Program Receives Input**
@@ -32,26 +35,28 @@ We consider channels 1, 2 and 3 part of the normal program flow, and build our l
 **Main Concepts**
 
 A *program* models a recipe for work being done on the computer.
-A program has *parameters*, *standard I/O streams* and an *environment*.
-The parameter arguments are explicitly given by caller of a program, whereas the I/O streams and environment variables are inherited implicitly.
+A program has *parameters* in the form of program *arguments* or environment *variables*.
+Program I/O is done through standard I/O streams, stdin/stdout/stderr.
 
-A *command* is a program supplied with a list of arguments as the program's parameters.
-An *invocation* is the execution instance of a command.
+An *operator* is any callable entity.
+A *macro* is similar to a program, but follows different evaluation rules.
+A *special operator* is any callable entity that is not a program or a macro.
+
+A *command* is an operator supplied with arguments.
+An *invocation* is the execution instance of a command, corresponding to a process.
 An invocation receives its environment variables as a copy of its parent's, possibly with invocation-specific modifications.
 An invocation receives its standard file descriptors as a copy of its parent's, possibly with invocation-specific redirections.
 
-The *variables* of an invocation are the environment variables inherited from the parent invocation.
-The scope and variables together form the *environment* of the invocation.
+A common pattern programs employ is to expose parameters as both arguments and variables, where arguments override variables.
+Since variables are passed implicitly to child invocations, this allows controlling the behavior of programs across multiple program boundaries, which is useful for controlling default behavior even when you don't directly call a program yourself and thus have no control over the arguments being passed.
 
-The *scope* of an invocation (also called *dynamic scope*) is the set of available programs to be called and files to be accessed, mainly defined by the $PATH variable and the current working directory.
+The *scope* of an invocation (also called *dynamic scope*) is the set of available programs to be called and files to be accessed, mainly defined by the $PATH variable and the current working directory (CWD).
 This definition does not include running a program or accessing a file explicitly via it's absolute path (which is considered a filesystem interaction, and thus a side effect).
 Invocations inherit scopes automatically from the parent invocation, because $PATH is a variable and the CWD is inherited too.
 
-The *exit code* of an invocation is a byte that indicates how the execution went.
-A exit code of 0 signals an uneventful execution, while any other values have program specific meanings and usually indicate something went wrong.
+The *exit code* of an invocation is a number that indicates how the execution went.
+A exit code of 0 signals an uneventful execution, while any other values have operator specific meanings and usually indicate something went wrong.
 
-An *operator* is any callable entity.
-A *macro* is an operator that is not a program.
 
 ## Data
 In Lush, data is represented by values. There are several kinds of values.
@@ -61,26 +66,28 @@ In Lush, data is represented by values. There are several kinds of values.
 - A *list* is a sequence of values. Syntax: `("hello world" hello (a b c))`.
 - An *operator* is an opaque value that can be invoked with arguments.
 
-Programs communicate data by default through stdin/stdout and arguments.
-The args list is a list of the argument values supplied to the command.
+Programs communicate data by through stdin and stdout.
+Although arguments and variables are also capable of communicating data, they have OS-dependent restrictions in size.
 The stdin is a readable stream of values, whereas the stdout is a writeable stream of values.
-The stderr is normally used for communicating with the user, such a log messaging.
-The exit code of a program is represented by an ascii string containing a decimal number.
+The stderr is normally used for communicating with the user, such a log messaging, but is in fact just a stream of values, similar to stdout.
+The exit code of a program is represented by a string containing a decimal number.
 
 ## Evaluation
 A *string* is a so-called constant, meaning that when it is evaluated, it returns itself.
 
 When a *word* is evaluated, the following rules apply:
 
-1. If it starts with a `$`, it is interpreted as a variable and is substituted by the value in that variable.
-2. If it contains `*` characters, it is interpreted as a glob pattern and is evaluated to all the filenames matching the pattern.
-3. Otherwise it evaluates to a string.
+1. If the name starts with a `@` it is interpreted as an argument of the currently defined program, and it is substituted with the argument value.
+2. If it starts with a `$`, it is interpreted as a variable and is substituted by the value in that variable.
+3. If it starts with a `_`, it is substituted with the name of a private file. See below.
+4. If it contains `*` characters, it is interpreted as a glob pattern and is evaluated to all the filenames matching the pattern.
+5. Otherwise it evaluates to a string.
 
 When a *list* `(x y z ...)` is evaluated, all the list elements are first scanned if there is a word matching a macro name.
 
 1. For the first macro that is found, the macro is evaluated with two list arguments: the elements to the left and to the right of the macro.
 2. If there are no macros present, the list is evaluated recursively from left to right.
-3. Then, if the first element is a word that matches a program name, it is invoked with the remaining elemens as arguments, and the entire expression evaluates to the values in the stdout of the program.
+3. Then, if the first element is a program or a string that matches a program name, it is invoked with the remaining elements as arguments, and the entire expression evaluates to the values in the stdout of the program.
 4. Note that stdout can have multiple values, so a program evaluation can result in multiple values (and thus also result in multiple arguments when passed to another program).
 5. If the first element is not a program, the expression evaluates to a list again, but with the elements evaluated.
 
@@ -117,16 +124,8 @@ Comments start with `#`.
 
 At the top level, the outermost parameters are optional if the command is typed on one line.
 
-## Builtin Macros
-- `program`: Define a program.
-- `install`: Make a program available under a given name.
-- `out` / `err`: They both take any number of values as argument and write them to stdout and stderr respectively.
-- `case`: takes one command to run and then two or more commands (continuations) to run for each possible exit code, starting with 0. The last command is the "else" case.
-- `return`: exits the current command with the given code.
-- `exit`: Only valid with a program definition. Exits the currently defined program with the given code.
-
 ### Command algebra
-Commands can be composed to produce more complex commands.
+Commands can be composed to produce more complex commands using a set of macros called command *combinators*.
 
 **`&`**: If `A` and `B` are commands, then so is `A & B`. This command first runs A passing the stdin onto A and waits for completion. Both output streams of `A` are directed to the corresponding output streams of the compound program. Then `B` is invoked in the same manner as `A`. The exit code is that of B.
 
@@ -136,17 +135,22 @@ Commands can be composed to produce more complex commands.
 
 **`|`**: If `A` and `B` are commands, then so is `A | B`. The command invokes both `A` and `B` (they are started in order, but will usually run concurrently). The stdin of the compound command is directed to A, the stdout of A is directed to the stdin of B. The stdout of B is directed to the stdout of the compound command. The stderr of both A and B are directed to the stderr of the compound command. The exit code is the first non-zero exit code of the chain.
 
-The precedence of these operators are all the same. They are always evaluated from left to right. Parentheses can be used to change the order of evaluation.
+The precedence of these operators are all the same.
+They are always evaluated from left to right (i.e. left-associative: `(A ; B) ; C` ≡ `A ; B ; C`).
+Parentheses can be used to change the order of evaluation.
+Parentheses are optional for grouping commands between combinators.
+So `A ; B x y ; C` ≡ `A ; (B x y) ; C`.
+
 
 ```sh
-(program (dir) (cd dir ; ls | grep README ? echo "No readme found"))
+(program (dir) (cd dir ; ls | grep README ? error "No readme found"))
 ```
 
 This program attempts to enter the given directory and search for a file with a name that contains "README" in it. If the directory does not exist, the program exits with the exit code of `cd`. If no readme has been found, the program writes a messages to stdout.
 
 
 ### I/O redirections
-I/O redirections are postfix macros.
+I/O redirections are specified with macros called command *decorators*.
 
 I/O can interact with files as follows.
 
@@ -159,43 +163,40 @@ I/O can interact with files as follows.
 (<cmd> ?> file.txt) # Writes the exit code to rc.txt
 ```
 
-The same interactions are allowed with variables, which have to be prefixed with a `$` sign.
-Variables can contain more than one value.
+<!-- The same interactions are allowed with variables, which have to be prefixed with a `$` sign. -->
+<!-- Variables can contain more than one value. -->
 
-```r
-(<cmd> > $myvar)
-(<cmd> >> $myvar)
-(<cmd> err> $myvar)
-(<cmd> err>> $myvar)
-(<cmd> < $myvar)
-(<cmd> ?> $myvar)
-```
+<!-- ```r -->
+<!-- (<cmd> > $myvar) -->
+<!-- (<cmd> >> $myvar) -->
+<!-- (<cmd> err> $myvar) -->
+<!-- (<cmd> err>> $myvar) -->
+<!-- (<cmd> < $myvar) -->
+<!-- (<cmd> ?> $myvar) -->
+<!-- ``` -->
 
 Output streams allow the following mutual redirections.
 
 ```r
 (<cmd> err>out) # Points fd (file descriptor) 2 to the same file description as fd 1.
-(<cmd> err<>out) # Swaps file descriptions of fds 1 and 2.
+(<cmd> out><err) # Swaps file descriptions of fds 1 and 2.
 (<cmd> err+>out) # Points fd 2 to a pipe that writes to fd 1 and the original file description of fd 2.
 ```
 
 The default I/O directions are inherited from the parent program.
 The root program will usually be the shell, which uses the currently connected tty for stdin/stdout/stderr, and writes the exit code to `$?`.
 
-### Builtin Programs
+All these redirection operators have the same precedence as the command combinators, and are evaluated from left to right.
 
-## Private storage and lexical scoping
-Values can be stored in files and variables.
+## Private files and programs and lexical scoping
 Files can store more than one value and are global and globally mutable.
-Variables are copied from the parent to a child invocation, and so child invocations cannot mutate variables of their parents, and vice versa, a parent can also not mutate variables of their children.
-
-It is possible to write values into *private* files or variables.
-Private files and variables are prefix with an underscore, like `_priv.txt` and `$_priv`, and behave just like their normal counterparts, except their names will be modified by the shell as to not collide with any files and variables outside the *lexical scope*.
-Moreover, the files will not be placed in the CWD, but in a temporary location.
+It is possible to write values into *private* files.
+Private files can be written as a word that is prefixed with an underscore, like `_priv.txt`, and behave just as a normal filename, except their names will be modified by the shell as to not collide with any files outside the *lexical scope*.
+Moreover, the files will not point into the CWD, but in a temporary location, possibly in memory instead of on disk.
 
 In the same vein, programs can be privately installed.
 ```sh
-(install _hw (program () (out "Hello world)))
+(install _hw (program () (echo "Hello world)))
 ```
 Now the program `_hw` is only available to be called from within the lexical scope where it was defined.
 
@@ -215,60 +216,89 @@ Lists are not delimited by parentheses, but instead by SO (0E) and SI (0F), and 
 
 This implies that strings are not allowed to contain bytes 0, 1, 14, 15 or 31.
 
-## Example programs
+## Special operators
+Special operators work within the context of a program. They have no variables or I/O streams of their own.
+They do have an exit code though, and as such can be used with command combinators (except the pipe operator).
+
+- `install`: Make a program available under a given name in the current dynamic scope.
+- `exit`: Only valid within a program definition. Exits the currently defined program with the given code.
+- `set`: set a variable: `(set PATH (append $PATH ";/foo/bar"))`.
+
+## Builtin Macros
+- `program`: Define a program and write it to stdout.
+- `with`: invoke a command with a set of variable assignments.
+- `case`: takes one command to run and then one or more commands (continuations) to run for each possible exit code, starting with 0.
+  The first continuation is run when the run command has exit code 0. Subsequent non-last continuations are run for exit codes 1, 2, etc. The last continuation is run if no other continuations have been run.
+- `cond`: if/elseif/else
+- `switch`: a value and a list of predicates with associated outcome values.
+
+
+## Builtin Programs
+- All system programs, like unix utilities
+- `echo` / `error`: They both take any number of values as argument and write them to stdout and stderr respectively.
+- `read-line`: read a line from stdin.
+- `tmp : <filename> `: return a filename for a temporary file
+- `each (p : value -> <modified value>) : values -> <modified values>`: run program `p` for each given value, and output the resulting values.
+- `fold init (p acc : value -> <acc with p>) : values -> <aggregation>`: aggregated values by applying program `p` to each value and the accumulated aggregation so far. `init` is the initial aggregation.
+- `(= <value> <value>)`: checks if two values are equal
+- `(= <value>)`: partially applied version of above
+
+
+## Example commands
 ```sh
-# A program that writes hello world to stdout
-program args (out "hello world")
+# A program that ignores arguments writes hello world to stdout
+program args (echo "hello world") ;
 
 # Makes alias of the `ls -al` command available in the current dynamic scope
-install l (program args (ls -al (args | expand))) ;
+install l (program args (ls -al (@args | expand))) ;
 
 # Install program hw into the current scope, and then call it from a python script
-install hw ("hello world") ; python -c "import subprocess;subprocess.call('hw', shell=True)"
+install hw ("hello world") ; python -c "import subprocess;subprocess.call('hw', shell=True)" ;
 
 # Branch on whether a directory exists
-case (test -d "foo") ("foo is a folder") ("foo is not a folder") ("something went wrong") ("this is unreachable, as test never returns a code higher than 2")
+case (test -d "foo") ("foo is a folder") ("foo is not a folder") ("something went wrong") ("this is unreachable, as test never returns a code higher than 2") ;
 
 # Interactively checkout a git branch
 install "g c" () (
-  (git branch --color=never | lines | where (program (it) (starts-with "*" it))) > $_branches ;
-  (out $_branches) ;
-  (read-line "Type branch number to checkout and press enter to move on: " | trim) > $_input ;
-  (case (test -n $_input)
-    ((list $_branches) | index $_input | trim) > $_branch) ; git checkout $_branch)
-    (out "Aborting..")
+  (git branch --color=never | lines | where (program (it) (starts-with "*" @it))) > _branches ;
+  (cat _branches) ;
+  (read-line "Type branch number to checkout and press enter to move on: " | trim) > _input ;
+  (case (test -n (cat _input))
+    ((list < _branches) | index (cat _input) | trim) > _branch) ; git checkout (cat _branch))
+    (echo "Aborting..")
   )
-)
+) ;
 
+# Modified version of git status
 install "git state" () (
   (cd (git rev-parse --show-toplevel)) ;
   (cond
-    [(test -f .git/BISECT_LOG) (out BISECTING)]
-    [(test -f .git/MERGE_HEAD) (out MERGING)]
-    [(test -d .git/rebase-merge ? test -d .git/rebase-apply) (out REBASING)]
-    [(test -f .git/CHERRY_PICK_HEAD) (out CHERRY-PICKING)]
-    [(test -f .git/REVERT_HEAD (out REVERTING)]
-    [else (out NORMAL) 
+    [(test -f .git/BISECT_LOG) (echo BISECTING)]
+    [(test -f .git/MERGE_HEAD) (echo MERGING)]
+    [(test -d .git/rebase-merge ? test -d .git/rebase-apply) (echo REBASING)]
+    [(test -f .git/CHERRY_PICK_HEAD) (echo CHERRY-PICKING)]
+    [(test -f .git/REVERT_HEAD (echo REVERTING)]
+    [else (echo NORMAL) 
   )
-)
+) ;
 
 install "g st" () (
-  (git state) > $_state ;
-  (if (substr "NORMAL" $_state)
-    (out (fg magenta) $_state (ansi reset))) ;
-  (list (git status -sb | lines)) > $_statuslines ;
-  ($_statuslines | index 0) ;
-  ($_statuslines
+  (git state) > _state ;
+  (if (substr "NORMAL" < _state)
+    (color (fg magenta) _state) ;
+  (git status -sb | lines | list > _statuslines) ;
+  (index 0 < _statuslines) ;
+  (cat _statuslines
     | drop 1
     | sort (program (line)
-      (switch (line | ansi strip | substr 0 2)
+      (@line | ansi strip | substr 0 2 | switch
         ((= "??") 0)
         ((= "UU") 1)
         ((= "UD") 2)
         ((match " \S") 3)
         ((match "\S\S") 4)
         ((match "\S ") 5)
-        (else 5)
+        (else 6)
       )
   )
 )
@@ -279,7 +309,6 @@ install "g st" () (
 Lists also act as mappings by the following convention: a list entry that contains an `=` character can be treated as a key-value pair, whereby the string before the first `=` is treated as key.
 
 ### Questions
-What is evaluation really?
-And should constants indeed behave like programs when evaluated?
+- Can we generalize over environment variables to be keys in an environment listmap?
 -->
 

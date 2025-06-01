@@ -265,6 +265,8 @@ code span.wa {
 <p>Design in one sentence: type shell invocations with a UNIX-like
 syntax, but based on a lisp dialect that has programs and files as main
 language primitives.</p>
+<p>Lush is not intended as general purpose programming language. It’s a
+shell language to link programs together.</p>
 <h2 id="program-model"><a class="anchor" href="#program-model"></a>Program
 model</h2>
 <p><strong>Primary Ways a Program Receives Input</strong></p>
@@ -305,34 +307,39 @@ documented properly when sharing programs with others.</p>
 build our language around these.</p>
 <p><strong>Main Concepts</strong></p>
 <p>A <em>program</em> models a recipe for work being done on the
-computer. A program has <em>parameters</em>, <em>standard I/O
-streams</em> and an <em>environment</em>. The parameter arguments are
-explicitly given by caller of a program, whereas the I/O streams and
-environment variables are inherited implicitly.</p>
-<p>A <em>command</em> is a program supplied with a list of arguments as
-the program’s parameters. An <em>invocation</em> is the execution
-instance of a command. An invocation receives its environment variables
-as a copy of its parent’s, possibly with invocation-specific
+computer. A program has <em>parameters</em> in the form of program
+<em>arguments</em> or environment <em>variables</em>. Program I/O is
+done through standard I/O streams, stdin/stdout/stderr.</p>
+<p>An <em>operator</em> is any callable entity. A <em>macro</em> is
+similar to a program, but follows different evaluation rules. A
+<em>special operator</em> is any callable entity that is not a program
+or a macro.</p>
+<p>A <em>command</em> is an operator supplied with arguments. An
+<em>invocation</em> is the execution instance of a command,
+corresponding to a process. An invocation receives its environment
+variables as a copy of its parent’s, possibly with invocation-specific
 modifications. An invocation receives its standard file descriptors as a
 copy of its parent’s, possibly with invocation-specific
 redirections.</p>
-<p>The <em>variables</em> of an invocation are the environment variables
-inherited from the parent invocation. The scope and variables together
-form the <em>environment</em> of the invocation.</p>
+<p>A common pattern programs employ is to expose parameters as both
+arguments and variables, where arguments override variables. Since
+variables are passed implicitly to child invocations, this allows
+controlling the behavior of programs across multiple program boundaries,
+which is useful for controlling default behavior even when you don’t
+directly call a program yourself and thus have no control over the
+arguments being passed.</p>
 <p>The <em>scope</em> of an invocation (also called <em>dynamic
 scope</em>) is the set of available programs to be called and files to
 be accessed, mainly defined by the $PATH variable and the current
-working directory. This definition does not include running a program or
-accessing a file explicitly via it’s absolute path (which is considered
-a filesystem interaction, and thus a side effect). Invocations inherit
-scopes automatically from the parent invocation, because $PATH is a
-variable and the CWD is inherited too.</p>
-<p>The <em>exit code</em> of an invocation is a byte that indicates how
-the execution went. A exit code of 0 signals an uneventful execution,
-while any other values have program specific meanings and usually
-indicate something went wrong.</p>
-<p>An <em>operator</em> is any callable entity. A <em>macro</em> is an
-operator that is not a program.</p>
+working directory (CWD). This definition does not include running a
+program or accessing a file explicitly via it’s absolute path (which is
+considered a filesystem interaction, and thus a side effect).
+Invocations inherit scopes automatically from the parent invocation,
+because $PATH is a variable and the CWD is inherited too.</p>
+<p>The <em>exit code</em> of an invocation is a number that indicates
+how the execution went. A exit code of 0 signals an uneventful
+execution, while any other values have operator specific meanings and
+usually indicate something went wrong.</p>
 <h2 id="data"><a class="anchor" href="#data"></a>Data</h2>
 <p>In Lush, data is represented by values. There are several kinds of
 values.</p>
@@ -346,20 +353,26 @@ rules. Syntax: <code>hello</code>.</li>
 <li>An <em>operator</em> is an opaque value that can be invoked with
 arguments.</li>
 </ul>
-<p>Programs communicate data by default through stdin/stdout and
-arguments. The args list is a list of the argument values supplied to
-the command. The stdin is a readable stream of values, whereas the
-stdout is a writeable stream of values. The stderr is normally used for
-communicating with the user, such a log messaging. The exit code of a
-program is represented by an ascii string containing a decimal
-number.</p>
+<p>Programs communicate data by through stdin and stdout. Although
+arguments and variables are also capable of communicating data, they
+have OS-dependent restrictions in size. The stdin is a readable stream
+of values, whereas the stdout is a writeable stream of values. The
+stderr is normally used for communicating with the user, such a log
+messaging, but is in fact just a stream of values, similar to stdout.
+The exit code of a program is represented by a string containing a
+decimal number.</p>
 <h2 id="evaluation"><a class="anchor" href="#evaluation"></a>Evaluation</h2>
 <p>A <em>string</em> is a so-called constant, meaning that when it is
 evaluated, it returns itself.</p>
 <p>When a <em>word</em> is evaluated, the following rules apply:</p>
 <ol type="1">
+<li>If the name starts with a <code>@</code> it is interpreted as an
+argument of the currently defined program, and it is substituted with
+the argument value.</li>
 <li>If it starts with a <code>$</code>, it is interpreted as a variable
 and is substituted by the value in that variable.</li>
+<li>If it starts with a <code>_</code>, it is substituted with the name
+of a private file. See below.</li>
 <li>If it contains <code>*</code> characters, it is interpreted as a
 glob pattern and is evaluated to all the filenames matching the
 pattern.</li>
@@ -374,9 +387,10 @@ list arguments: the elements to the left and to the right of the
 macro.</li>
 <li>If there are no macros present, the list is evaluated recursively
 from left to right.</li>
-<li>Then, if the first element is a word that matches a program name, it
-is invoked with the remaining elemens as arguments, and the entire
-expression evaluates to the values in the stdout of the program.</li>
+<li>Then, if the first element is a program or a string that matches a
+program name, it is invoked with the remaining elements as arguments,
+and the entire expression evaluates to the values in the stdout of the
+program.</li>
 <li>Note that stdout can have multiple values, so a program evaluation
 can result in multiple values (and thus also result in multiple
 arguments when passed to another program).</li>
@@ -405,26 +419,10 @@ followed by a command.</p>
 <p>Comments start with <code>#</code>.</p>
 <p>At the top level, the outermost parameters are optional if the
 command is typed on one line.</p>
-<h2 id="builtin-macros"><a class="anchor" href="#builtin-macros"></a>Builtin
-Macros</h2>
-<ul>
-<li><code>program</code>: Define a program.</li>
-<li><code>install</code>: Make a program available under a given
-name.</li>
-<li><code>out</code> / <code>err</code>: They both take any number of
-values as argument and write them to stdout and stderr
-respectively.</li>
-<li><code>case</code>: takes one command to run and then two or more
-commands (continuations) to run for each possible exit code, starting
-with 0. The last command is the “else” case.</li>
-<li><code>return</code>: exits the current command with the given
-code.</li>
-<li><code>exit</code>: Only valid with a program definition. Exits the
-currently defined program with the given code.</li>
-</ul>
 <h3 id="command-algebra"><a class="anchor" href="#command-algebra"></a>Command
 algebra</h3>
-<p>Commands can be composed to produce more complex commands.</p>
+<p>Commands can be composed to produce more complex commands using a set
+of macros called command <em>combinators</em>.</p>
 <p><strong><code>&amp;</code></strong>: If <code>A</code> and
 <code>B</code> are commands, then so is <code>A &amp; B</code>. This
 command first runs A passing the stdin onto A and waits for completion.
@@ -446,16 +444,20 @@ directed to the stdout of the compound command. The stderr of both A and
 B are directed to the stderr of the compound command. The exit code is
 the first non-zero exit code of the chain.</p>
 <p>The precedence of these operators are all the same. They are always
-evaluated from left to right. Parentheses can be used to change the
-order of evaluation.</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="ex">program</span> <span class="er">(</span><span class="fu">dir</span><span class="kw">)</span> <span class="kw">(</span><span class="bu">cd</span> dir <span class="kw">;</span> <span class="fu">ls</span> <span class="kw">|</span> <span class="fu">grep</span> README <span class="pp">?</span> echo <span class="st">&quot;No readme found&quot;</span><span class="kw">))</span></span></code></pre></div>
+evaluated from left to right (i.e. left-associative:
+<code>(A ; B) ; C</code> ≡ <code>A ; B ; C</code>). Parentheses can be
+used to change the order of evaluation. Parentheses are optional for
+grouping commands between combinators. So <code>A ; B x y ; C</code> ≡
+<code>A ; (B x y) ; C</code>.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="ex">program</span> <span class="er">(</span><span class="fu">dir</span><span class="kw">)</span> <span class="kw">(</span><span class="bu">cd</span> dir <span class="kw">;</span> <span class="fu">ls</span> <span class="kw">|</span> <span class="fu">grep</span> README <span class="pp">?</span> error <span class="st">&quot;No readme found&quot;</span><span class="kw">))</span></span></code></pre></div>
 <p>This program attempts to enter the given directory and search for a
 file with a name that contains “README” in it. If the directory does not
 exist, the program exits with the exit code of <code>cd</code>. If no
 readme has been found, the program writes a messages to stdout.</p>
 <h3 id="io-redirections"><a class="anchor" href="#io-redirections"></a>I/O
 redirections</h3>
-<p>I/O redirections are postfix macros.</p>
+<p>I/O redirections are specified with macros called command
+<em>decorators</em>.</p>
 <p>I/O can interact with files as follows.</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>(<span class="sc">&lt;</span>cmd<span class="sc">&gt;</span> <span class="er">&gt;</span> file.txt)</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>(<span class="sc">&lt;</span>cmd<span class="sc">&gt;</span> <span class="er">&gt;&gt;</span> file.txt)</span>
@@ -463,41 +465,38 @@ redirections</h3>
 <span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>(<span class="sc">&lt;</span>cmd<span class="sc">&gt;</span> err<span class="sc">&gt;</span><span class="er">&gt;</span> file.txt)</span>
 <span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>(<span class="sc">&lt;</span>cmd<span class="sc">&gt;</span> <span class="er">&lt;</span> file.txt)</span>
 <span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>(<span class="sc">&lt;</span>cmd<span class="sc">&gt;</span> ?<span class="sc">&gt;</span> file.txt) <span class="co"># Writes the exit code to rc.txt</span></span></code></pre></div>
-<p>The same interactions are allowed with variables, which have to be
-prefixed with a <code>$</code> sign. Variables can contain more than one
-value.</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>(<span class="sc">&lt;</span>cmd<span class="sc">&gt;</span> <span class="er">&gt;</span> <span class="er">$</span>myvar)</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>(<span class="sc">&lt;</span>cmd<span class="sc">&gt;</span> <span class="er">&gt;&gt;</span> <span class="er">$</span>myvar)</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>(<span class="sc">&lt;</span>cmd<span class="sc">&gt;</span> err<span class="sc">&gt;</span> <span class="er">$</span>myvar)</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>(<span class="sc">&lt;</span>cmd<span class="sc">&gt;</span> err<span class="sc">&gt;</span><span class="er">&gt;</span> <span class="er">$</span>myvar)</span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>(<span class="sc">&lt;</span>cmd<span class="sc">&gt;</span> <span class="er">&lt;</span> <span class="er">$</span>myvar)</span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>(<span class="sc">&lt;</span>cmd<span class="sc">&gt;</span> ?<span class="sc">&gt;</span> <span class="er">$</span>myvar)</span></code></pre></div>
+<!-- The same interactions are allowed with variables, which have to be prefixed with a `$` sign. -->
+<!-- Variables can contain more than one value. -->
+<!-- ```r -->
+<!-- (<cmd> > $myvar) -->
+<!-- (<cmd> >> $myvar) -->
+<!-- (<cmd> err> $myvar) -->
+<!-- (<cmd> err>> $myvar) -->
+<!-- (<cmd> < $myvar) -->
+<!-- (<cmd> ?> $myvar) -->
+<!-- ``` -->
 <p>Output streams allow the following mutual redirections.</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>(<span class="sc">&lt;</span>cmd<span class="sc">&gt;</span> err<span class="sc">&gt;</span>out) <span class="co"># Points fd (file descriptor) 2 to the same file description as fd 1.</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>(<span class="sc">&lt;</span>cmd<span class="sc">&gt;</span> err<span class="sc">&lt;</span><span class="er">&gt;</span>out) <span class="co"># Swaps file descriptions of fds 1 and 2.</span></span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>(<span class="sc">&lt;</span>cmd<span class="sc">&gt;</span> err<span class="sc">+</span><span class="er">&gt;</span>out) <span class="co"># Points fd 2 to a pipe that writes to fd 1 and the original file description of fd 2.</span></span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>(<span class="sc">&lt;</span>cmd<span class="sc">&gt;</span> err<span class="sc">&gt;</span>out) <span class="co"># Points fd (file descriptor) 2 to the same file description as fd 1.</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>(<span class="sc">&lt;</span>cmd<span class="sc">&gt;</span> out<span class="sc">&gt;</span><span class="er">&lt;</span>err) <span class="co"># Swaps file descriptions of fds 1 and 2.</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>(<span class="sc">&lt;</span>cmd<span class="sc">&gt;</span> err<span class="sc">+</span><span class="er">&gt;</span>out) <span class="co"># Points fd 2 to a pipe that writes to fd 1 and the original file description of fd 2.</span></span></code></pre></div>
 <p>The default I/O directions are inherited from the parent program. The
 root program will usually be the shell, which uses the currently
 connected tty for stdin/stdout/stderr, and writes the exit code to
 <code>$?</code>.</p>
-<h3 id="builtin-programs"><a class="anchor" href="#builtin-programs"></a>Builtin
-Programs</h3>
-<h2 id="private-storage-and-lexical-scoping"><a class="anchor" href="#private-storage-and-lexical-scoping"></a>Private
-storage and lexical scoping</h2>
-<p>Values can be stored in files and variables. Files can store more
-than one value and are global and globally mutable. Variables are copied
-from the parent to a child invocation, and so child invocations cannot
-mutate variables of their parents, and vice versa, a parent can also not
-mutate variables of their children.</p>
-<p>It is possible to write values into <em>private</em> files or
-variables. Private files and variables are prefix with an underscore,
-like <code>_priv.txt</code> and <code>$_priv</code>, and behave just
-like their normal counterparts, except their names will be modified by
-the shell as to not collide with any files and variables outside the
-<em>lexical scope</em>. Moreover, the files will not be placed in the
-CWD, but in a temporary location.</p>
+<p>All these redirection operators have the same precedence as the
+command combinators, and are evaluated from left to right.</p>
+<h2 id="private-files-and-programs-and-lexical-scoping"><a class="anchor" href="#private-files-and-programs-and-lexical-scoping"></a>Private
+files and programs and lexical scoping</h2>
+<p>Files can store more than one value and are global and globally
+mutable. It is possible to write values into <em>private</em> files.
+Private files can be written as a word that is prefixed with an
+underscore, like <code>_priv.txt</code>, and behave just as a normal
+filename, except their names will be modified by the shell as to not
+collide with any files outside the <em>lexical scope</em>. Moreover, the
+files will not point into the CWD, but in a temporary location, possibly
+in memory instead of on disk.</p>
 <p>In the same vein, programs can be privately installed.</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="fu">install</span> _hw <span class="er">(</span><span class="fu">program ()</span> <span class="kw">(</span><span class="ex">out</span> <span class="st">&quot;Hello world)))</span></span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="fu">install</span> _hw <span class="er">(</span><span class="fu">program ()</span> <span class="kw">(</span><span class="bu">echo</span> <span class="st">&quot;Hello world)))</span></span></code></pre></div>
 <p>Now the program <code>_hw</code> is only available to be called from
 within the lexical scope where it was defined.</p>
 <h2 id="wire-formats"><a class="anchor" href="#wire-formats"></a>Wire
@@ -518,70 +517,122 @@ but instead by SO (0E) and SI (0F), and list elements are again
 separated by US (1F) or NULL (00).</p>
 <p>This implies that strings are not allowed to contain bytes 0, 1, 14,
 15 or 31.</p>
-<h2 id="example-programs"><a class="anchor" href="#example-programs"></a>Example
-programs</h2>
-<div class="sourceCode" id="cb10"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># A program that writes hello world to stdout</span></span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="ex">program</span> args <span class="er">(</span><span class="ex">out</span> <span class="st">&quot;hello world&quot;</span><span class="kw">)</span></span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Makes alias of the `ls -al` command available in the current dynamic scope</span></span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="fu">install</span> l <span class="er">(</span><span class="ex">program</span> args <span class="er">(</span><span class="fu">ls</span> <span class="at">-al</span> <span class="er">(</span><span class="ex">args</span> <span class="kw">|</span> <span class="fu">expand</span><span class="kw">)))</span> <span class="kw">;</span></span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Install program hw into the current scope, and then call it from a python script</span></span>
-<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a><span class="fu">install</span> hw <span class="er">(</span><span class="st">&quot;hello world&quot;</span><span class="kw">)</span> <span class="kw">;</span> <span class="ex">python</span> <span class="at">-c</span> <span class="st">&quot;import subprocess;subprocess.call(&#39;hw&#39;, shell=True)&quot;</span></span>
-<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Branch on whether a directory exists</span></span>
-<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a><span class="cf">case</span> (test -d <span class="st">&quot;foo&quot;</span>) (<span class="st">&quot;foo is a folder&quot;</span>) (<span class="st">&quot;foo is not a folder&quot;</span>) (<span class="st">&quot;something went wrong&quot;</span>) (<span class="st">&quot;this is unreachable, as test never returns a code higher than 2&quot;</span>)</span>
-<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a># Interactively checkout a git branch</span>
-<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>install <span class="st">&quot;g c&quot;</span> () (</span>
-<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>  (git branch --color=never | lines | where (program (it) (starts-with <span class="st">&quot;*&quot;</span> it))) &gt; <span class="va">$_branches</span> ;</span>
-<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>  (out <span class="va">$_branches</span>) ;</span>
-<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>  (read-line <span class="st">&quot;Type branch number to checkout and press enter to move on: &quot;</span> | trim) &gt; <span class="va">$_input</span> ;</span>
-<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a>  (case (test -n <span class="va">$_input</span>)</span>
-<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a>    ((list <span class="va">$_branches</span>) | index <span class="va">$_input</span> | trim) &gt; <span class="va">$_branch</span>) ; git checkout <span class="va">$_branch</span>)</span>
-<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a>    (out <span class="st">&quot;Aborting..&quot;</span>)</span>
-<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-24"><a href="#cb10-24" aria-hidden="true" tabindex="-1"></a>install <span class="st">&quot;git state&quot;</span> () (</span>
-<span id="cb10-25"><a href="#cb10-25" aria-hidden="true" tabindex="-1"></a>  (cd (git rev-parse --show-toplevel)) ;</span>
-<span id="cb10-26"><a href="#cb10-26" aria-hidden="true" tabindex="-1"></a>  (cond</span>
-<span id="cb10-27"><a href="#cb10-27" aria-hidden="true" tabindex="-1"></a>    [(test -f .git/BISECT_LOG) (out BISECTING)]</span>
-<span id="cb10-28"><a href="#cb10-28" aria-hidden="true" tabindex="-1"></a>    [(test -f .git/MERGE_HEAD) (out MERGING)]</span>
-<span id="cb10-29"><a href="#cb10-29" aria-hidden="true" tabindex="-1"></a>    [(test -d .git/rebase-merge ? test -d .git/rebase-apply) (out REBASING)]</span>
-<span id="cb10-30"><a href="#cb10-30" aria-hidden="true" tabindex="-1"></a>    [(test -f .git/CHERRY_PICK_HEAD) (out CHERRY-PICKING)]</span>
-<span id="cb10-31"><a href="#cb10-31" aria-hidden="true" tabindex="-1"></a>    [(test -f .git/REVERT_HEAD (out REVERTING)]</span>
-<span id="cb10-32"><a href="#cb10-32" aria-hidden="true" tabindex="-1"></a>    [else (out NORMAL) </span>
-<span id="cb10-33"><a href="#cb10-33" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb10-34"><a href="#cb10-34" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb10-35"><a href="#cb10-35" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-36"><a href="#cb10-36" aria-hidden="true" tabindex="-1"></a>install <span class="st">&quot;g st&quot;</span> () (</span>
-<span id="cb10-37"><a href="#cb10-37" aria-hidden="true" tabindex="-1"></a>  (git state) &gt; <span class="va">$_state</span> ;</span>
-<span id="cb10-38"><a href="#cb10-38" aria-hidden="true" tabindex="-1"></a>  (if (substr <span class="st">&quot;NORMAL&quot;</span> <span class="va">$_state</span>)</span>
-<span id="cb10-39"><a href="#cb10-39" aria-hidden="true" tabindex="-1"></a>    (out (fg magenta) <span class="va">$_state</span> (ansi reset))) ;</span>
-<span id="cb10-40"><a href="#cb10-40" aria-hidden="true" tabindex="-1"></a>  (list (git status -sb | lines)) &gt; <span class="va">$_statuslines</span> ;</span>
-<span id="cb10-41"><a href="#cb10-41" aria-hidden="true" tabindex="-1"></a>  (<span class="va">$_statuslines</span> | index 0) ;</span>
-<span id="cb10-42"><a href="#cb10-42" aria-hidden="true" tabindex="-1"></a>  (<span class="va">$_statuslines</span></span>
-<span id="cb10-43"><a href="#cb10-43" aria-hidden="true" tabindex="-1"></a>    | drop 1</span>
-<span id="cb10-44"><a href="#cb10-44" aria-hidden="true" tabindex="-1"></a>    | sort (program (line)</span>
-<span id="cb10-45"><a href="#cb10-45" aria-hidden="true" tabindex="-1"></a>      (switch (line | ansi strip | substr 0 2)</span>
-<span id="cb10-46"><a href="#cb10-46" aria-hidden="true" tabindex="-1"></a>        ((= <span class="st">&quot;??&quot;</span>) 0)</span>
-<span id="cb10-47"><a href="#cb10-47" aria-hidden="true" tabindex="-1"></a>        ((= <span class="st">&quot;UU&quot;</span>) 1)</span>
-<span id="cb10-48"><a href="#cb10-48" aria-hidden="true" tabindex="-1"></a>        ((= <span class="st">&quot;UD&quot;</span>) 2)</span>
-<span id="cb10-49"><a href="#cb10-49" aria-hidden="true" tabindex="-1"></a>        ((match <span class="st">&quot; \S&quot;</span>) 3)</span>
-<span id="cb10-50"><a href="#cb10-50" aria-hidden="true" tabindex="-1"></a>        ((match <span class="st">&quot;\S\S&quot;</span>) 4)</span>
-<span id="cb10-51"><a href="#cb10-51" aria-hidden="true" tabindex="-1"></a>        ((match <span class="st">&quot;\S &quot;</span>) 5)</span>
-<span id="cb10-52"><a href="#cb10-52" aria-hidden="true" tabindex="-1"></a>        (else 5)</span>
-<span id="cb10-53"><a href="#cb10-53" aria-hidden="true" tabindex="-1"></a>      )</span>
-<span id="cb10-54"><a href="#cb10-54" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb10-55"><a href="#cb10-55" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
+<h2 id="special-operators"><a class="anchor" href="#special-operators"></a>Special
+operators</h2>
+<p>Special operators work within the context of a program. They have no
+variables or I/O streams of their own. They do have an exit code though,
+and as such can be used with command combinators (except the pipe
+operator).</p>
+<ul>
+<li><code>install</code>: Make a program available under a given name in
+the current dynamic scope.</li>
+<li><code>exit</code>: Only valid within a program definition. Exits the
+currently defined program with the given code.</li>
+<li><code>set</code>: set a variable:
+<code>(set PATH (append $PATH &quot;;/foo/bar&quot;))</code>.</li>
+</ul>
+<h2 id="builtin-macros"><a class="anchor" href="#builtin-macros"></a>Builtin
+Macros</h2>
+<ul>
+<li><code>program</code>: Define a program and write it to stdout.</li>
+<li><code>with</code>: invoke a command with a set of variable
+assignments.</li>
+<li><code>case</code>: takes one command to run and then one or more
+commands (continuations) to run for each possible exit code, starting
+with 0. The first continuation is run when the run command has exit code
+0. Subsequent non-last continuations are run for exit codes 1, 2, etc.
+The last continuation is run if no other continuations have been
+run.</li>
+<li><code>cond</code>: if/elseif/else</li>
+<li><code>switch</code>: a value and a list of predicates with
+associated outcome values.</li>
+</ul>
+<h2 id="builtin-programs"><a class="anchor" href="#builtin-programs"></a>Builtin
+Programs</h2>
+<ul>
+<li>All system programs, like unix utilities</li>
+<li><code>echo</code> / <code>error</code>: They both take any number of
+values as argument and write them to stdout and stderr
+respectively.</li>
+<li><code>read-line</code>: read a line from stdin.</li>
+<li><code>tmp : &lt;filename&gt;</code>: return a filename for a
+temporary file</li>
+<li><code>each (p : value -&gt; &lt;modified value&gt;) : values -&gt; &lt;modified values&gt;</code>:
+run program <code>p</code> for each given value, and output the
+resulting values.</li>
+<li><code>fold init (p acc : value -&gt; &lt;acc with p&gt;) : values -&gt; &lt;aggregation&gt;</code>:
+aggregated values by applying program <code>p</code> to each value and
+the accumulated aggregation so far. <code>init</code> is the initial
+aggregation.</li>
+<li><code>(= &lt;value&gt; &lt;value&gt;)</code>: checks if two values
+are equal</li>
+<li><code>(= &lt;value&gt;)</code>: partially applied version of
+above</li>
+</ul>
+<h2 id="example-commands"><a class="anchor" href="#example-commands"></a>Example
+commands</h2>
+<div class="sourceCode" id="cb9"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># A program that ignores arguments writes hello world to stdout</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="ex">program</span> args <span class="er">(</span><span class="bu">echo</span> <span class="st">&quot;hello world&quot;</span><span class="kw">)</span> <span class="kw">;</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Makes alias of the `ls -al` command available in the current dynamic scope</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="fu">install</span> l <span class="er">(</span><span class="ex">program</span> args <span class="er">(</span><span class="fu">ls</span> <span class="at">-al</span> <span class="er">(</span><span class="ex">@args</span> <span class="kw">|</span> <span class="fu">expand</span><span class="kw">)))</span> <span class="kw">;</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Install program hw into the current scope, and then call it from a python script</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a><span class="fu">install</span> hw <span class="er">(</span><span class="st">&quot;hello world&quot;</span><span class="kw">)</span> <span class="kw">;</span> <span class="ex">python</span> <span class="at">-c</span> <span class="st">&quot;import subprocess;subprocess.call(&#39;hw&#39;, shell=True)&quot;</span> <span class="kw">;</span></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Branch on whether a directory exists</span></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a><span class="cf">case</span> (test -d <span class="st">&quot;foo&quot;</span>) (<span class="st">&quot;foo is a folder&quot;</span>) (<span class="st">&quot;foo is not a folder&quot;</span>) (<span class="st">&quot;something went wrong&quot;</span>) (<span class="st">&quot;this is unreachable, as test never returns a code higher than 2&quot;</span>) ;</span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a># Interactively checkout a git branch</span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>install <span class="st">&quot;g c&quot;</span> () (</span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>  (git branch --color=never | lines | where (program (it) (starts-with <span class="st">&quot;*&quot;</span> @it))) &gt; _branches ;</span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>  (cat _branches) ;</span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>  (read-line <span class="st">&quot;Type branch number to checkout and press enter to move on: &quot;</span> | trim) &gt; _input ;</span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>  (case (test -n (cat _input))</span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a>    ((list &lt; _branches) | index (cat _input) | trim) &gt; _branch) ; git checkout (cat _branch))</span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a>    (echo <span class="st">&quot;Aborting..&quot;</span>)</span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a>) ;</span>
+<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a># Modified version of git status</span>
+<span id="cb9-25"><a href="#cb9-25" aria-hidden="true" tabindex="-1"></a>install <span class="st">&quot;git state&quot;</span> () (</span>
+<span id="cb9-26"><a href="#cb9-26" aria-hidden="true" tabindex="-1"></a>  (cd (git rev-parse --show-toplevel)) ;</span>
+<span id="cb9-27"><a href="#cb9-27" aria-hidden="true" tabindex="-1"></a>  (cond</span>
+<span id="cb9-28"><a href="#cb9-28" aria-hidden="true" tabindex="-1"></a>    [(test -f .git/BISECT_LOG) (echo BISECTING)]</span>
+<span id="cb9-29"><a href="#cb9-29" aria-hidden="true" tabindex="-1"></a>    [(test -f .git/MERGE_HEAD) (echo MERGING)]</span>
+<span id="cb9-30"><a href="#cb9-30" aria-hidden="true" tabindex="-1"></a>    [(test -d .git/rebase-merge ? test -d .git/rebase-apply) (echo REBASING)]</span>
+<span id="cb9-31"><a href="#cb9-31" aria-hidden="true" tabindex="-1"></a>    [(test -f .git/CHERRY_PICK_HEAD) (echo CHERRY-PICKING)]</span>
+<span id="cb9-32"><a href="#cb9-32" aria-hidden="true" tabindex="-1"></a>    [(test -f .git/REVERT_HEAD (echo REVERTING)]</span>
+<span id="cb9-33"><a href="#cb9-33" aria-hidden="true" tabindex="-1"></a>    [else (echo NORMAL) </span>
+<span id="cb9-34"><a href="#cb9-34" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb9-35"><a href="#cb9-35" aria-hidden="true" tabindex="-1"></a>) ;</span>
+<span id="cb9-36"><a href="#cb9-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-37"><a href="#cb9-37" aria-hidden="true" tabindex="-1"></a>install <span class="st">&quot;g st&quot;</span> () (</span>
+<span id="cb9-38"><a href="#cb9-38" aria-hidden="true" tabindex="-1"></a>  (git state) &gt; _state ;</span>
+<span id="cb9-39"><a href="#cb9-39" aria-hidden="true" tabindex="-1"></a>  (if (substr <span class="st">&quot;NORMAL&quot;</span> &lt; _state)</span>
+<span id="cb9-40"><a href="#cb9-40" aria-hidden="true" tabindex="-1"></a>    (color (fg magenta) _state) ;</span>
+<span id="cb9-41"><a href="#cb9-41" aria-hidden="true" tabindex="-1"></a>  (git status -sb | lines | list &gt; _statuslines) ;</span>
+<span id="cb9-42"><a href="#cb9-42" aria-hidden="true" tabindex="-1"></a>  (index 0 &lt; _statuslines) ;</span>
+<span id="cb9-43"><a href="#cb9-43" aria-hidden="true" tabindex="-1"></a>  (cat _statuslines</span>
+<span id="cb9-44"><a href="#cb9-44" aria-hidden="true" tabindex="-1"></a>    | drop 1</span>
+<span id="cb9-45"><a href="#cb9-45" aria-hidden="true" tabindex="-1"></a>    | sort (program (line)</span>
+<span id="cb9-46"><a href="#cb9-46" aria-hidden="true" tabindex="-1"></a>      (@line | ansi strip | substr 0 2 | switch</span>
+<span id="cb9-47"><a href="#cb9-47" aria-hidden="true" tabindex="-1"></a>        ((= <span class="st">&quot;??&quot;</span>) 0)</span>
+<span id="cb9-48"><a href="#cb9-48" aria-hidden="true" tabindex="-1"></a>        ((= <span class="st">&quot;UU&quot;</span>) 1)</span>
+<span id="cb9-49"><a href="#cb9-49" aria-hidden="true" tabindex="-1"></a>        ((= <span class="st">&quot;UD&quot;</span>) 2)</span>
+<span id="cb9-50"><a href="#cb9-50" aria-hidden="true" tabindex="-1"></a>        ((match <span class="st">&quot; \S&quot;</span>) 3)</span>
+<span id="cb9-51"><a href="#cb9-51" aria-hidden="true" tabindex="-1"></a>        ((match <span class="st">&quot;\S\S&quot;</span>) 4)</span>
+<span id="cb9-52"><a href="#cb9-52" aria-hidden="true" tabindex="-1"></a>        ((match <span class="st">&quot;\S &quot;</span>) 5)</span>
+<span id="cb9-53"><a href="#cb9-53" aria-hidden="true" tabindex="-1"></a>        (else 6)</span>
+<span id="cb9-54"><a href="#cb9-54" aria-hidden="true" tabindex="-1"></a>      )</span>
+<span id="cb9-55"><a href="#cb9-55" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb9-56"><a href="#cb9-56" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
 <!--
 ### Datastructures
 Lists also act as mappings by the following convention: a list entry that contains an `=` character can be treated as a key-value pair, whereby the string before the first `=` is treated as key.
 
 ### Questions
-What is evaluation really?
-And should constants indeed behave like programs when evaluated?
+- Can we generalize over environment variables to be keys in an environment listmap?
 -->
 </div>
 </body>
