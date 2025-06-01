@@ -104,8 +104,10 @@ When an argument is a command invocation, the stdout is used as arguments.
 
 Programs are defined like
 ```
-(program <args> <body>)
+(program <args> <command>)
 ```
+
+The body consists of a single command, and the exit code of this command decides the exit code of this program.
 
 Programs are installed (named) into the current runtime scope and all child runtime scopes like
 ```
@@ -163,17 +165,17 @@ I/O can interact with files as follows.
 (<cmd> ?> file.txt) # Writes the exit code to rc.txt
 ```
 
-<!-- The same interactions are allowed with variables, which have to be prefixed with a `$` sign. -->
-<!-- Variables can contain more than one value. -->
+The same interactions are allowed with variables, which have to be prefixed with a `$` sign.
+Variables can contain more than one value. Note that variables have OS specific limitations to how much data they can hold, so they are not suitable for storing arbitrary data.
 
-<!-- ```r -->
-<!-- (<cmd> > $myvar) -->
-<!-- (<cmd> >> $myvar) -->
-<!-- (<cmd> err> $myvar) -->
-<!-- (<cmd> err>> $myvar) -->
-<!-- (<cmd> < $myvar) -->
-<!-- (<cmd> ?> $myvar) -->
-<!-- ``` -->
+```r
+(<cmd> > $myvar)
+(<cmd> >> $myvar)
+(<cmd> err> $myvar)
+(<cmd> err>> $myvar)
+(<cmd> < $myvar)
+(<cmd> ?> $myvar)
+```
 
 Output streams allow the following mutual redirections.
 
