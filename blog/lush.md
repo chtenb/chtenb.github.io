@@ -136,10 +136,10 @@ Commands can be composed to produce more complex commands using a set of macros 
 **`|`**: If `A` and `B` are commands, then so is `A | B`. The command invokes both `A` and `B` (they are started in order, but will usually run concurrently). The stdin of the compound command is directed to A, the stdout of A is directed to the stdin of B. The stdout of B is directed to the stdout of the compound command. The stderr of both A and B are directed to the stderr of the compound command. The exit code is the first non-zero exit code of the chain.
 
 The precedence of these operators are all the same.
-They are always evaluated from left to right (i.e. left-associative: `(A ; B) ; C` ≡ `A ; B ; C`).
+They are always evaluated from left to right (i.e. left-associative: `(A ; B) ; C ≡ A ; B ; C`).
 Parentheses can be used to change the order of evaluation.
 Parentheses are optional for grouping commands between combinators.
-So `A ; B x y ; C` ≡ `A ; (B x y) ; C`.
+So `A ; B x y ; C ≡ A ; (B x y) ; C`.
 
 
 ```sh

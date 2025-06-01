@@ -445,10 +445,10 @@ B are directed to the stderr of the compound command. The exit code is
 the first non-zero exit code of the chain.</p>
 <p>The precedence of these operators are all the same. They are always
 evaluated from left to right (i.e. left-associative:
-<code>(A ; B) ; C</code> ≡ <code>A ; B ; C</code>). Parentheses can be
-used to change the order of evaluation. Parentheses are optional for
-grouping commands between combinators. So <code>A ; B x y ; C</code> ≡
-<code>A ; (B x y) ; C</code>.</p>
+<code>(A ; B) ; C ≡ A ; B ; C</code>). Parentheses can be used to change
+the order of evaluation. Parentheses are optional for grouping commands
+between combinators. So
+<code>A ; B x y ; C ≡ A ; (B x y) ; C</code>.</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="ex">program</span> <span class="er">(</span><span class="fu">dir</span><span class="kw">)</span> <span class="kw">(</span><span class="bu">cd</span> dir <span class="kw">;</span> <span class="fu">ls</span> <span class="kw">|</span> <span class="fu">grep</span> README <span class="pp">?</span> error <span class="st">&quot;No readme found&quot;</span><span class="kw">))</span></span></code></pre></div>
 <p>This program attempts to enter the given directory and search for a
 file with a name that contains “README” in it. If the directory does not
