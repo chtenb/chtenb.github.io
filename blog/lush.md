@@ -38,8 +38,11 @@ A *program* models a recipe for work being done on the computer.
 A program has *parameters* in the form of program *arguments* or environment *variables*.
 Program I/O is done through standard I/O streams, stdin/stdout/stderr.
 
-An *operator* is any callable entity.
-A *macro* is similar to a program, but follows different evaluation rules.
+The difference between a function in other lisps and a program in lush is that a function gets arguments and returns one value at the end of the execution.
+A program also gets arguments, but the main dataflow is through I/O. It streams bytes to stdout and stderr and reads bytes from stdin. 
+
+An *operator* is any callable entity, and unevaluated arguments passed to the operator are called *operands*.
+A *macro* is similar to a program, but defines its own evaluation rules.
 A *special operator* is any callable entity that is not a program or a macro.
 
 A *command* is an operator supplied with arguments.
@@ -64,7 +67,6 @@ In Lush, data is represented by values. There are several kinds of values.
 - A *string* is a sequence of bytes that contains utf-8 text. Syntax: `"Hello world"`.
 - A *word* is a similar to a string, but has special evaluation rules. Syntax: `hello`.
 - A *list* is a sequence of values. Syntax: `("hello world" hello (a b c))`.
-- An *operator* is an opaque value that can be invoked with arguments.
 
 Programs communicate data by through stdin and stdout.
 Although arguments and variables are also capable of communicating data, they have OS-dependent restrictions in size.
@@ -72,26 +74,7 @@ The stdin is a readable stream of values, whereas the stdout is a writeable stre
 The stderr is normally used for communicating with the user, such a log messaging, but is in fact just a stream of values, similar to stdout.
 The exit code of a program is represented by a string containing a decimal number.
 
-## Evaluation
-A *string* is a so-called constant, meaning that when it is evaluated, it returns itself.
-
-When a *word* is evaluated, the following rules apply:
-
-1. If the name starts with a `@` it is interpreted as an argument of the currently defined program, and it is substituted with the argument value.
-2. If it starts with a `$`, it is interpreted as a variable and is substituted by the value in that variable.
-3. If it starts with a `_`, it is substituted with the name of a private file. See below.
-4. If it contains `*` characters, it is interpreted as a glob pattern and is evaluated to all the filenames matching the pattern.
-5. Otherwise it evaluates to a string.
-
-When a *list* `(x y z ...)` is evaluated, all the list elements are first scanned if there is a word matching a macro name.
-
-1. For the first macro that is found, the macro is evaluated with two list arguments: the elements to the left and to the right of the macro.
-2. If there are no macros present, the list is evaluated recursively from left to right.
-3. Then, if the first element is a program or a string that matches a program name, it is invoked with the remaining elements as arguments, and the entire expression evaluates to the values in the stdout of the program.
-4. Note that stdout can have multiple values, so a program evaluation can result in multiple values (and thus also result in multiple arguments when passed to another program).
-5. If the first element is not a program, the expression evaluates to a list again, but with the elements evaluated.
-
-When an *operator* is evaluated, an error is signaled, because operators can only be evaluated in the context of a list.
+A program is also represented by data. It is a list that starts with the `program` macro, and it evaluates to itself.
 
 ## Syntax
 Commands are invoked like
@@ -121,10 +104,40 @@ The body of a program consists of an optional number of installations followed b
   (join ", " (get-branches)))
 ```
 
-
 Comments start with `#`.
 
 At the top level, the outermost parameters are optional if the command is typed on one line.
+
+## Evaluation
+A *string* is a constant, meaning that when it is evaluated, it returns itself.
+
+When a *word* is evaluated, the following rules apply:
+
+1. If the name starts with a `@` it is interpreted as an argument of the currently defined program, and it is substituted with the argument value.
+2. If it starts with a `$`, it is interpreted as a variable and is substituted by the value in that variable.
+3. If it starts with a `_`, it is substituted with the name of a private file. See below.
+4. If it contains `*` characters, it is interpreted as a glob pattern and is evaluated to all the filenames matching the pattern.
+5. Otherwise it evaluates to a string.
+
+When a *list* `(x y z ...)` is evaluated, all the list elements are first scanned if there is a word matching a macro name.
+Unlike most lisps, Lush supports infix macros as well as prefix macros.
+
+1. For the first macro that is found, the macro is evaluated with two list arguments: the operands to the left and to the right of the macro.
+2. If there are no macros present, the list is evaluated recursively from left to right.
+3. Then, if the first element is a program or a string that matches a program name, it is invoked with the remaining elements as arguments, and the entire expression evaluates to the values in the stdout of the program.
+4. Note that stdout can have multiple values, so a program evaluation can result in multiple values (and thus also result in multiple arguments when passed to another program).
+5. If the first element is not a program, the expression evaluates to a list again, but with the elements evaluated.
+
+When an *operator* is evaluated, an error is signaled, because operators can only be evaluated in the context of a list.
+
+
+### Associative Lists
+An associative list is a list where every element is again a list with two elements: `((a b) (c d)..)`.
+All first elements are called keys and all second elements are called values.
+This way, lists can be used as mappings.
+
+Lists also act as mappings by the following convention: a list entry that contains an `=` character can be treated as a key-value pair, whereby the string before the first `=` is treated as key.
+
 
 ### Command algebra
 Commands can be composed to produce more complex commands using a set of macros called command *combinators*.
@@ -280,7 +293,7 @@ install "git state" () (
     [(test -d .git/rebase-merge ? test -d .git/rebase-apply) (echo REBASING)]
     [(test -f .git/CHERRY_PICK_HEAD) (echo CHERRY-PICKING)]
     [(test -f .git/REVERT_HEAD (echo REVERTING)]
-    [else (echo NORMAL) 
+    [else (echo NORMAL)]
   )
 ) ;
 
@@ -307,10 +320,25 @@ install "g st" () (
 ```
 
 <!--
-### Datastructures
-Lists also act as mappings by the following convention: a list entry that contains an `=` character can be treated as a key-value pair, whereby the string before the first `=` is treated as key.
+
+### Ideas for generalization
+- fexpr is all we need for defining macros
+- I would like all mutations to the current scope be a simple collection mutation, which is possible when we define the current environment as some collection and pass it e.g. as first value to all macros
+- allowing infix macros gives great flexibility and allows defining command algebra
+- allowing attached unary macros allows even more syntactic magic to emulate POSIX syntax, but it starts getting out of hand and feels gimmicky
+- allowing attached binary macros allows even more, like $asfd=ghjk and allows reading (env -0) output as lush code
+- what special operators do we then need? I guess eval and macro could be all we need?
 
 ### Questions
 - Can we generalize over environment variables to be keys in an environment listmap?
+  - I would like dot-syntax for key lookup: $.PATH
+  - Or slash? $/PATH
+  - But it would be nice to be POSIX compatible in this regard: $PATH. What about mymap$mykey? Then the environment would be the "default map".
+    We could still allow slashes or dots for nested lookups.
+  - Listmaps would be a cool datastructure to parse json into. How do we export json?
+  - 
+- Define synopsis/signature syntax
+- Need shorthand macro for install-program
+- in the end all special operators should probably be no more than 3 chars
 -->
 

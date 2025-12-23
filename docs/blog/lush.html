@@ -310,10 +310,16 @@ build our language around these.</p>
 computer. A program has <em>parameters</em> in the form of program
 <em>arguments</em> or environment <em>variables</em>. Program I/O is
 done through standard I/O streams, stdin/stdout/stderr.</p>
-<p>An <em>operator</em> is any callable entity. A <em>macro</em> is
-similar to a program, but follows different evaluation rules. A
-<em>special operator</em> is any callable entity that is not a program
-or a macro.</p>
+<p>The difference between a function in other lisps and a program in
+lush is that a function gets arguments and returns one value at the end
+of the execution. A program also gets arguments, but the main dataflow
+is through I/O. It streams bytes to stdout and stderr and reads bytes
+from stdin.</p>
+<p>An <em>operator</em> is any callable entity, and unevaluated
+arguments passed to the operator are called <em>operands</em>. A
+<em>macro</em> is similar to a program, but defines its own evaluation
+rules. A <em>special operator</em> is any callable entity that is not a
+program or a macro.</p>
 <p>A <em>command</em> is an operator supplied with arguments. An
 <em>invocation</em> is the execution instance of a command,
 corresponding to a process. An invocation receives its environment
@@ -350,8 +356,6 @@ Syntax: <code>&quot;Hello world&quot;</code>.</li>
 rules. Syntax: <code>hello</code>.</li>
 <li>A <em>list</em> is a sequence of values. Syntax:
 <code>(&quot;hello world&quot; hello (a b c))</code>.</li>
-<li>An <em>operator</em> is an opaque value that can be invoked with
-arguments.</li>
 </ul>
 <p>Programs communicate data by through stdin and stdout. Although
 arguments and variables are also capable of communicating data, they
@@ -361,44 +365,8 @@ stderr is normally used for communicating with the user, such a log
 messaging, but is in fact just a stream of values, similar to stdout.
 The exit code of a program is represented by a string containing a
 decimal number.</p>
-<h2 id="evaluation"><a class="anchor" href="#evaluation"></a>Evaluation</h2>
-<p>A <em>string</em> is a so-called constant, meaning that when it is
-evaluated, it returns itself.</p>
-<p>When a <em>word</em> is evaluated, the following rules apply:</p>
-<ol type="1">
-<li>If the name starts with a <code>@</code> it is interpreted as an
-argument of the currently defined program, and it is substituted with
-the argument value.</li>
-<li>If it starts with a <code>$</code>, it is interpreted as a variable
-and is substituted by the value in that variable.</li>
-<li>If it starts with a <code>_</code>, it is substituted with the name
-of a private file. See below.</li>
-<li>If it contains <code>*</code> characters, it is interpreted as a
-glob pattern and is evaluated to all the filenames matching the
-pattern.</li>
-<li>Otherwise it evaluates to a string.</li>
-</ol>
-<p>When a <em>list</em> <code>(x y z ...)</code> is evaluated, all the
-list elements are first scanned if there is a word matching a macro
-name.</p>
-<ol type="1">
-<li>For the first macro that is found, the macro is evaluated with two
-list arguments: the elements to the left and to the right of the
-macro.</li>
-<li>If there are no macros present, the list is evaluated recursively
-from left to right.</li>
-<li>Then, if the first element is a program or a string that matches a
-program name, it is invoked with the remaining elements as arguments,
-and the entire expression evaluates to the values in the stdout of the
-program.</li>
-<li>Note that stdout can have multiple values, so a program evaluation
-can result in multiple values (and thus also result in multiple
-arguments when passed to another program).</li>
-<li>If the first element is not a program, the expression evaluates to a
-list again, but with the elements evaluated.</li>
-</ol>
-<p>When an <em>operator</em> is evaluated, an error is signaled, because
-operators can only be evaluated in the context of a list.</p>
+<p>A program is also represented by data. It is a list that starts with
+the <code>program</code> macro, and it evaluates to itself.</p>
 <h2 id="syntax"><a class="anchor" href="#syntax"></a>Syntax</h2>
 <p>Commands are invoked like</p>
 <pre><code>(&lt;program&gt; [arg1 [arg2 ...]])</code></pre>
@@ -421,6 +389,55 @@ followed by a command.</p>
 <p>Comments start with <code>#</code>.</p>
 <p>At the top level, the outermost parameters are optional if the
 command is typed on one line.</p>
+<h2 id="evaluation"><a class="anchor" href="#evaluation"></a>Evaluation</h2>
+<p>A <em>string</em> is a constant, meaning that when it is evaluated,
+it returns itself.</p>
+<p>When a <em>word</em> is evaluated, the following rules apply:</p>
+<ol type="1">
+<li>If the name starts with a <code>@</code> it is interpreted as an
+argument of the currently defined program, and it is substituted with
+the argument value.</li>
+<li>If it starts with a <code>$</code>, it is interpreted as a variable
+and is substituted by the value in that variable.</li>
+<li>If it starts with a <code>_</code>, it is substituted with the name
+of a private file. See below.</li>
+<li>If it contains <code>*</code> characters, it is interpreted as a
+glob pattern and is evaluated to all the filenames matching the
+pattern.</li>
+<li>Otherwise it evaluates to a string.</li>
+</ol>
+<p>When a <em>list</em> <code>(x y z ...)</code> is evaluated, all the
+list elements are first scanned if there is a word matching a macro
+name. Unlike most lisps, Lush supports infix macros as well as prefix
+macros.</p>
+<ol type="1">
+<li>For the first macro that is found, the macro is evaluated with two
+list arguments: the operands to the left and to the right of the
+macro.</li>
+<li>If there are no macros present, the list is evaluated recursively
+from left to right.</li>
+<li>Then, if the first element is a program or a string that matches a
+program name, it is invoked with the remaining elements as arguments,
+and the entire expression evaluates to the values in the stdout of the
+program.</li>
+<li>Note that stdout can have multiple values, so a program evaluation
+can result in multiple values (and thus also result in multiple
+arguments when passed to another program).</li>
+<li>If the first element is not a program, the expression evaluates to a
+list again, but with the elements evaluated.</li>
+</ol>
+<p>When an <em>operator</em> is evaluated, an error is signaled, because
+operators can only be evaluated in the context of a list.</p>
+<h3 id="associative-lists"><a class="anchor" href="#associative-lists"></a>Associative
+Lists</h3>
+<p>An associative list is a list where every element is again a list
+with two elements: <code>((a b) (c d)..)</code>. All first elements are
+called keys and all second elements are called values. This way, lists
+can be used as mappings.</p>
+<p>Lists also act as mappings by the following convention: a list entry
+that contains an <code>=</code> character can be treated as a key-value
+pair, whereby the string before the first <code>=</code> is treated as
+key.</p>
 <h3 id="command-algebra"><a class="anchor" href="#command-algebra"></a>Command
 algebra</h3>
 <p>Commands can be composed to produce more complex commands using a set
@@ -605,7 +622,7 @@ commands</h2>
 <span id="cb10-30"><a href="#cb10-30" aria-hidden="true" tabindex="-1"></a>    [(test -d .git/rebase-merge ? test -d .git/rebase-apply) (echo REBASING)]</span>
 <span id="cb10-31"><a href="#cb10-31" aria-hidden="true" tabindex="-1"></a>    [(test -f .git/CHERRY_PICK_HEAD) (echo CHERRY-PICKING)]</span>
 <span id="cb10-32"><a href="#cb10-32" aria-hidden="true" tabindex="-1"></a>    [(test -f .git/REVERT_HEAD (echo REVERTING)]</span>
-<span id="cb10-33"><a href="#cb10-33" aria-hidden="true" tabindex="-1"></a>    [else (echo NORMAL) </span>
+<span id="cb10-33"><a href="#cb10-33" aria-hidden="true" tabindex="-1"></a>    [else (echo NORMAL)]</span>
 <span id="cb10-34"><a href="#cb10-34" aria-hidden="true" tabindex="-1"></a>  )</span>
 <span id="cb10-35"><a href="#cb10-35" aria-hidden="true" tabindex="-1"></a>) ;</span>
 <span id="cb10-36"><a href="#cb10-36" aria-hidden="true" tabindex="-1"></a></span>
@@ -630,11 +647,26 @@ commands</h2>
 <span id="cb10-55"><a href="#cb10-55" aria-hidden="true" tabindex="-1"></a>  )</span>
 <span id="cb10-56"><a href="#cb10-56" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
 <!--
-### Datastructures
-Lists also act as mappings by the following convention: a list entry that contains an `=` character can be treated as a key-value pair, whereby the string before the first `=` is treated as key.
+
+### Ideas for generalization
+- fexpr is all we need for defining macros
+- I would like all mutations to the current scope be a simple collection mutation, which is possible when we define the current environment as some collection and pass it e.g. as first value to all macros
+- allowing infix macros gives great flexibility and allows defining command algebra
+- allowing attached unary macros allows even more syntactic magic to emulate POSIX syntax, but it starts getting out of hand and feels gimmicky
+- allowing attached binary macros allows even more, like $asfd=ghjk and allows reading (env -0) output as lush code
+- what special operators do we then need? I guess eval and macro could be all we need?
 
 ### Questions
 - Can we generalize over environment variables to be keys in an environment listmap?
+  - I would like dot-syntax for key lookup: $.PATH
+  - Or slash? $/PATH
+  - But it would be nice to be POSIX compatible in this regard: $PATH. What about mymap$mykey? Then the environment would be the "default map".
+    We could still allow slashes or dots for nested lookups.
+  - Listmaps would be a cool datastructure to parse json into. How do we export json?
+  - 
+- Define synopsis/signature syntax
+- Need shorthand macro for install-program
+- in the end all special operators should probably be no more than 3 chars
 -->
 </div>
 </body>
