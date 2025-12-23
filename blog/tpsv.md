@@ -49,7 +49,7 @@ This example highlights a few aspects.
   This can be convenient if you want to paste the tabular data somewhere.
 - In general, the last column is ideal for long cell contents.
 - The cell with the "TODO" is beyond the last column, so it acts as a comment.
-- The last line is an example of a row continuation, which can be nice if you don't want the text to exceed a certain width.
+- The last line is an example of a row continuation, which can be nice if you don't want the text to exceed a certain width. Note that this is not compatible with markdown tables.
 
 ## Editor configuration
 
