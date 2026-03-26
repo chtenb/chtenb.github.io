@@ -67,7 +67,7 @@ notation.</p>
 <li><a href="#inverses">Definition 5. (Inverses)</a></li>
 <li><a href="#isomorphism">Definition 6. (Isomorphism)</a></li>
 <li><a href="#monomorphism">Definition 7. (Monomorphism)</a></li>
-<li><a href="#epiomorphism">Definition 8. (Epiomorphism)</a></li>
+<li><a href="#epimorphism">Definition 8. (Epimorphism)</a></li>
 <li><a href="#product-and-coproduct">Definition 9. (Product and
 Coproduct)</a></li>
 <li><a href="#functor">Definition 10. (Functor)</a></li>
@@ -190,9 +190,9 @@ morphism to <code>f</code>.</p>
 <pre><code>f ∘ g = f ∘ h ⇒ g = h</code></pre>
 <p>This is the categorical generalization of <em>injectivity</em>.</p>
 </section>
-<section id="epiomorphism" class="Definition">
-<h4><a class="anchor" href="#epiomorphism"></a>Definition 8.
-(Epiomorphism)</h4>
+<section id="epimorphism" class="Definition">
+<h4><a class="anchor" href="#epimorphism"></a>Definition 8.
+(Epimorphism)</h4>
 <p><code>f</code> is <strong>epi</strong> if for any object
 <code>X</code> and any two morphisms <code>g, h : B → X</code>,</p>
 <pre><code>g ∘ f = h ∘ f ⇒ g = h</code></pre>
@@ -207,19 +207,18 @@ imply it’s an isomorphism in general (unlike in Set).</p>
 <p>A <strong>product</strong> of two objects <code>A</code> and
 <code>B</code> is the object <code>C</code> equipped with two morphisms
 (called projections) <code>p: C → A</code> and <code>q: C → B</code>
-such that for any other object <code>C&#39;</code> equipped with two
-projections <code>p&#39;: C&#39; → A</code> and <code>q&#39;: C&#39; → B</code> there is
-a unique morphism <code>m: C&#39; → C</code> that factorizes those
-projections:</p>
+such that for any object <code>C&#39;</code> equipped with two projections
+<code>p&#39;: C&#39; → A</code> and <code>q&#39;: C&#39; → B</code> there is a unique
+morphism <code>m: C&#39; → C</code> that factorizes those projections:</p>
 <pre><code> p&#39; = m ▹ p
  q&#39; = m ▹ q</code></pre>
 <p>Dually, a <strong>coproduct</strong> of two objects <code>A</code>
 and <code>B</code> is the object <code>C</code> equipped with two
 morphisms (called injections) <code>i: A → C</code> and
-<code>j: B → C</code> such that for any other object <code>C&#39;</code>
-equipped with two injections <code>i&#39;: A → C&#39;</code> and
-<code>j&#39;: B → C&#39;</code> there is a unique morphism
-<code>m: C → C&#39;</code> that factorizes those injections:</p>
+<code>j: B → C</code> such that for any object <code>C&#39;</code> equipped
+with two injections <code>i&#39;: A → C&#39;</code> and <code>j&#39;: B → C&#39;</code>
+there is a unique morphism <code>m: C → C&#39;</code> that factorizes those
+injections:</p>
 <pre><code> i&#39; = i ▹ m
  j&#39; = j ▹ m</code></pre>
 </section>

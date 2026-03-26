@@ -68,7 +68,7 @@ This is the categorical generalization of *injectivity*.
 
 
 ::: Definition :::
-# Epiomorphism
+# Epimorphism
 `f` is **epi** if for any object `X` and any two morphisms `g, h : B → X`,
 
 ```
@@ -83,7 +83,7 @@ A morphism that is both epi and mono is called **bimorphism**, but note this doe
 ::: Definition :::
 # Product and Coproduct
 A **product** of two objects `A` and `B` is the object `C` equipped with two morphisms (called projections) `p: C → A` and `q: C → B` 
-such that for any other object `C'` equipped with two projections `p': C' → A` and `q': C' → B` there is a unique morphism `m: C' → C` that factorizes those projections: 
+such that for any object `C'` equipped with two projections `p': C' → A` and `q': C' → B` there is a unique morphism `m: C' → C` that factorizes those projections: 
 
 ```
  p' = m ▹ p
@@ -91,7 +91,7 @@ such that for any other object `C'` equipped with two projections `p': C' → A`
 ```
 
 Dually, a **coproduct** of two objects `A` and `B` is the object `C` equipped with two morphisms (called injections) `i: A → C` and `j: B → C` 
-such that for any other object `C'` equipped with two injections `i': A → C'` and `j': B → C'` there is a unique morphism `m: C → C'` that factorizes those injections: 
+such that for any object `C'` equipped with two injections `i': A → C'` and `j': B → C'` there is a unique morphism `m: C → C'` that factorizes those injections: 
 
 ```
  i' = i ▹ m
