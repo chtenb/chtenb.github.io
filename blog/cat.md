@@ -25,11 +25,22 @@ A **category** `𝓒` consists of the following components:
 
 
 ::: Definition :::
+# Initial object
+An object `I` is called **initial** if for every object `X` in `𝓒`, there exists a unique morphism `I → X`.
+It is the object that maps out to everything uniquely.
+:::
+
+::: Definition :::
+# Terminal object
+An object `T` is called **terminal** if for every object `X` in `𝓒`, there exists a unique morphism `X → T`.
+It is the object that maps out to everything uniquely.
+:::
+
+::: Definition :::
 # Homsets/Arrowsets
 For two objects `A,B` in a category `𝓒`, the set of morphisms from `A` to `B` is called the homset, or arrowset, from `A` to `B`. We denote this set by `A→B`.
 In other words, the notation `m ∈ A→B` is equivalent to `m: A → B`.
 :::
-
 
 ::: Definition :::
 # Inverses
@@ -43,6 +54,51 @@ Given a category `𝓒` and a morphism `f: A → B`.
 ::: Definition :::
 # Isomorphism
 Given a category `𝓒`, a morphism `f: A → B` is called an **isomorphism** if there exists an inverse morphism to `f`.
+:::
+
+In category theory, for a morphism **f : A → B** in a category **C**:
+
+::: Definition :::
+# Monomorphism
+`f` is mono if for any object `X` and any two morphisms `g, h : X → A`,
+
+```
+f ∘ g = f ∘ h ⇒ g = h
+```
+This is the categorical generalization of **injectivity**.
+:::
+
+
+::: Definition :::
+# Epiomorphism
+`f` is epi if for any object `X` and any two morphisms `g, h : B → X`,
+
+```
+g ∘ f = h ∘ f ⇒ g = h
+```
+
+Think of it as the categorical generalization of **surjectivity**.
+:::
+
+A morphism that is both epi and mono is called **bimorphism**, but note this does **not** imply it's an isomorphism in general (unlike in Set).
+
+::: Definition :::
+# Product and Coproduct
+A **product** of two objects `A` and `B` is the object `C` equipped with two morphisms (called projections) `p: C → A` and `q: C → B` 
+such that for any other object `C'` equipped with two projections `p': C' → A` and `q': C' → B` there is a unique morphism `m: C' → C` that factorizes those projections: 
+
+```
+ p' = m ▹ p
+ q' = m ▹ q
+```
+
+Dually, a **coproduct** of two objects `A` and `B` is the object `C` equipped with two morphisms (called injections) `i: A → C` and `j: B → C` 
+such that for any other object `C'` equipped with two injections `i': A → C'` and `j': B → C'` there is a unique morphism `m: C → C'` that factorizes those injections: 
+
+```
+ i' = i ▹ m
+ j' = j ▹ m
+```
 :::
 
 ::: Definition :::
@@ -175,25 +231,6 @@ ii) Let (f₁⁻,f₂) : <A₁,A₂> → <B₁,B₂> and (g₁⁻,g₂) : <B₁,
  = →(f₁⁻,f₂) ▹ →(g₁⁻,g₂)                                (eta reduction)
 ```
 ∎
-:::
-
-::: Definition :::
-# Product and Coproduct
-A **product** of two objects `A` and `B` is the object `C` equipped with two morphisms (called projections) `p: C → A` and `q: C → B` 
-such that for any other object `C'` equipped with two projections `p': C' → A` and `q': C' → B` there is a unique morphism `m: C' → C` that factorizes those projections: 
-
-```
- p' = m ▹ p
- q' = m ▹ q
-```
-
-Dually, a **coproduct** of two objects `A` and `B` is the object `C` equipped with two morphisms (called injections) `i: A → C` and `j: B → C` 
-such that for any other object `C'` equipped with two injections `i': A → C'` and `j': B → C'` there is a unique morphism `m: C → C'` that factorizes those injections: 
-
-```
- i' = i ▹ m
- j' = j ▹ m
-```
 :::
 
 ::: Definition :::
