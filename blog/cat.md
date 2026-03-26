@@ -57,18 +57,14 @@ Given a category `𝓒`, a morphism `f: A → B` is called an **isomorphism** if
 :::
 
 ::: Definition :::
-# Monomorphism
+# Monomorphism and Epimorphism
 `f` is **mono** if for any object `X` and any two morphisms `g, h : X → A`,
 
 ```
 f ∘ g = f ∘ h ⇒ g = h
 ```
 This is the categorical generalization of *injectivity*.
-:::
 
-
-::: Definition :::
-# Epimorphism
 `f` is **epi** if for any object `X` and any two morphisms `g, h : B → X`,
 
 ```
@@ -90,7 +86,7 @@ such that for any object `C'` equipped with two projections `p': C' → A` and `
  q' = m ▹ q
 ```
 
-Dually, a **coproduct** of two objects `A` and `B` is the object `C` equipped with two morphisms (called injections) `i: A → C` and `j: B → C` 
+Dually, a **coproduct** (also called *sum*) of two objects `A` and `B` is the object `C` equipped with two morphisms (called injections) `i: A → C` and `j: B → C` 
 such that for any object `C'` equipped with two injections `i': A → C'` and `j': B → C'` there is a unique morphism `m: C → C'` that factorizes those injections: 
 
 ```
@@ -98,6 +94,17 @@ such that for any object `C'` equipped with two injections `i': A → C'` and `j
  j' = j ▹ m
 ```
 :::
+
+::: Definition :::
+# Pullback and Pushout
+The **pullback** of two morphisms `f: A → C, g: B → C` is an object `X` together with two morphisms `p: X → A` and `q: X → B` such that `p ▹ f = q ▹ g`, that is minimal in the following sense:
+For every object `Y` with morphisms `p': Y → A` and `q': Y → B` such that `p' ▹ f = q' ▹ g` there exists a unique morphism `m : Y → X` that factorizes these morphisms: `m ▹ p = p'` and `m ▹ q = q'`.
+
+The **pushout** is the dual notion of the pullback.
+:::
+
+The pullback and pushout can be seen as generalizations from the product and coproduct.
+If you choose `C` to be a terminal object, the notions reduce to the product and coproduct.
 
 ::: Definition :::
 # Functor
