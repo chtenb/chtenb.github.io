@@ -24,19 +24,25 @@ A **category** `𝓒` consists of the following components:
 :::
 
 ::: Definition :::
+# Dual Category or Opposite Category
+Every category `𝓒` has an opposite category, denoted `𝓒⁻`, which has the same objects as `𝓒`, but has the arrows reversed.
+
+1. **Objects**: every object `A` in `𝓒⁻` is an object in `𝓒`
+2. **Morphisms**: a morphism `f⁻: A → B` in `𝓒⁻` is a morphism `f: B → A` in `𝓒`. Composition `▹⁻` between `f⁻` and `g⁻: B → C` is defined `f⁻ ▹⁻ g⁻ = (g▹f)⁻`.
+:::
+
+All definitions on categories can be defined on corresponding opposite categories. These are called *dual* definitions.
+
+::: Definition :::
 # Homsets/Arrowsets
 For two objects `A,B` in a category `𝓒`, the set of morphisms from `A` to `B` is called the **homset**, or **arrowset**, from `A` to `B`. We denote this set by `A→B`.
 In other words, the notation `m ∈ A→B` is equivalent to `m: A → B`.
 :::
 
 ::: Definition :::
-# Initial object
+# Initial and terminal objects
 An object `I` is called **initial** if for every object `X` in `𝓒`, there exists a unique morphism `I → X`.
-:::
-
-::: Definition :::
-# Terminal object
-An object `T` is called **terminal** if for every object `X` in `𝓒`, there exists a unique morphism `X → T`.
+Dually, an object `T` is called **terminal** if for every object `X` in `𝓒`, there exists a unique morphism `X → T`.
 :::
 
 ::: Definition :::
@@ -62,7 +68,7 @@ f ∘ g = f ∘ h ⇒ g = h
 ```
 This is the categorical generalization of *injectivity*.
 
-`f` is **epi** if for any object `X` and any two morphisms `g, h : B → X`,
+Dually, `f` is **epi** if for any object `X` and any two morphisms `g, h : B → X`,
 
 ```
 g ∘ f = h ∘ f ⇒ g = h
@@ -169,14 +175,6 @@ id<A,B> ▹ (g, g') = (id<A>, id<B>) ▹ (g, g') = (id<A> ▹ g, id<B> ▹ g') =
 ::: Definition :::
 # Bifunctor
 Given three categories `𝓒`, `𝓓` and `𝓔`, a functor `F: 𝓒 ⨯ 𝓓 → 𝓔` is called a *bifunctor*.
-:::
-
-::: Definition :::
-# Dual Category or Opposite Category
-Every category `𝓒` has an opposite category, denoted `𝓒⁻`, which has the same objects as `𝓒`, but has the arrows reversed.
-
-1. **Objects**: every object `A` in `𝓒⁻` is an object in `𝓒`
-2. **Morphisms**: a morphism `f⁻: A → B` in `𝓒⁻` is a morphism `f: B → A` in `𝓒`. Composition `▹⁻` between `f⁻` and `g⁻: B → C` is defined `f⁻ ▹⁻ g⁻ = (g▹f)⁻`.
 :::
 
 ::: Definition :::
