@@ -23,23 +23,20 @@ A **category** `𝓒` consists of the following components:
 4. **Identity morphism**: For each object `A`, there exists an identity morphism `id<A>` such that for any morphism `f: A → B`, we have `f ▹ id<B> = f = id<A> ▹ f`.
 :::
 
+::: Definition :::
+# Homsets/Arrowsets
+For two objects `A,B` in a category `𝓒`, the set of morphisms from `A` to `B` is called the **homset**, or **arrowset**, from `A` to `B`. We denote this set by `A→B`.
+In other words, the notation `m ∈ A→B` is equivalent to `m: A → B`.
+:::
 
 ::: Definition :::
 # Initial object
 An object `I` is called **initial** if for every object `X` in `𝓒`, there exists a unique morphism `I → X`.
-It is the object that maps out to everything uniquely.
 :::
 
 ::: Definition :::
 # Terminal object
 An object `T` is called **terminal** if for every object `X` in `𝓒`, there exists a unique morphism `X → T`.
-It is the object that maps out to everything uniquely.
-:::
-
-::: Definition :::
-# Homsets/Arrowsets
-For two objects `A,B` in a category `𝓒`, the set of morphisms from `A` to `B` is called the **homset**, or **arrowset**, from `A` to `B`. We denote this set by `A→B`.
-In other words, the notation `m ∈ A→B` is equivalent to `m: A → B`.
 :::
 
 ::: Definition :::
