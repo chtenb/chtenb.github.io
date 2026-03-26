@@ -38,7 +38,7 @@ It is the object that maps out to everything uniquely.
 
 ::: Definition :::
 # Homsets/Arrowsets
-For two objects `A,B` in a category `𝓒`, the set of morphisms from `A` to `B` is called the homset, or arrowset, from `A` to `B`. We denote this set by `A→B`.
+For two objects `A,B` in a category `𝓒`, the set of morphisms from `A` to `B` is called the **homset**, or **arrowset**, from `A` to `B`. We denote this set by `A→B`.
 In other words, the notation `m ∈ A→B` is equivalent to `m: A → B`.
 :::
 
@@ -56,28 +56,26 @@ Given a category `𝓒` and a morphism `f: A → B`.
 Given a category `𝓒`, a morphism `f: A → B` is called an **isomorphism** if there exists an inverse morphism to `f`.
 :::
 
-In category theory, for a morphism **f : A → B** in a category **C**:
-
 ::: Definition :::
 # Monomorphism
-`f` is mono if for any object `X` and any two morphisms `g, h : X → A`,
+`f` is **mono** if for any object `X` and any two morphisms `g, h : X → A`,
 
 ```
 f ∘ g = f ∘ h ⇒ g = h
 ```
-This is the categorical generalization of **injectivity**.
+This is the categorical generalization of *injectivity*.
 :::
 
 
 ::: Definition :::
 # Epiomorphism
-`f` is epi if for any object `X` and any two morphisms `g, h : B → X`,
+`f` is **epi** if for any object `X` and any two morphisms `g, h : B → X`,
 
 ```
 g ∘ f = h ∘ f ⇒ g = h
 ```
 
-Think of it as the categorical generalization of **surjectivity**.
+This is the categorical generalization of *surjectivity*.
 :::
 
 A morphism that is both epi and mono is called **bimorphism**, but note this does **not** imply it's an isomorphism in general (unlike in Set).
