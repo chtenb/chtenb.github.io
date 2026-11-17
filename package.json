@@ -10,7 +10,7 @@
     "dev": "just watch & parcel serve --watch-backend=watchman index.html blog/*.html",
     "publish": "npm run release && git add . && git commit -m publish",
 
-    "release": "rm -rf docs && just && npm run build && parcel build --no-optimize --no-source-maps --dist-dir docs/ './index.html' './blog/*.html' && git checkout -- docs/CNAME docs/.nojekyll",
+    "release": "rm -rf docs && just && cp ./blog/*.pdf ./docs/ && npm run build && parcel build --no-optimize --no-source-maps --dist-dir docs/ './index.html' './blog/*.html' && git checkout -- docs/CNAME docs/.nojekyll",
     "clean": "rm -rf .cache .spago .psci_modules node_modules output .parcel-cache",
     "test": "npm exec spago test",
     "serve": "parcel serve --watch-backend=watchman index.html blog/*.html"
