@@ -89,7 +89,7 @@ Let `D` be the set of all finite unions of such intervals, with
 a + b := a ∪ b     0 := ∅ = [s, s)
 a ⋅ b := a ∩ b     1 := T ∖ {+∞} = [-∞, +∞)
 ```
-Then `(D, +, ⋅, 0, 1)` is an observation algebra.
+_ Then `(D, +, ⋅, 0, 1)` is an observation algebra.
 *Proof.* First, the operations are well defined on `D`. Closure under `+` is immediate, since a union of two finite unions of intervals is one. For `⋅`, totality of `≤` gives
 ```
 [s₁, e₁) ∩ [s₂, e₂) = [ max(s₁, s₂), min(e₁, e₂) )
@@ -98,14 +98,70 @@ so an intersection of intervals is an interval, and `(⋃ᵢ Iᵢ) ∩ (⋃ⱼ J
 Hence `D` is a sublattice of `(𝒫(T ∖ {+∞}), ∪, ∩)` containing `∅` and `T ∖ {+∞}`, and each axiom holds already in the powerset lattice.
 ∎
 
-**Example (Lattice dioid).** Generalizing the previous examples, any bounded distributive lattice is also an observation algebra.
+**Example (Lattice).** Generalizing the previous examples, any bounded distributive lattice is also an observation algebra.
 Let `(L, ∨, ∧, ⊥, ⊤)` be a bounded distributive lattice, and let `D = L`, with
 ```
 0 := ⊥     1 := ⊤
 a + b := a ∨ b
 a ⋅ b := a ∧ b
 ```
-Then `(D, +, ⋅, 0, 1)` is an observation algebra.
+_ Then `(D, +, ⋅, 0, 1)` is an observation algebra.
+
+**Example (Lineage).** Let `S` be a set of *sources*, and `⊥ ∉ 𝒫(S)` a separate element representing no observation.
+An element is either `⊥`, or the set of sources that contributed to it. Let `D = 𝒫(S) ∪ {⊥}`, with
+```
+0 := ⊥     1 := ∅
+a + b := a ∪ b      a ⋅ b := a ∪ b      for a, b ⊆ S
+⊥ + a := a + ⊥ := a
+⊥ ⋅ a := a ⋅ ⊥ := ⊥
+```
+_ Then `(D, +, ⋅, 0, 1)` is an observation algebra.
+
+Both independent and joint observations draw on the sources of all their parts.
+The trivial observation `∅` involves no sources, which is different from not observing anything at all.
+
+Unlike in a lattice, the product grows: `a ⊆ ab`.
+Lineage records *which* sources contributed, but not *how*: it cannot distinguish independent from joint observations, since `+` and `⋅` coincide on sets.
+It is not a lattice: `∅ + {s} = {s} ≠ ∅`.
+
+This algebra is known as the *lineage semiring* in database provenance (Green, ICDT 2009).
+
+**Example (Minimum Count).** Let `⊥ ∉ ℕ` be a separate element representing no observation.
+An element `n ∈ ℕ` means "at least `n` were observed". Let `D = ℕ ∪ {⊥}`, with
+```
+0 := ⊥     1 := 0 ∈ ℕ
+a + b := max(a, b)      a ⋅ b := max(a, b)      for a, b ∈ ℕ
+⊥ + a := a + ⊥ := a
+⊥ ⋅ a := a ⋅ ⊥ := ⊥
+```
+_ Then `(D, +, ⋅, 0, 1)` is an observation algebra.
+
+The information ordering is `⊥ ⊆ 0 ⊆ 1 ⊆ 2 ⊆ ⋯`: counts only grow as reports accumulate.
+It is not a lattice: `0 + 5 = 5 ≠ 0`.
+
+By the *Open World Principle*, an exact count can never be observed, since a further report may always arrive: only a lower bound can.
+This is why counting takes this form, and why exact counts do not form an observation algebra.
+The trivial observation is "at least 0", which differs from no observation `⊥`.
+
+**Example (Discrete).** Let `S` be a set of *values*, and `* ∉ S` a separate element representing an unspecified value. Let `D = 𝒫(S ∪ {*})`, with
+```
+0 := ∅     1 := {*}
+a + b := a ∪ b
+a ⋅ b := (a ∩ b) ∪ (a if * ∈ b) ∪ (b if * ∈ a)
+```
+_ Then `(D, +, ⋅, 0, 1)` is an observation algebra: it is the taxonomy refinement with root `*`, where every value refines `*` and no value refines another.
+
+Two different values observed jointly cancel each other, while independent reports of them coexist:
+```
+{red} ⋅ {red} = {red}
+{red} ⋅ {green} = ∅
+{red} ⋅ {*} = {red}
+{red, green} ⋅ {green, blue} = {green}
+```
+Typical uses are categorical attributes, such as colours, statuses or country codes.
+
+The algebra is not a lattice, since `{*} + {red} = {*, red} ≠ {*}`: an unspecified value and a specific value can be observed independently.
+With `1 = S` instead of `{*}`, the product becomes intersection and we recover the powerset example, but then the trivial observation reads as "all values at once" rather than "an unspecified value".
 
 **Example (Taxonomy Refinement).** Let `(T, ≤)` be a *taxonomy*: a partial order with a root `*` such that `x ≤ *` for all `x ∈ T`, and in which the ancestors `{ y ∈ T | x ≤ y }` of any `x` form a chain.
 Read `x ≤ y` as "`x` refines `y`", e.g. `Amsterdam ≤ Netherlands ≤ Europe`.
@@ -114,20 +170,20 @@ Two nodes are *compatible* if one refines the other, and then we write
 x ∧ y := x    if x ≤ y
          y    if y ≤ x
 ```
-Let `D = 𝒫(T)`, with
+_ Let `D = 𝒫(T)`, with
 ```
 0 := ∅     1 := {*}
 a + b := a ∪ b
 a ⋅ b := { x ∧ y | x ∈ a, y ∈ b, x and y compatible }
 ```
-Then `(D, +, ⋅, 0, 1)` is an observation algebra.
+_ Then `(D, +, ⋅, 0, 1)` is an observation algebra.
 
 The product refines joint observations and drops the incompatible combinations:
 ```
 {Netherlands} ⋅ {Amsterdam, Paris} = {Amsterdam}
 ```
 
-**Example (Free Observation Algebra with Names).**
+**Example (Free Named Observations).**
 We define `Obs(Atom, Attr)` as the free observation algebra over a set of atoms `Atom`, with names from a set of attributes `Attr`.
 When `Atom` and `Attr` are clear from context, we simply write `Obs`.
 
