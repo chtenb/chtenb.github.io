@@ -18,10 +18,10 @@ Observations that were made together, such as the fields of one record or the pa
 Observations that were made separately are independent.
 Independent observations can be interpreted together but don't have to be, while the parts of a joint observation must always be considered together.
 
-**Blank Observations**
+**Trivial Observations**
 : Having no observation is different from having an observation that carries no information.
 No observation means that no report was made: there is no witness, no record, no reading.
-A blank observation means that a report was made, but without any details.
+A trivial observation means that a report was made, but without any details.
 
 **Completion Principle**
 : A joint observation needs one of each of its parts.
@@ -56,14 +56,14 @@ An element of the structure represents a collection of observations.
 10. *Annihilation*: `a ⋅ 0 = 0`
 
 The *sum* `a + b` combines `a` and `b` as independent observations, and the *product* `a ⋅ b` combines them into a joint observation.
-The element `0` represents no observation, and `1` represents the blank observation.
+The element `0` represents no observation, and `1` represents the trivial observation.
 By the *Open World Principle*, new observations are always admissible, so any two collections of observations can be added.
 Hence the observation algebra is closed under addition.
 An observation is determined by its information alone (*Observations*), so it does not matter how independent observations are grouped (1), in which order they arrive (3), or whether one is repeated (4).
-Adding no observation changes nothing (2), by *Blank Observations*.
+Adding no observation changes nothing (2), by *Trivial Observations*.
 Since independent observations can be considered together and any two collections can be added, by extension any two collections can be multiplied.
 A joint observation carries exactly the information of its parts, so by *Observations* it does not matter how its parts are grouped (5) or ordered (7), or whether a part is repeated (8).
-A blank part carries no information, so it does not change a joint observation (6), by *Blank Observations*.
+A trivial part carries no information, so it does not change a joint observation (6), by *Trivial Observations*.
 Distributivity and Annihilation follow from the *Completion Principle*.
 If a part of a joint observation was reported independently as `b` and as `c`, each report completes the joint observation independently (9).
 If a part was never reported, the joint observation cannot be completed (10).
@@ -157,7 +157,7 @@ Let `x, y, z ∈ Obs` and `a, b ∈ Path`.
 
 - *Product Associativity*: `[x, [y, z]] = [[x, y], z]`
 - *Product Commutativity*: `[x, y] = [y, x]`
-- *Product Identity*: The identity value is denoted `[]`, and represents the blank observation: `[x, []] = x`.
+- *Product Identity*: The identity value is denoted `[]`, and represents the trivial observation: `[x, []] = x`.
 - *Product Idempotency*: `[x, x] = x` "Having an observation twice is the same as having it once"
 
 - *Product-Sum Distributivity*: `[x, {y, z}] = {[x, y], [x, z]}` "An observation involving two independently observed values is the same as observing those values separately."
@@ -189,6 +189,8 @@ Information Ordering
 Every observation algebra carries an order that compares how much is observed: `a ⊆ b` when `b` already includes every observation in `a`.
 
 **Definition (Information Ordering).** Let `D` be an observation algebra. Denote `a ⊆ b` iff `a + b = b`.
+
+<!--
 
 **Theorem.** `⊆` is a partial order on `D`, with least element `0`.
 *Proof.*
@@ -255,7 +257,6 @@ hence `a + b ⊆ c`.
 So `(D, ⊆)` is a join-semilattice with least element `0`, and `+` is its join.
 
 **Theorem (Order Compatibility).** For all `a, b, c ∈ D`, if `a ⊆ b`, then `a + c ⊆ b + c` and `ac ⊆ bc`.
-
 *Proof.* Assume `a ⊆ b`. Then
 ```
 (a + c) + (b + c) = (a + b) + (c + c)    (1, 3)
@@ -295,14 +296,40 @@ so `c ⊆ ab` by transitivity.
 So `ab` is the greatest lower bound, and `ab = a ∩ b` by uniqueness.
 ∎
 
-<!--
-
 Maps and Polynomials
 ====================
 
-### Maps
+## Cartesian Products
 
-We study the following properties of functions between observation algebras, which we call *maps*.
+**Definition (Cartesian Product).** Let `X` and `Y` be observation algebras. The *Cartesian product* `X × Y` is the set of pairs `(x, y)` with `x ∈ X` and `y ∈ Y`, with
+```
+(x, y) + (x', y') := (x + x', y + y')      0 := (0, 0)
+(x, y) ⋅ (x', y') := (x ⋅ x', y ⋅ y')      1 := (1, 1)
+```
+We write `Xⁿ` for the Cartesian product of `n` copies of `X`.
+
+**Theorem.** `X × Y` is an observation algebra.
+*Proof.* Each axiom holds componentwise, since it holds in `X` and in `Y`.
+For example, `(x, y) ⋅ (0, 0) = (x ⋅ 0, y ⋅ 0) = (0, 0)` by (10).
+∎
+
+**Theorem.** The information ordering on `X × Y` is componentwise: `(x, y) ⊆ (x', y')` iff `x ⊆ x'` and `y ⊆ y'`.
+*Proof.*
+```
+(x, y) ⊆ (x', y')  ⟺  (x + x', y + y') = (x', y')
+                   ⟺  x + x' = x'  and  y + y' = y'
+                   ⟺  x ⊆ x'  and  y ⊆ y'
+```
+∎
+
+The *projections* `π₁ : X × Y → X` and `π₂ : X × Y → Y`, with `π₁(x, y) = x` and `π₂(x, y) = y`, are homomorphisms, since all operations are componentwise.
+
+An element of `X × Y` is a pair of collections of observations, one in each algebra, kept side by side.
+Note that `(x, 0)` is not `0`: it has observations in `X` and none in `Y`.
+
+## Maps
+
+We will study functions between observation algebras, which we call *maps*.
 Let `X` and `Y` be observation algebras. A map `f : X → Y` is called
 
 - *monotonic* if `x ⊆ y` implies `f(x) ⊆ f(y)`,
@@ -312,29 +339,36 @@ Let `X` and `Y` be observation algebras. A map `f : X → Y` is called
 - *unital* if `f(1) = 1`,
 
 for all `x, y ∈ X`.
-An operation `f : Aⁿ → A` of several arguments is said to have one of these properties if it has it in each argument separately, with the other arguments fixed.
+A map `f : Xⁿ → Y` of several arguments is a map from the Cartesian product.
+For maps `g, h : X → Y` we write `g + h` and `g ⋅ h` for the operations `x ↦ g(x) + h(x)` and `x ↦ g(x) ⋅ h(x)`.
+Additivity does not imply normality: a constant map `f(x) = c` where `c ≠ 0` is additive by (4), but `f(0) = c`.
+The operations `+` and `⋅` are monotonic by *Order Compatibility* and (3, 7).
+The operation `+` is additive by (1, 3, 4), and `⋅` is additive by (7, 9), multiplicative by (5, 7, 8) and normal by (10).
+The operation `+` is multiplicative only if `x + yz = (x + y)(x + z)`, which with `y = 0` gives `x = x(x + z)`. This fails in the taxonomy algebra: `{ρ} ⋅ ({ρ} + {x}) = {ρ, x} ≠ {ρ}` for `x ≠ ρ`.
 
-Additivity does not imply normality: a constant operation `f(x) = c` is additive by (4), but `f(0) = c`.
-
-`+` and `⋅` are monotonic by *Order Compatibility*.
-`+` is additive by (1, 3, 4), and `⋅` is additive by (7, 9), multiplicative by (5, 7, 8) and normal by (10).
-`+` is multiplicative only if `x + yz = (x + y)(x + z)`, which with `y = 0` gives `x = x(x + z)`. This fails in the taxonomy algebra: `{ρ} ⋅ ({ρ} + {x}) = {ρ, x} ≠ {ρ}` for `x ≠ ρ`.
-
-**Theorem:** Every additive map is monotonic.
-
+**Theorem.** Every additive map is monotonic.
 *Proof.* Let `x ⊆ y`, so `x + y = y`. Then `f(y) = f(x + y) = f(x) + f(y)`, hence `f(x) ⊆ f(y)`.
 For several arguments, change one argument at a time and use transitivity.
 ∎
 
-### Operations
+## Operations
+Agreed: "product" already means `⋅` in your document. Some options:
+
+| Name | Notes |
+|---|---|
+| **Cartesian product** | the term you used yourself; the adjective keeps it apart from `⋅` |
+| *direct product* | the standard term in universal algebra, but it still contains "product" |
+| *pairing* or *tuple algebra* | avoids the word altogether, but isn't a standard term |
+
+I'd use **Cartesian product**, always with the adjective, and the symbol `×`. It's standard, readers recognise it, and in your text plain "product" never needs to mean anything other than `⋅`. The renamed section:
 
 Let `A` be an observation algebra.
-An *n-ary operation* on `A` is a function `f : Aⁿ → A`.
+An *n-ary operation* on `A` is a map `f : Aⁿ → A`.
 
 For example, `+` and `⋅` are binary operations on every observation algebra, and every constant `c` is a 0-ary operation.
 The naming operations `a:` of `Obs` are unary operations, as are complement `x ↦ S ∖ x` on the powerset `𝒫(S)`, and the shift `[s, e) ↦ [s + 1, e + 1)` on the half-open intervals over `ℤ ∪ {-∞, +∞}`, where `±∞ + 1 = ±∞`.
 
-For operations `g, h : Aⁿ → A` we write `g + h` and `g ⋅ h` for the operations `x ↦ g(x) + h(x)` and `x ↦ g(x) ⋅ h(x)`.
+<!--
 
 ### Polynomials
 
