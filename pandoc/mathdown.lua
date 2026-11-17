@@ -11,6 +11,7 @@ mathdown.lua — turn Markdown with Unicode math in backticks into a math paper.
   For all …                head, like a heading. The body is the rest of that
                            paragraph, or the next block if a blank line follows.
                            (Also Definition, Example, Lemma, Corollary, Remark, …)
+  _ text after a display → continues the paragraph (otherwise a new one starts)
   *Proof.* … ∎           → proof environment, up to the block holding ∎.
                            A proof or keyword may also start on a new line
                            inside a paragraph (no blank line needed).
@@ -128,7 +129,10 @@ tex = function(s, text_words)
       local gap = (prev_atom and c[i - 1] == ' ') and '\\ ' or ''
       if #w == 1 then emit(w, true)
       elseif OPS[w] then emit('\\' .. w .. ' ', true)
-      elseif WORDS[w] then emit('\\text{ ' .. w .. ' }', false)
+      elseif WORDS[w] then
+        -- "x = 1  and  y = 2": two spaces in the source give a wide gap
+        local wide = c[i - 1] == ' ' and c[i - 2] == ' '
+        emit(wide and ('\\quad\\text{' .. w .. '}\\quad ') or ('\\text{ ' .. w .. ' }'), false)
       elseif #w == 2 and w:match('^%l%l$') and not text_words then
         emit(w, true)                -- juxtaposed variables: ab, xy
       elseif text_words then emit(gap .. '\\text{' .. w .. '}', true)
@@ -176,17 +180,70 @@ end
 -- Display blocks
 ---------------------------------------------------------------------------
 
-local RELS = { ':=', '⊆', '⊇', '≤', '≥', '=', '<', '>', '≅', '≡' }
+-- The relations a display is aligned on, in tiers of decreasing precedence.
+-- A block aligns on the first tier that occurs in any of its lines, and each
+-- line at its leftmost relation from that tier (outside brackets). So in
+--   (x, y) ⊆ (x', y')  ⟺  (x + x', y + y') = (x', y')
+--                      ⟺  x ⊆ x'  and  y ⊆ y'
+-- the ⟺ wins over ⊆ and =. Anything not listed (<, ∈, ≠, …) is never used.
+-- Override per document in the front matter, one list per tier:
+--   mathdown-align: [["⟺", "⟹"], [":=", "=", "⊆", "⊑"]]
+-- (a flat list is a single tier).
+local RELS = {
+  { '⟺', '⟹', '⟸', '⇔', '⇒', '⇐' },
+  { ':=', '=', '≤', '⊆' },
+}
+
+local function sort_tier(t)
+  -- longest first, so ":=" wins over "=" and "<=" over "<"
+  table.sort(t, function(a, b) return #a > #b end)
+  return t
+end
+for _, t in ipairs(RELS) do sort_tier(t) end
+
+local ALL_RELS = {}
+local function flatten_rels()
+  ALL_RELS = {}
+  for _, t in ipairs(RELS) do for _, r in ipairs(t) do ALL_RELS[#ALL_RELS + 1] = r end end
+  sort_tier(ALL_RELS)
+end
+flatten_rels()
+
+local align_pass = {
+  Meta = function(meta)
+    local a = meta['mathdown-align']
+    if not a then return end
+    RELS = {}
+    local flat = {}
+    for _, x in ipairs(a) do
+      if type(x) == 'table' and x.t == nil or (type(x) == 'table' and x.t == 'MetaList') then
+        local tier = {}
+        for _, y in ipairs(x) do tier[#tier + 1] = stringify(y) end
+        RELS[#RELS + 1] = sort_tier(tier)
+      else
+        flat[#flat + 1] = stringify(x)
+      end
+    end
+    if #flat > 0 then RELS[#RELS + 1] = sort_tier(flat) end
+    flatten_rels()
+  end,
+}
+
+-- Logical arrows used for alignment get amsmath's wider spacing.
+local WIDE = { ['⟺']='\\iff ', ['⇔']='\\iff ', ['⟹']='\\implies ',
+  ['⇒']='\\implies ', ['⟸']='\\impliedby ', ['⇐']='\\impliedby ' }
+local function rel_tex(r) return WIDE[r] or tex(r) end
 
 -- Split at the first relation outside brackets: lhs, rel, rhs.
-local function split_rel(s)
+local function split_rel(s, rels)
+  rels = rels or ALL_RELS
   local depth, i = 0, 1
   while i <= #s do
     local b = s:sub(i, i)
     if b:match('[%(%[{]') then depth = depth + 1
     elseif b:match('[%)%]}]') then depth = depth - 1
     elseif depth == 0 then
-      for _, r in ipairs(RELS) do
+      for _, r in ipairs(rels) do
         if s:sub(i, i + #r - 1) == r then
           return trim(s:sub(1, i - 1)), r, trim(s:sub(i + #r))
         end
@@ -240,18 +297,32 @@ local function group_to_tex(lines)
     end
   end
 
+  -- The block aligns on the highest-precedence tier present in any line.
+  local tier = nil
+  for _, t in ipairs(RELS) do
+    for _, line in ipairs(lines) do
+      for _, col in ipairs(split_cols(trim((split_just(line))))) do
+        if split_rel(col, t) then tier = t; break end
+      end
+      if tier then break end
+    end
+    if tier then break end
+  end
+  tier = tier or {}
+
   -- Each row: column pairs "lhs & rel rhs", then an optional justification.
-  local parsed, maxcols, any_just = {}, 0, false
+  local parsed, maxcols, any_just, all_rel = {}, 0, false, true
   for _, line in ipairs(lines) do
     local body, just = split_just(line)
     local cols = split_cols(trim(body))
     local cells = {}
     for _, col in ipairs(cols) do
-      local l, r, rest = split_rel(col)
+      local l, r, rest = split_rel(col, tier)
       if l then
-        cells[#cells + 1] = tex(l) .. ' &' .. tex(r) .. ' ' .. tex(rest)
+        cells[#cells + 1] = tex(l) .. ' &' .. rel_tex(r) .. ' ' .. tex(rest)
       else
         cells[#cells + 1] = ' & ' .. tex(col)
+        all_rel = false
       end
     end
     parsed[#parsed + 1] = { cells = cells, just = just }
@@ -261,6 +332,18 @@ local function group_to_tex(lines)
 
   if #lines == 1 and maxcols == 1 and not any_just then
     return '\\[\n  ' .. tex(trim(lines[1])) .. '\n\\]'
+  end
+
+  -- Only align when every line has a relation to align on. Otherwise the
+  -- lines are separate formulas: centre each one.
+  if not all_rel and not any_just then
+    local rows = {}
+    for _, line in ipairs(lines) do
+      local cols = split_cols(trim(line))
+      for k, c in ipairs(cols) do cols[k] = tex(c) end
+      rows[#rows + 1] = table.concat(cols, ' \\qquad ')
+    end
+    return '\\begin{gather*}\n  ' .. table.concat(rows, ' \\\\\n  ') .. '\n\\end{gather*}'
   end
 
   -- alignat keeps columns and justifications close to the equations
@@ -337,13 +420,25 @@ local math_pass = {
 
 local function is_display(b)
   return b.t == 'RawBlock' and b.format == 'latex'
-    and (b.text:match('^\\%[') or b.text:match('^\\begin{align'))
+    and (b.text:match('^\\%[') or b.text:match('^\\begin{align')
+         or b.text:match('^\\begin{gather'))
 end
 
-local function continues_sentence(b)
-  if b.t ~= 'Para' or #b.content == 0 then return false end
-  local f = b.content[1]
-  if f.t == 'Str' then return f.text:match('^[%l,;.]') ~= nil end
+-- A paragraph starts afresh after a display, list or quote, unless it begins
+-- with "_ ": then it continues the paragraph before it.
+--   … so that
+--   ```
+--   a = b
+--   ```
+--   _ which proves the claim.
+-- Removes the marker and returns true if it was there.
+local function take_continue(b)
+  if not b or b.t ~= 'Para' or #b.content < 2 then return false end
+  local m, sp = b.content[1], b.content[2]
+  if m.t == 'Str' and m.text == '_' and (sp.t == 'Space' or sp.t == 'SoftBreak') then
+    b.content:remove(1); b.content:remove(1)
+    return true
+  end
   return false
 end
 
@@ -360,27 +455,29 @@ local function host_of(prev)
   return nil
 end
 
--- Para + display + lowercase Para  →  one paragraph, as in LaTeX source.
+-- Para + display + "_ " Para  →  one paragraph, as in LaTeX source.
 local function merge_displays(blocks)
   local out = pandoc.Blocks({})
   local i = 1
   while i <= #blocks do
     local b = blocks[i]
-    local host = is_display(b) and host_of(out[#out]) or nil
-    if host then
-      host.content:insert(pandoc.RawInline('latex', '\n' .. b.text .. '\n'))
+    if is_display(b) then
       local nxt = blocks[i + 1]
-      if nxt and continues_sentence(nxt) then
-        host.content:extend(nxt.content)
+      local cont = take_continue(nxt)
+      local host = host_of(out[#out])
+      if host then
+        host.content:insert(pandoc.RawInline('latex', '\n' .. b.text .. '\n'))
+        if cont then host.content:extend(nxt.content); i = i + 1 end
+      elseif cont then
+        local p = pandoc.Para({ pandoc.RawInline('latex', '\\noindent\n' .. b.text .. '\n') })
+        p.content:extend(nxt.content)
+        out:insert(p)
         i = i + 1
+      else
+        out:insert(b)
       end
-    elseif is_display(b) and blocks[i + 1] and continues_sentence(blocks[i + 1]) then
-      local p = pandoc.Para({ pandoc.RawInline('latex', '\\noindent\n' .. b.text .. '\n') })
-      p.content:extend(blocks[i + 1].content)
-      out:insert(p)
-      i = i + 1
-    elseif continues_sentence(b) then
-      -- a sentence that carries on after a list: no paragraph indent
+    elseif take_continue(b) then
+      -- carries on after a list or quote: no paragraph indent
       b.content:insert(1, pandoc.RawInline('latex', '\\noindent '))
       out:insert(b)
     else
@@ -395,6 +492,7 @@ end
 local function qed_in_display(s)
   local r, n = s:gsub('\n\\end{alignat%*}(%s*)$', ' \\qedhere\n\\end{alignat*}%1')
   if n == 0 then r, n = s:gsub('\n\\%](%s*)$', ' \\qedhere\n\\]%1') end
+  if n == 0 then r, n = s:gsub('\n\\end{gather%*}(%s*)$', ' \\qedhere\n\\end{gather*}%1') end
   return r, n > 0
 end
 
@@ -574,6 +672,7 @@ local function structure(blocks)
 end
 
 return {
+  align_pass,
   math_pass,
   { Pandoc = function(doc) doc.blocks = structure(doc.blocks); return doc end },
 }

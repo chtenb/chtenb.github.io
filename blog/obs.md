@@ -107,27 +107,22 @@ a ⋅ b := a ∧ b
 ```
 Then `(D, +, ⋅, 0, 1)` is an observation algebra.
 
-**Example (Taxonomy Refinement).** Let `(T, ≤)` be a *taxonomy*: a partial order with a root `ρ` such that `x ≤ ρ` for all `x ∈ T`, and in which the ancestors `{ y ∈ T | x ≤ y }` of any `x` form a chain.
+**Example (Taxonomy Refinement).** Let `(T, ≤)` be a *taxonomy*: a partial order with a root `*` such that `x ≤ *` for all `x ∈ T`, and in which the ancestors `{ y ∈ T | x ≤ y }` of any `x` form a chain.
 Read `x ≤ y` as "`x` refines `y`", e.g. `Amsterdam ≤ Netherlands ≤ Europe`.
 Two nodes are *compatible* if one refines the other, and then we write
-
 ```
 x ∧ y := x    if x ≤ y
          y    if y ≤ x
 ```
-
 Let `D = 𝒫(T)`, with
-
 ```
-0 := ∅     1 := {ρ}
+0 := ∅     1 := {*}
 a + b := a ∪ b
 a ⋅ b := { x ∧ y | x ∈ a, y ∈ b, x and y compatible }
 ```
-
 Then `(D, +, ⋅, 0, 1)` is an observation algebra.
 
 The product refines joint observations and drops the incompatible combinations:
-
 ```
 {Netherlands} ⋅ {Amsterdam, Paris} = {Amsterdam}
 ```
@@ -190,8 +185,6 @@ Every observation algebra carries an order that compares how much is observed: `
 
 **Definition (Information Ordering).** Let `D` be an observation algebra. Denote `a ⊆ b` iff `a + b = b`.
 
-<!--
-
 **Theorem.** `⊆` is a partial order on `D`, with least element `0`.
 *Proof.*
 Let `a, b, c ∈ D`.
@@ -214,7 +207,7 @@ b = a + b    (a ⊆ b)
 - Least element: `0 + a = a` by identity (2), hence `0 ⊆ a`.
 ∎
 
-The unit `1` need not be the greatest element: in the taxonomy algebra, `{ρ} + {x} = {ρ, x} ≠ {ρ}` for `x ≠ ρ`.
+The unit `1` need not be the greatest element: in the taxonomy refinement, `{*} + {x} = {*, x} ≠ {*}` for `x ≠ *`.
 
 **Theorem (Sum implies Product).** For all `a, b ∈ D`, `ab ⊆ a + b`.
 *Proof.*
@@ -256,7 +249,7 @@ hence `a + b ⊆ c`.
 
 So `(D, ⊆)` is a join-semilattice with least element `0`, and `+` is its join.
 
-**Theorem (Order Compatibility).** For all `a, b, c ∈ D`, if `a ⊆ b`, then `a + c ⊆ b + c` and `ac ⊆ bc`.
+**Theorem (Order Preservation).** For all `a, b, c ∈ D`, if `a ⊆ b`, then `a + c ⊆ b + c` and `ac ⊆ bc`.
 *Proof.* Assume `a ⊆ b`. Then
 ```
 (a + c) + (b + c) = (a + b) + (c + c)    (1, 3)
@@ -279,12 +272,12 @@ By antisymmetry, it is unique if it exists.
 Assume `c ⊆ a` and `c ⊆ b`. Then
 ```
 c = cc    (8)
-  ⊆ ac    (Order Compatibility, c ⊆ a)
+  ⊆ ac    (Order Preservation, c ⊆ a)
   = ca    (7)
-  ⊆ ba    (Order Compatibility, c ⊆ b)
+  ⊆ ba    (Order Preservation, c ⊆ b)
   = ab    (7)
 ```
-so `c ⊆ ab` by transitivity.
+_ so `c ⊆ ab` by transitivity.
 ∎
 
 **Corollary.** `a ∩ b ⊆ ab` whenever `a ∩ b` exists.
@@ -341,10 +334,12 @@ Let `X` and `Y` be observation algebras. A map `f : X → Y` is called
 for all `x, y ∈ X`.
 A map `f : Xⁿ → Y` of several arguments is a map from the Cartesian product.
 For maps `g, h : X → Y` we write `g + h` and `g ⋅ h` for the operations `x ↦ g(x) + h(x)` and `x ↦ g(x) ⋅ h(x)`.
+
+**Remark.**
 Additivity does not imply normality: a constant map `f(x) = c` where `c ≠ 0` is additive by (4), but `f(0) = c`.
-The operations `+` and `⋅` are monotonic by *Order Compatibility* and (3, 7).
+The operations `+` and `⋅` are monotonic by *Order Preservation* and (3, 7).
 The operation `+` is additive by (1, 3, 4), and `⋅` is additive by (7, 9), multiplicative by (5, 7, 8) and normal by (10).
-The operation `+` is multiplicative only if `x + yz = (x + y)(x + z)`, which with `y = 0` gives `x = x(x + z)`. This fails in the taxonomy algebra: `{ρ} ⋅ ({ρ} + {x}) = {ρ, x} ≠ {ρ}` for `x ≠ ρ`.
+The operation `+` is multiplicative only if `x + yz = (x + y)(x + z)`, which with `y = 0` gives `x = x(x + z)`. This fails in the taxonomy refinement: `{*} ⋅ ({*} + {x}) = {*, x} ≠ {*}` for `x ≠ *`.
 
 **Theorem.** Every additive map is monotonic.
 *Proof.* Let `x ⊆ y`, so `x + y = y`. Then `f(y) = f(x + y) = f(x) + f(y)`, hence `f(x) ⊆ f(y)`.
@@ -352,23 +347,12 @@ For several arguments, change one argument at a time and use transitivity.
 ∎
 
 ## Operations
-Agreed: "product" already means `⋅` in your document. Some options:
-
-| Name | Notes |
-|---|---|
-| **Cartesian product** | the term you used yourself; the adjective keeps it apart from `⋅` |
-| *direct product* | the standard term in universal algebra, but it still contains "product" |
-| *pairing* or *tuple algebra* | avoids the word altogether, but isn't a standard term |
-
-I'd use **Cartesian product**, always with the adjective, and the symbol `×`. It's standard, readers recognise it, and in your text plain "product" never needs to mean anything other than `⋅`. The renamed section:
 
 Let `A` be an observation algebra.
 An *n-ary operation* on `A` is a map `f : Aⁿ → A`.
 
 For example, `+` and `⋅` are binary operations on every observation algebra, and every constant `c` is a 0-ary operation.
 The naming operations `a:` of `Obs` are unary operations, as are complement `x ↦ S ∖ x` on the powerset `𝒫(S)`, and the shift `[s, e) ↦ [s + 1, e + 1)` on the half-open intervals over `ℤ ∪ {-∞, +∞}`, where `±∞ + 1 = ±∞`.
-
-<!--
 
 ### Polynomials
 
@@ -382,21 +366,16 @@ A *polynomial* in the variables `x₁, …, xₙ` is an expression built from
 - `p + q` and `p ⋅ q` for polynomials `p` and `q`,
 - `γ(p₁, …, p_k)` for `γ ∈ Γ` with `k` arguments and polynomials `p₁, …, p_k`.
 
-We write
+We use `≡` for syntactic identity: `x ≡ y` when `x` and `y` are the same polynomial expression.
+We use `=` for equality in the algebra at hand: `x = y` when `x` and `y` denote the same element.
 
+We write
 ```
 f : Aⁿ → A
 f(x₁, …, xₙ) = p
 ```
-
-for the operation that substitutes its arguments for the variables of `p` and evaluates the result in `A`, and call `f` a *polynomial operation*.
+_ for the operation that substitutes its arguments for the variables of `p` and evaluates the result in `A`, and call `f` a *polynomial operation*.
 We write `p(x₁, …, xₙ)` for the value of `p` at `x₁, …, xₙ ∈ A`.
-
-#### Notation
-
-We use `≡` for syntactic identity: `x ≡ y` when `x` and `y` are the same expression.
-We use `=` for equality in the algebra at hand: `x = y` when `x` and `y` denote the same element.
-For polynomials, `p = q` means that `p` and `q` define the same operation.
 
 ### Monomials
 
@@ -404,13 +383,14 @@ A *monomial* is a product of variables and constants.
 
 **Theorem (Distributive Form):** Every polynomial that uses no operations from `Γ` is equal to a sum of monomials `m₁ + ⋯ + mₖ`, where the empty sum is `0`.
 This is also known as the *sum-of-products form*.
-
 *Proof.* By induction on the polynomial.
 
 - A variable or a constant is a monomial.
 - For a sum, `(m₁ + ⋯ + mₖ) + (m'₁ + ⋯ + m'ₗ)` is a sum of monomials by (1).
 - For a product, `(m₁ + ⋯ + mₖ)(m'₁ + ⋯ + m'ₗ)` is the sum of all `mᵢm'ⱼ` by (7, 9), and each `mᵢm'ⱼ` is a monomial. If either sum is empty, the product is `0` by (7, 10).
 ∎
+
+<!--
 
 In `Obs`, the naming operations also distribute over sums and products, so every value has a distributive form.
 Here a *monomial* is a product `[p₁:s₁, ..., pₖ:sₖ]` of named atoms.
@@ -433,7 +413,7 @@ Here a *monomial* is a product `[p₁:s₁, ..., pₖ:sₖ]` of named atoms.
 
 *Proof.* Let `x ⊆ x'` in `Aⁿ`, ordered componentwise. We show `p(x) ⊆ p(x')` by induction on `p`.
 For constants and variables this is immediate.
-If `p(x) ⊆ p(x')` and `q(x) ⊆ q(x')`, then by *Order Compatibility* and transitivity
+If `p(x) ⊆ p(x')` and `q(x) ⊆ q(x')`, then by *Order Preservation* and transitivity
 ```
 p(x) + q(x) ⊆ p(x') + q(x) ⊆ p(x') + q(x')
 p(x) ⋅ q(x) ⊆ p(x') ⋅ q(x) ⊆ p(x') ⋅ q(x')
