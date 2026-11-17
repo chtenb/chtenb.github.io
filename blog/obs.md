@@ -149,7 +149,7 @@ The trivial observation is "at least 0", which differs from no observation `⊥`
 a + b := a ∪ b
 a ⋅ b := (a ∩ b) ∪ (a if * ∈ b) ∪ (b if * ∈ a)
 ```
-_ Then `(D, +, ⋅, 0, 1)` is an observation algebra: it is the taxonomy refinement with root `*`, where every value refines `*` and no value refines another.
+_ Then `(D, +, ⋅, 0, 1)` is an observation algebra: it is the taxonomy refinement (see below) with root `*`, where every value refines `*` and no value refines another.
 
 Two different values observed jointly cancel each other, while independent reports of them coexist:
 ```
