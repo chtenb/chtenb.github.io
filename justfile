@@ -11,6 +11,10 @@ main:
     pandoc "$file" -o "$output" -d pandoc/pandoc.yaml; \
   done
 
+pdf:
+  echo "pandoc --defaults pandoc/mathdown.yaml blog/obs.md -o blog/obs.pdf"; \
+  pandoc --defaults pandoc/mathdown.yaml blog/obs.md -o blog/obs.pdf
+
 watch:
   echo "watching pandoc"
   watchexec --print-events -w . -e md,pikchr,lua,yaml "just main"

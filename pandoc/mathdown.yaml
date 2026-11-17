@@ -1,0 +1,57 @@
+# pandoc --defaults mathdown.yaml notes.md -o notes.pdf
+from: commonmark_x
+# pdflatex is the fastest engine (about 2x xelatex, more vs lualatex).
+# Switch to xelatex or lualatex only if you need OpenType fonts
+# or Unicode text the filter does not translate.
+pdf-engine: pdflatex
+filters:
+  - ${.}/mathdown.lua
+variables:
+  # plain LaTeX defaults: article class, standard margins and spacing
+  documentclass: article
+  classoption: [11pt, a4paper]
+  indent: true
+  colorlinks: true
+  linkcolor: black
+  urlcolor: blue
+  header-includes: |
+    \usepackage{mathtools}
+    \usepackage{amsthm}
+
+    % Pandoc marks Markdown lists without blank lines between items as
+    % "tight" and removes all space between their items. Normal LaTeX
+    % lists don't do that, so switch it off.
+    \renewcommand{\tightlist}{}
+
+    % With toc: true, start the text on a new page after the contents.
+    \let\mdtableofcontents\tableofcontents
+    \renewcommand{\tableofcontents}{\mdtableofcontents\clearpage}
+
+    % Theorem heads on their own line, like the bold line in the Markdown:
+    %   **Theorem (Name)**        →   Theorem 3 (Name)
+    %   For all a, b …                For all a, b …
+    \newtheoremstyle{plainbreak}{\topsep}{\topsep}{\itshape}{}{\bfseries}{}{\newline}{}
+    \newtheoremstyle{defnbreak}{\topsep}{\topsep}{\normalfont}{}{\bfseries}{}{\newline}{}
+    \newtheoremstyle{rembreak}{\topsep}{\topsep}{\normalfont}{}{\itshape}{}{\newline}{}
+
+    \theoremstyle{plainbreak}
+    % Numbering: one counter shared by all theorem-like blocks. With
+    % numbersections on, it is prefixed by the section and restarts in
+    % each section (Theorem 2.3); without, it runs 1, 2, 3, ...
+    \ifnum\value{secnumdepth}>0
+      \newtheorem{mdtheorem}{Theorem}[section]
+    \else
+      \newtheorem{mdtheorem}{Theorem}
+    \fi
+    \newtheorem{mdlemma}[mdtheorem]{Lemma}
+    \newtheorem{mdproposition}[mdtheorem]{Proposition}
+    \newtheorem{mdcorollary}[mdtheorem]{Corollary}
+    \newtheorem{mdconjecture}[mdtheorem]{Conjecture}
+    \newtheorem{mdclaim}[mdtheorem]{Claim}
+    \theoremstyle{defnbreak}
+    \newtheorem{mddefinition}[mdtheorem]{Definition}
+    \newtheorem{mdexample}[mdtheorem]{Example}
+    \newtheorem{mdaxiom}[mdtheorem]{Axiom}
+    \newtheorem{mdnotation}[mdtheorem]{Notation}
+    \theoremstyle{rembreak}
+    \newtheorem{mdremark}[mdtheorem]{Remark}

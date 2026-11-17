@@ -1,119 +1,99 @@
 ---
-toc-override: true
+title: Observation Algebras
+numbersections: true
+toc: true
 ---
 
-Philosophy about Observations
-=============================
+
+Philosophy
+==========
 
 **Observations**
-An observation is a reported piece of information about the world, and nothing more: two observations that carry the same information are the same observation.
+: An observation is a reported piece of information about the world, and nothing more: two observations that carry the same information are the same observation.
 Any further information about an observation, such as how often or when something was observed, counts as an observation in its own right.
 
 **Joint Observations**
-Observations do not only come in isolation.
+: Observations do not only come in isolation.
 Observations that were made together, such as the fields of one record or the parts of one sensor reading, form a joint observation.
 Observations that were made separately are independent.
 Independent observations can be interpreted together but don't have to be, while the parts of a joint observation must always be considered together.
 
 **Blank Observations**
-Having no observation is different from having an observation that carries no information.
+: Having no observation is different from having an observation that carries no information.
 No observation means that no report was made: there is no witness, no record, no reading.
 A blank observation means that a report was made, but without any details.
 
 **Completion Principle**
-A joint observation needs one of each of its parts.
+: A joint observation needs one of each of its parts.
 If a part consists of multiple independent observations, each such independent observation completes the joint observation on its own.
 If a part was never reported, the joint observation can't be completed.
 
 **Open World Principle**
-It is often not possible to know whether a set of observations is complete, so new observations must always be admissible.
+: It is often not possible to know whether a set of observations is complete, so new observations must always be admissible.
 In particular, not having some observation is not evidence against it.
 
 **Safe Reasoning Principle**
-Since a set of observations is never known to be complete, a conclusion is only safe if new independent observations cannot invalidate it.
+: Since a set of observations is never known to be complete, a conclusion is only safe if new independent observations cannot invalidate it.
+
 
 Observation Algebra
 ===================
 
 We propose an algebraic structure to encode observations while adhering to the philosophy described earlier.
 An element of the structure represents a collection of observations.
-The *sum* `a + b` combines `a` and `b` as independent observations, and the *product* `a ⋅ b` combines them into a joint observation.
-The element `0` represents no observation, and `1` represents the blank observation.
-The resulting structure is a *commutative idempotent dioid*.
 
-### Definition Observation Algebra
+**Definition (Observation Algebra).** An *observation algebra*, or *commutative idempotent dioid*, is a set `D` closed under two binary operations `+` and `⋅` and with two distinguished elements `0, 1 ∈ D`, such that for all `a, b, c ∈ D`:
 
-A **commutative idempotent dioid** is a set `D` closed under two binary operations `+` and `⋅` and with two distinguished elements `0, 1 ∈ D`, such that for all `a, b, c ∈ D`:
-
-**Addition: independent observations**
-
-1. *Associativity*: `a + (b + c) = (a + b) + c`
-2. *Identity*: `0 + a = a`
-3. *Commutativity*: `a + b = b + a`
-4. *Idempotency*: `a + a = a`
-
-By the *Open World Principle*, new observations are always admissible, so any two collections of observations can be added.
-An observation is determined by its information alone (*Observations*), so it does not matter how independent observations are grouped (1), in which order they arrive (3), or whether one is repeated (4).
-Adding no observation changes nothing (2), by *Blank Observations*.
-
-**Multiplication: joint observations**
-
-5. *Associativity*: `a(bc) = (ab)c`
-6. *Identity*: `1 ⋅ a = a`
-7. *Commutativity*: `ab = ba`
-8. *Idempotency*: `aa = a`
-
-Since independent observations can be considered together and any two collections can be added, by extension any two collections can be multiplied.
-A joint observation carries exactly the information of its parts, so by *Observations* it does not matter how its parts are grouped (5) or ordered (7), or whether a part is repeated (8).
-A blank part carries no information, so it does not change a joint observation (6), by *Blank Observations*.
-
-**Interaction: completion**
-
+1. *Addition Associativity*: `a + (b + c) = (a + b) + c`
+2. *Addition Identity*: `0 + a = a`
+3. *Addition Commutativity*: `a + b = b + a`
+4. *Addition Idempotency*: `a + a = a`
+5. *Multiplication Associativity*: `a(bc) = (ab)c`
+6. *Multiplication Identity*: `1 ⋅ a = a`
+7. *Multiplication Commutativity*: `ab = ba`
+8. *Multiplication Idempotency*: `aa = a`
 9. *Distributivity*: `a(b + c) = ab + ac`
 10. *Annihilation*: `a ⋅ 0 = 0`
 
-These two axioms are the *Completion Principle*.
+The *sum* `a + b` combines `a` and `b` as independent observations, and the *product* `a ⋅ b` combines them into a joint observation.
+The element `0` represents no observation, and `1` represents the blank observation.
+By the *Open World Principle*, new observations are always admissible, so any two collections of observations can be added.
+Hence the observation algebra is closed under addition.
+An observation is determined by its information alone (*Observations*), so it does not matter how independent observations are grouped (1), in which order they arrive (3), or whether one is repeated (4).
+Adding no observation changes nothing (2), by *Blank Observations*.
+Since independent observations can be considered together and any two collections can be added, by extension any two collections can be multiplied.
+A joint observation carries exactly the information of its parts, so by *Observations* it does not matter how its parts are grouped (5) or ordered (7), or whether a part is repeated (8).
+A blank part carries no information, so it does not change a joint observation (6), by *Blank Observations*.
+Distributivity and Annihilation follow from the *Completion Principle*.
 If a part of a joint observation was reported independently as `b` and as `c`, each report completes the joint observation independently (9).
 If a part was never reported, the joint observation cannot be completed (10).
+Annihilation can intuitively be understood as distribution of an empty sum, just as a part that was never reported has no reports to complete the joint observation with.
 
 The *Safe Reasoning Principle* is not an axiom: it restricts which functions we use on observations for safe reasoning, which we will introduce later.
 
-In the remainder of the text, we will refer to this structure as an **observation algebra**.
-Another way of looking at this is as two commutative idempotent monoids that are combined by distributivity.
-Annihilation can intuitively be understood as distribution of an empty sum, just as a part that was never reported has no reports to complete the joint observation with.
+Another way of looking at this is as two commutative idempotent monoids that are combined by distributivity, hence the term *commutative idempotent dioid*.
 
-### Examples
+## Examples
 
-#### Powerset
-Let `S` be any set, then `(𝒫(S), ∪, ∩, ∅, S)` is an observation algebra.
-
+**Example (Powerset).** Let `S` be any set, then `(𝒫(S), ∪, ∩, ∅, S)` is an observation algebra.
 *Proof.* `𝒫(S)` is closed under `∪` and `∩`, and contains `∅` and `S`. Axioms 1, 3, 4 and 5, 7, 8 are associativity, commutativity and idempotency of `∪` and `∩`; 2 is `∅ ∪ a = a`; 6 is `S ∩ a = a`, using `a ⊆ S`; 9 is distributivity of `∩` over `∪`; 10 is `∅ ∩ a = ∅`.
 ∎
 
-#### Sets of half-open intervals
-Let `(T, ≤)` be a totally ordered set of *positions*, including extrema `-∞, +∞` with `-∞ < t < +∞` for all `t ∈ T`. For `s, e ∈ T` write
-
+**Example (Sets of half-open intervals).** Let `(T, ≤)` be a totally ordered set of *positions*, including extrema `-∞, +∞` with `-∞ < t < +∞` for all `t ∈ T`. For `s, e ∈ T` write
 ```
 [s, e) := { t ∈ T | s ≤ t < e }
 ```
-
 and note `[s, e) = ∅` whenever `e ≤ s`.
-
 Let `D` be the set of all finite unions of such intervals, with
-
 ```
 a + b := a ∪ b     0 := ∅ = [s, s)
 a ⋅ b := a ∩ b     1 := T ∖ {+∞} = [-∞, +∞)
 ```
-
 Then `(D, +, ⋅, 0, 1)` is an observation algebra.
-
 *Proof.* First, the operations are well defined on `D`. Closure under `+` is immediate, since a union of two finite unions of intervals is one. For `⋅`, totality of `≤` gives
-
 ```
 [s₁, e₁) ∩ [s₂, e₂) = [ max(s₁, s₂), min(e₁, e₂) )
 ```
-
 so an intersection of intervals is an interval, and `(⋃ᵢ Iᵢ) ∩ (⋃ⱼ Jⱼ) = ⋃_{i,j} (Iᵢ ∩ Jⱼ)` is a finite union of intervals. Also `0 = [s, s) ∈ D` and `1 = [-∞, +∞) ∈ D`.
 Hence `D` is a sublattice of `(𝒫(T ∖ {+∞}), ∪, ∩)` containing `∅` and `T ∖ {+∞}`, and each axiom holds already in the powerset lattice.
 ∎
@@ -121,20 +101,16 @@ Hence `D` is a sublattice of `(𝒫(T ∖ {+∞}), ∪, ∩)` containing `∅` a
 The two examples above form bounded lattices.
 In fact, we can generalize these constructions for arbitrary bounded distributive lattices.
 
-#### Lattice dioid
-Generalizing the previous examples, any lattice is also an observation algebra.
+**Example (Lattice dioid).** Generalizing the previous examples, any lattice is also an observation algebra.
 Let `(L, ∨, ∧, ⊥, ⊤)` be a bounded distributive lattice, and let `D = L`, with
-
 ```
 0 := ⊥     1 := ⊤
 a + b := a ∨ b
 a ⋅ b := a ∧ b
 ```
-
 Then `(D, +, ⋅, 0, 1)` is an observation algebra.
 
-#### Taxonomy Refinement
-Let `(T, ≤)` be a *taxonomy*: a partial order with a root `r` such that `x ≤ r` for all `x ∈ T`, and in which the ancestors `{ y ∈ T | x ≤ y }` of any `x` form a chain.
+**Example (Taxonomy Refinement).** Let `(T, ≤)` be a *taxonomy*: a partial order with a root `r` such that `x ≤ r` for all `x ∈ T`, and in which the ancestors `{ y ∈ T | x ≤ y }` of any `x` form a chain.
 Read `x ≤ y` as "`x` refines `y`", e.g. `Amsterdam ≤ Netherlands ≤ Europe`.
 Two nodes are *compatible* if one refines the other, and then we write
 
@@ -159,7 +135,7 @@ The product refines joint observations and drops the incompatible combinations:
 {Netherlands} ⋅ {Amsterdam, Paris} = {Amsterdam}
 ```
 
-#### Free Observation Algebra with Names
+**Example (Free Observation Algebra with Names).**
 We define `Obs(Atom, Attr)` as the free observation algebra over a set of atoms `Atom`, with names from a set of attributes `Attr`.
 When `Atom` and `Attr` are clear from context, we simply write `Obs`.
 
@@ -197,6 +173,9 @@ Let `x, y, z ∈ Obs` and `a, b ∈ Path`.
 - *Naming Associativity*: Naming is associative under this equality: `a:(b:x) = (a.b):x`.
 - *Naming Identity*: Naming with the identity name is the same as having no name at all: `ε:x = x`.
 
+These last naming axioms follow from the fact that a free naming operator does not change the structure of observations it names.
+Hence all algebra primitives (addition, multiplication and identities) are preserved.
+
 While product and sum are defined as binary operations, we will often write them as n-ary operations, since they are both associative.
 So
 
@@ -206,16 +185,14 @@ So
 - `[x, y, z, ...] = [x, [y, [z, ...]]]`
 
 
-Information ordering
+Information Ordering
 ====================
 
 Every observation algebra carries an order that compares how much is observed: `a ⊆ b` when `b` already includes every observation in `a`.
 
-**Definition:**
-Let `D` be an observation algebra. Denote `a ⊆ b` iff `a + b = b`.
+**Definition (Information Ordering).** Let `D` be an observation algebra. Denote `a ⊆ b` iff `a + b = b`.
 
-**Theorem:** `⊆` is a partial order on `D`, with least element `0`.
-
+**Theorem.** `⊆` is a partial order on `D`, with least element `0`.
 *Proof.*
 Let `a, b, c ∈ D`.
 
@@ -239,8 +216,7 @@ b = a + b    (a ⊆ b)
 
 The unit `1` need not be the greatest element: in the taxonomy algebra, `{r} + {x} = {r, x} ≠ {r}` for `x ≠ r`.
 
-**Theorem:** For all `a, b ∈ D`, `ab ⊆ a + b`.
-
+**Theorem.** For all `a, b ∈ D`, `ab ⊆ a + b`.
 *Proof.*
 To prove: `ab + (a + b) = a + b`.
 ```
@@ -253,11 +229,9 @@ a + b = (a + b)(a + b)           (8)
 ```
 ∎
 
-**Definition:**
-The *join* `a ∪ b` is the least `c ∈ D` such that `a ⊆ c` and `b ⊆ c`.
+**Definition.** The *join* `a ∪ b` is the least `c ∈ D` such that `a ⊆ c` and `b ⊆ c`.
 
-**Theorem:** For all `a, b ∈ D`, `a ∪ b = a + b`.
-
+**Theorem.** For all `a, b ∈ D`, `a ∪ b = a + b`.
 *Proof.*
 `a + b` is an upper bound of `a` and `b`:
 ```
@@ -279,7 +253,7 @@ hence `a + b ⊆ c`.
 
 So `(D, ⊆)` is a join-semilattice with least element `0`, and `+` is its join.
 
-**Theorem (Order Compatibility):** For all `a, b, c ∈ D`, if `a ⊆ b`, then `a + c ⊆ b + c` and `ac ⊆ bc`.
+**Theorem (Order Compatibility).** For all `a, b, c ∈ D`, if `a ⊆ b`, then `a + c ⊆ b + c` and `ac ⊆ bc`.
 
 *Proof.* Assume `a ⊆ b`. Then
 ```
@@ -295,12 +269,10 @@ bc = cb          (7)
 ```
 ∎
 
-**Definition:**
-The *meet* `a ∩ b`, if it exists, is the greatest `c ∈ D` such that `c ⊆ a` and `c ⊆ b`.
+**Definition.** The *meet* `a ∩ b`, if it exists, is the greatest `c ∈ D` such that `c ⊆ a` and `c ⊆ b`.
 By antisymmetry, it is unique if it exists.
 
-**Theorem:** For all `a, b, c ∈ D`, if `c ⊆ a` and `c ⊆ b`, then `c ⊆ ab`.
-
+**Theorem.** For all `a, b, c ∈ D`, if `c ⊆ a` and `c ⊆ b`, then `c ⊆ ab`.
 *Proof.*
 Assume `c ⊆ a` and `c ⊆ b`. Then
 ```
@@ -313,16 +285,16 @@ c = cc    (8)
 so `c ⊆ ab` by transitivity.
 ∎
 
-**Corollary:** `a ∩ b ⊆ ab` whenever `a ∩ b` exists.
+**Corollary.** `a ∩ b ⊆ ab` whenever `a ∩ b` exists.
 
-**Theorem:** For all `a, b ∈ D`, `ab = a ∩ b` iff `ab ⊆ a` and `ab ⊆ b`.
-
+**Theorem.** For all `a, b ∈ D`, `ab = a ∩ b` iff `ab ⊆ a` and `ab ⊆ b`.
 *Proof.*
 (⟹) `a ∩ b` is a lower bound of `a` and `b` by definition.
 (⟸) `ab` is a lower bound of `a` and `b`, and every lower bound `c` of `a` and `b` satisfies `c ⊆ ab` by the previous theorem.
 So `ab` is the greatest lower bound, and `ab = a ∩ b` by uniqueness.
 ∎
 
+<!--
 Maps and Polynomials
 ====================
 
@@ -588,4 +560,4 @@ If `η` is a homomorphism, then `η[0] = 0` and `η[1] = 1`, so a polynomial wit
 ```
 so `σ(x ∩ [0, 5)) = σ(x) ∩ [1, 6)`: restricting and then shifting is the same as shifting and then restricting to the shifted range.
 
-
+-->

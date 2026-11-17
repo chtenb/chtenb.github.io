@@ -1,0 +1,579 @@
+--[[
+mathdown.lua — turn Markdown with Unicode math in backticks into a math paper.
+
+  `a ⊆ b`               inline code      → inline math
+  ```                    unlabelled fence → displayed math
+  a + b = c       (1)      - equation chains are aligned on their relation,
+      = d         (2)      - a trailing "(...)" after 2+ spaces is a justification,
+  ```                      - columns separated by 3+ spaces become align columns,
+                           - lines with "  if " become a cases block.
+  **Theorem (Name)**     → theorem environment; the bold keyword line is its
+  For all …                head, like a heading. The body is the rest of that
+                           paragraph, or the next block if a blank line follows.
+                           (Also Definition, Example, Lemma, Corollary, Remark, …)
+  *Proof.* … ∎           → proof environment, up to the block holding ∎.
+                           A proof or keyword may also start on a new line
+                           inside a paragraph (no blank line needed).
+  Headings are left to pandoc.
+
+Opt out with a class: `x := 1`{.code} or ```lua … ``` stays code.
+Raw TeX inside backticks passes through: `\alpha + \beta`.
+]]
+
+local stringify = pandoc.utils.stringify
+
+-- Bold keywords that open a theorem-like environment. In LaTeX they become
+-- md<keyword> (mdtheorem, mddefinition, …), so they never clash with a
+-- document class that defines its own theorem or example commands.
+local ENVS = { theorem=1, lemma=1, proposition=1, corollary=1, definition=1,
+  example=1, remark=1, conjecture=1, claim=1, axiom=1, notation=1 }
+
+---------------------------------------------------------------------------
+-- Unicode → TeX
+---------------------------------------------------------------------------
+
+local SYM = {
+  ['⋅']='\\cdot ', ['·']='\\cdot ', ['∈']='\\in ', ['∉']='\\notin ', ['∋']='\\ni ',
+  ['∪']='\\cup ', ['∩']='\\cap ', ['∅']='\\emptyset ', ['⊆']='\\subseteq ',
+  ['⊇']='\\supseteq ', ['⊂']='\\subset ', ['⊃']='\\supset ', ['⊊']='\\subsetneq ',
+  ['≤']='\\le ', ['≥']='\\ge ', ['≠']='\\neq ', ['≅']='\\cong ', ['≡']='\\equiv ',
+  ['≈']='\\approx ', ['∼']='\\sim ', ['≺']='\\prec ', ['≼']='\\preceq ',
+  ['∞']='\\infty ', ['∖']='\\setminus ', ['⋃']='\\bigcup', ['⋂']='\\bigcap',
+  ['⨆']='\\bigsqcup', ['∑']='\\sum', ['∏']='\\prod', ['∐']='\\coprod',
+  ['⊓']='\\sqcap ', ['⊔']='\\sqcup ', ['⊥']='\\bot ', ['⊤']='\\top ',
+  ['∨']='\\vee ', ['∧']='\\wedge ', ['⋁']='\\bigvee', ['⋀']='\\bigwedge',
+  ['¬']='\\neg ', ['∀']='\\forall ', ['∃']='\\exists ', ['∄']='\\nexists ',
+  ['→']='\\to ', ['←']='\\leftarrow ', ['↦']='\\mapsto ', ['↔']='\\leftrightarrow ',
+  ['⇒']='\\Rightarrow ', ['⇐']='\\Leftarrow ', ['⇔']='\\Leftrightarrow ',
+  ['⟹']='\\Longrightarrow ', ['⟸']='\\Longleftarrow ', ['⟺']='\\Longleftrightarrow ',
+  ['↪']='\\hookrightarrow ', ['↠']='\\twoheadrightarrow ',
+  ['×']='\\times ', ['∘']='\\circ ', ['⊕']='\\oplus ', ['⊗']='\\otimes ',
+  ['⊢']='\\vdash ', ['⊨']='\\models ', ['∣']='\\mid ', ['∥']='\\parallel ',
+  ['⟨']='\\langle ', ['⟩']='\\rangle ', ['⌊']='\\lfloor ', ['⌋']='\\rfloor ',
+  ['⌈']='\\lceil ', ['⌉']='\\rceil ', ['…']='\\dots ', ['⋯']='\\cdots ',
+  ['−']='-', ['∂']='\\partial ', ['∇']='\\nabla ', ['∫']='\\int', ['√']='\\sqrt',
+  ['ℕ']='\\mathbb{N}', ['ℤ']='\\mathbb{Z}', ['ℚ']='\\mathbb{Q}', ['ℝ']='\\mathbb{R}',
+  ['ℂ']='\\mathbb{C}', ['𝔹']='\\mathbb{B}', ['∎']='',
+  ['α']='\\alpha ', ['β']='\\beta ', ['γ']='\\gamma ', ['δ']='\\delta ',
+  ['ε']='\\varepsilon ', ['ζ']='\\zeta ', ['η']='\\eta ', ['θ']='\\theta ',
+  ['ι']='\\iota ', ['κ']='\\kappa ', ['λ']='\\lambda ', ['μ']='\\mu ',
+  ['ν']='\\nu ', ['ξ']='\\xi ', ['π']='\\pi ', ['ρ']='\\rho ', ['σ']='\\sigma ',
+  ['τ']='\\tau ', ['υ']='\\upsilon ', ['φ']='\\varphi ', ['χ']='\\chi ',
+  ['ψ']='\\psi ', ['ω']='\\omega ', ['Γ']='\\Gamma ', ['Δ']='\\Delta ',
+  ['Θ']='\\Theta ', ['Λ']='\\Lambda ', ['Ξ']='\\Xi ', ['Π']='\\Pi ',
+  ['Σ']='\\Sigma ', ['Φ']='\\Phi ', ['Ψ']='\\Psi ', ['Ω']='\\Omega ',
+}
+-- Mathematical script / blackboard capitals (𝒜…𝒵, 𝔸…𝕐)
+do
+  local script = { [0x1D49C]='A', [0x212C]='B', [0x1D49E]='C', [0x1D49F]='D',
+    [0x2130]='E', [0x2131]='F', [0x1D4A2]='G', [0x210B]='H', [0x2110]='I',
+    [0x1D4A5]='J', [0x1D4A6]='K', [0x2112]='L', [0x2133]='M', [0x1D4A9]='N',
+    [0x1D4AA]='O', [0x1D4AB]='P', [0x1D4AC]='Q', [0x211B]='R', [0x1D4AE]='S',
+    [0x1D4AF]='T', [0x1D4B0]='U', [0x1D4B1]='V', [0x1D4B2]='W', [0x1D4B3]='X',
+    [0x1D4B4]='Y', [0x1D4B5]='Z' }
+  for cp, l in pairs(script) do SYM[utf8.char(cp)] = '\\mathcal{' .. l .. '}' end
+  for k = 0, 25 do
+    local c = utf8.char(0x1D538 + k)
+    if not SYM[c] then SYM[c] = '\\mathbb{' .. string.char(65 + k) .. '}' end
+  end
+end
+
+local SUB = { ['₀']='0', ['₁']='1', ['₂']='2', ['₃']='3', ['₄']='4', ['₅']='5',
+  ['₆']='6', ['₇']='7', ['₈']='8', ['₉']='9', ['₊']='+', ['₋']='-', ['₌']='=',
+  ['ₐ']='a', ['ₑ']='e', ['ₒ']='o', ['ₓ']='x', ['ₕ']='h', ['ₖ']='k', ['ₗ']='l',
+  ['ₘ']='m', ['ₙ']='n', ['ₚ']='p', ['ₛ']='s', ['ₜ']='t', ['ᵢ']='i', ['ⱼ']='j',
+  ['ᵣ']='r', ['ᵤ']='u', ['ᵥ']='v' }
+local SUP = { ['⁰']='0', ['¹']='1', ['²']='2', ['³']='3', ['⁴']='4', ['⁵']='5',
+  ['⁶']='6', ['⁷']='7', ['⁸']='8', ['⁹']='9', ['⁺']='+', ['⁻']='-', ['⁼']='=',
+  ['ⁿ']='n', ['ⁱ']='i', ['ᵏ']='k', ['ᵐ']='m', ['ˣ']='x', ['ʸ']='y', ['ᵀ']='T',
+  ['′']="'", ['″']="''", ['∗']='*' }
+
+-- Named operators set upright with proper spacing.
+local OPS = { max=1, min=1, sup=1, inf=1, lim=1, log=1, ln=1, exp=1, sin=1,
+  cos=1, tan=1, ker=1, dim=1, deg=1, gcd=1, det=1, arg=1, Pr=1 }
+-- Connective words set as text inside math.
+local WORDS = { ['if']=1, ['iff']=1, ['and']=1, ['or']=1, ['otherwise']=1,
+  ['for']=1, ['where']=1, ['when']=1, ['else']=1, ['then']=1, ['by']=1 }
+
+local function chars(s)
+  local t = {}
+  for _, cp in utf8.codes(s) do t[#t + 1] = utf8.char(cp) end
+  return t
+end
+
+local function trim(s) return (s:gsub('^%s+', ''):gsub('%s+$', '')) end
+
+-- Translate one Unicode math expression to TeX.
+-- text_words: set multi-letter words with \text (for justifications).
+local tex
+tex = function(s, text_words)
+  local c = chars(s)
+  local out, n, i = {}, #c, 1
+  local prev_atom = false          -- last emitted thing can carry a superscript
+  local function emit(x, atom) out[#out + 1] = x; prev_atom = atom end
+  while i <= n do
+    local ch = c[i]
+    if ch == '\\' and i < n and c[i + 1]:match('^%a$') then
+      -- raw TeX command: copy it verbatim
+      local j = i + 1
+      while j <= n and c[j]:match('^%a$') do j = j + 1 end
+      emit(table.concat(c, '', i, j - 1) .. ' ', true); i = j
+    elseif ch == '\\' and i < n then
+      emit('\\' .. c[i + 1], true); i = i + 2
+    elseif ch:match('^%a$') then
+      local j = i
+      while j <= n and c[j]:match('^%a$') do j = j + 1 end
+      local w = table.concat(c, '', i, j - 1)
+      -- keep a word space between an identifier and a following word
+      local gap = (prev_atom and c[i - 1] == ' ') and '\\ ' or ''
+      if #w == 1 then emit(w, true)
+      elseif OPS[w] then emit('\\' .. w .. ' ', true)
+      elseif WORDS[w] then emit('\\text{ ' .. w .. ' }', false)
+      elseif #w == 2 and w:match('^%l%l$') and not text_words then
+        emit(w, true)                -- juxtaposed variables: ab, xy
+      elseif text_words then emit(gap .. '\\text{' .. w .. '}', true)
+      else emit(gap .. '\\mathrm{' .. w .. '}', true) end
+      i = j
+    elseif ch == '{' then emit('\\{', false); i = i + 1
+    elseif ch == '}' then emit('\\}', true); i = i + 1
+    elseif ch == '_' or ch == '^' then
+      if c[i + 1] == '{' then        -- TeX-style group: x_{i,j}
+        local depth, j = 1, i + 2
+        while j <= n and depth > 0 do
+          if c[j] == '{' then depth = depth + 1 elseif c[j] == '}' then depth = depth - 1 end
+          j = j + 1
+        end
+        emit(ch .. '{' .. tex(table.concat(c, '', i + 2, j - 2)) .. '}', false); i = j
+      elseif prev_atom and c[i + 1] and c[i + 1]:match('^%w$') then
+        emit(ch, false); i = i + 1
+      else emit(ch == '_' and '\\_' or '\\hat{}', true); i = i + 1 end
+    elseif SUB[ch] or SUP[ch] then
+      local map, mark = SUB[ch] and SUB or SUP, SUB[ch] and '_' or '^'
+      local j, buf = i, {}
+      while j <= n and map[c[j]] do buf[#buf + 1] = map[c[j]]; j = j + 1 end
+      emit(mark .. '{' .. table.concat(buf) .. '}', true); i = j
+    elseif ch == ':' then
+      if c[i + 1] == '=' then emit('\\coloneqq ', false); i = i + 2
+      elseif c[i - 1] == ' ' and c[i + 1] == ' ' then emit('\\colon ', false); i = i + 1
+      else emit('{:}', false); i = i + 1 end
+    elseif ch == '|' then emit('\\mid ', false); i = i + 1
+    elseif ch == '*' then
+      emit(prev_atom and '^{*}' or '\\ast ', true); i = i + 1
+    elseif ch == '.' and c[i + 1] == '.' and c[i + 2] == '.' then
+      emit('\\dots ', true); i = i + 3
+    elseif ch == "'" then emit("'", true); i = i + 1
+    elseif ch == '#' or ch == '%' or ch == '&' or ch == '$' then
+      emit('\\' .. ch, true); i = i + 1
+    elseif ch == '~' then emit('\\sim ', false); i = i + 1
+    elseif ch == ' ' or ch == '\t' then emit(' ', prev_atom); i = i + 1
+    elseif SYM[ch] then emit(SYM[ch], ch:match('[)%]]') ~= nil); i = i + 1
+    else emit(ch, ch:match('^[%d%)%]]$') ~= nil); i = i + 1 end
+  end
+  return (table.concat(out):gsub('%s+', ' '):gsub('^ ', ''):gsub(' $', ''))
+end
+
+---------------------------------------------------------------------------
+-- Display blocks
+---------------------------------------------------------------------------
+
+local RELS = { ':=', '⊆', '⊇', '≤', '≥', '=', '<', '>', '≅', '≡' }
+
+-- Split at the first relation outside brackets: lhs, rel, rhs.
+local function split_rel(s)
+  local depth, i = 0, 1
+  while i <= #s do
+    local b = s:sub(i, i)
+    if b:match('[%(%[{]') then depth = depth + 1
+    elseif b:match('[%)%]}]') then depth = depth - 1
+    elseif depth == 0 then
+      for _, r in ipairs(RELS) do
+        if s:sub(i, i + #r - 1) == r then
+          return trim(s:sub(1, i - 1)), r, trim(s:sub(i + #r))
+        end
+      end
+    end
+    i = i + 1
+  end
+end
+
+-- "body    (justification)" → body, justification
+local function split_just(line)
+  local body, just = line:match('^(.-%S)%s%s+(%b())%s*$')
+  if body then return body, just end
+  return line, nil
+end
+
+local function split_cols(s)
+  local cols, pos = {}, 1
+  while true do
+    local a, b = s:find('%s%s%s+', pos)
+    if not a then cols[#cols + 1] = s:sub(pos); break end
+    cols[#cols + 1] = s:sub(pos, a - 1); pos = b + 1
+  end
+  return cols
+end
+
+local function cases_block(lines)
+  local lhs, rel, first = split_rel(trim(lines[1]))
+  if not lhs then return nil end
+  local rows = {}
+  local function row(s)
+    local val, cond = trim(s):match('^(.-)%s%s+if%s+(.+)$')
+    if val then
+      return tex(val) .. ' & \\text{if } ' .. tex(cond)
+    end
+    local v2 = trim(s):match('^(.-)%s%s+otherwise%s*$')
+    if v2 then return tex(v2) .. ' & \\text{otherwise}' end
+    return tex(s)
+  end
+  rows[1] = row(first)
+  for k = 2, #lines do rows[#rows + 1] = row(lines[k]) end
+  return '\\[\n  ' .. tex(lhs) .. ' ' .. tex(rel) ..
+    ' \\begin{cases}\n    ' .. table.concat(rows, ' \\\\\n    ') .. '\n  \\end{cases}\n\\]'
+end
+
+local function group_to_tex(lines)
+  for _, l in ipairs(lines) do
+    if l:match('%S%s%s+if%s') then
+      local t = cases_block(lines)
+      if t then return t end
+    end
+  end
+
+  -- Each row: column pairs "lhs & rel rhs", then an optional justification.
+  local parsed, maxcols, any_just = {}, 0, false
+  for _, line in ipairs(lines) do
+    local body, just = split_just(line)
+    local cols = split_cols(trim(body))
+    local cells = {}
+    for _, col in ipairs(cols) do
+      local l, r, rest = split_rel(col)
+      if l then
+        cells[#cells + 1] = tex(l) .. ' &' .. tex(r) .. ' ' .. tex(rest)
+      else
+        cells[#cells + 1] = ' & ' .. tex(col)
+      end
+    end
+    parsed[#parsed + 1] = { cells = cells, just = just }
+    if #cells > maxcols then maxcols = #cells end
+    if just then any_just = true end
+  end
+
+  if #lines == 1 and maxcols == 1 and not any_just then
+    return '\\[\n  ' .. tex(trim(lines[1])) .. '\n\\]'
+  end
+
+  -- alignat keeps columns and justifications close to the equations
+  local rows = {}
+  for _, p in ipairs(parsed) do
+    local cells = p.cells
+    while #cells < maxcols do cells[#cells + 1] = ' & ' end
+    local row = table.concat(cells, ' &\\qquad ')
+    if any_just then
+      row = row .. ' &\\qquad & ' .. (p.just and tex(p.just, true) or '')
+    end
+    rows[#rows + 1] = row
+  end
+  local pairs_n = maxcols + (any_just and 1 or 0)
+  return '\\begin{alignat*}{' .. pairs_n .. '}\n  ' ..
+    table.concat(rows, ' \\\\\n  ') .. '\n\\end{alignat*}'
+end
+
+local function codeblock_to_tex(text)
+  local groups, cur = {}, {}
+  for line in (text .. '\n'):gmatch('(.-)\n') do
+    if line:match('^%s*$') then
+      if #cur > 0 then groups[#groups + 1] = cur; cur = {} end
+    else cur[#cur + 1] = line end
+  end
+  if #cur > 0 then groups[#groups + 1] = cur end
+  local out = {}
+  for _, g in ipairs(groups) do out[#out + 1] = group_to_tex(g) end
+  return table.concat(out, '\n')
+end
+
+local function is_math(el)
+  return #el.classes == 0 or el.classes:includes('math')
+end
+
+-- Math symbols that appear in running text, e.g. "(⟹)".
+local function str_math(s)
+  local parts, buf = {}, {}
+  local changed = false
+  for _, ch in ipairs(chars(s)) do
+    if SYM[ch] and ch ~= '…' and ch ~= '∎' and ch ~= '−' then
+      if #buf > 0 then parts[#parts + 1] = pandoc.Str(table.concat(buf)); buf = {} end
+      parts[#parts + 1] = pandoc.Math('InlineMath', tex(ch)); changed = true
+    else buf[#buf + 1] = ch end
+  end
+  if not changed then return nil end
+  if #buf > 0 then parts[#parts + 1] = pandoc.Str(table.concat(buf)) end
+  return parts
+end
+
+local math_pass = {
+  Code = function(el)
+    if is_math(el) then return pandoc.Math('InlineMath', tex(el.text)) end
+  end,
+  CodeBlock = function(el)
+    if is_math(el) then return pandoc.RawBlock('latex', codeblock_to_tex(el.text)) end
+  end,
+  Str = function(el) return str_math(el.text) end,
+  -- Number lists (1), (2), … so references like "by (4)" match the labels.
+  OrderedList = function(el)
+    local la = el.listAttributes
+    if la.style == 'DefaultStyle' or la.style == 'Decimal' then
+      la.style = 'Decimal'
+      la.delimiter = 'TwoParens'
+      el.listAttributes = la
+      return el
+    end
+  end,
+}
+
+---------------------------------------------------------------------------
+-- Displays belong to the paragraph around them
+---------------------------------------------------------------------------
+
+local function is_display(b)
+  return b.t == 'RawBlock' and b.format == 'latex'
+    and (b.text:match('^\\%[') or b.text:match('^\\begin{align'))
+end
+
+local function continues_sentence(b)
+  if b.t ~= 'Para' or #b.content == 0 then return false end
+  local f = b.content[1]
+  if f.t == 'Str' then return f.text:match('^[%l,;.]') ~= nil end
+  return false
+end
+
+-- The paragraph a display should join: the previous paragraph, or the last
+-- paragraph of the previous list item (a fence right after "- … Then").
+local function host_of(prev)
+  if not prev then return nil end
+  if prev.t == 'Para' then return prev end
+  if (prev.t == 'BulletList' or prev.t == 'OrderedList') and #prev.content > 0 then
+    local item = prev.content[#prev.content]
+    local lb = item[#item]
+    if lb and (lb.t == 'Para' or lb.t == 'Plain') then return lb end
+  end
+  return nil
+end
+
+-- Para + display + lowercase Para  →  one paragraph, as in LaTeX source.
+local function merge_displays(blocks)
+  local out = pandoc.Blocks({})
+  local i = 1
+  while i <= #blocks do
+    local b = blocks[i]
+    local host = is_display(b) and host_of(out[#out]) or nil
+    if host then
+      host.content:insert(pandoc.RawInline('latex', '\n' .. b.text .. '\n'))
+      local nxt = blocks[i + 1]
+      if nxt and continues_sentence(nxt) then
+        host.content:extend(nxt.content)
+        i = i + 1
+      end
+    elseif is_display(b) and blocks[i + 1] and continues_sentence(blocks[i + 1]) then
+      local p = pandoc.Para({ pandoc.RawInline('latex', '\\noindent\n' .. b.text .. '\n') })
+      p.content:extend(blocks[i + 1].content)
+      out:insert(p)
+      i = i + 1
+    elseif continues_sentence(b) then
+      -- a sentence that carries on after a list: no paragraph indent
+      b.content:insert(1, pandoc.RawInline('latex', '\\noindent '))
+      out:insert(b)
+    else
+      out:insert(b)
+    end
+    i = i + 1
+  end
+  return out
+end
+
+-- Put the QED box on the last line of a proof that ends in a display.
+local function qed_in_display(s)
+  local r, n = s:gsub('\n\\end{alignat%*}(%s*)$', ' \\qedhere\n\\end{alignat*}%1')
+  if n == 0 then r, n = s:gsub('\n\\%](%s*)$', ' \\qedhere\n\\]%1') end
+  return r, n > 0
+end
+
+local function close_proof(blocks)
+  local last = blocks[#blocks]
+  if last and last.t == 'Para' and #last.content > 0 then
+    local tail = last.content[#last.content]
+    if tail.t == 'RawInline' and tail.format == 'latex' then
+      tail.text = qed_in_display(tail.text)
+    end
+    -- \end{proof} in the same paragraph keeps the box on the last line
+    last.content:insert(pandoc.RawInline('latex', '\n\\end{proof}'))
+  elseif last and is_display(last) then
+    last.text = qed_in_display(last.text) .. '\n\\end{proof}'
+  else
+    blocks:insert(pandoc.RawBlock('latex', '\\end{proof}'))
+  end
+  return blocks
+end
+
+---------------------------------------------------------------------------
+-- Theorem-like structure
+---------------------------------------------------------------------------
+
+
+local function raw(s) return pandoc.RawBlock('latex', s) end
+
+-- Inlines → LaTeX, so math in a title stays math.
+local function latex_of(inlines)
+  return trim(pandoc.write(pandoc.Pandoc({ pandoc.Plain(inlines) }), 'latex'))
+end
+
+local function begin_env(env, title)
+  if title and title ~= '' then
+    -- braces keep a "]" inside the title (e.g. math [x, y]) from ending the option
+    return raw('\\begin{md' .. env .. '}[{' .. title .. '}]')
+  end
+  return raw('\\begin{md' .. env .. '}')
+end
+
+local function drop_leading_space(inlines)
+  while #inlines > 0 and (inlines[1].t == 'Space' or inlines[1].t == 'SoftBreak'
+                          or inlines[1].t == 'LineBreak') do
+    inlines:remove(1)
+  end
+  return inlines
+end
+
+-- "**Theorem (Name):**" → "theorem", "Name"
+local function theorem_head(block)
+  if block.t ~= 'Para' or #block.content == 0 or block.content[1].t ~= 'Strong' then
+    return nil
+  end
+  local s = latex_of(block.content[1].content)
+  local name, rest = s:match('^(%a+)(.*)$')
+  if not name or not ENVS[name:lower()] then return nil end
+  rest = trim(rest):gsub('[:.]$', '')
+  rest = trim(rest)
+  local title = rest:match('^%((.*)%)$')
+  if rest ~= '' and not title then return nil end
+  return name:lower(), title
+end
+
+local function is_proof_start(block)
+  if block.t ~= 'Para' or #block.content == 0 then return false end
+  local first = block.content[1]
+  if first.t ~= 'Emph' and first.t ~= 'Strong' then return false end
+  return trim(stringify(first)):match('^Proof[.:]?$') ~= nil
+end
+
+local function has_qed(block) return stringify(block):find('∎', 1, true) ~= nil end
+
+-- Remove ∎ from the last block of a proof. Returns nil if the block empties.
+local function strip_qed(block)
+  if block.t == 'Para' or block.t == 'Plain' then
+    local inl = pandoc.Inlines({})
+    for _, x in ipairs(block.content) do
+      if x.t == 'Str' and x.text:find('∎', 1, true) then
+        local rest = x.text:gsub('∎', '')
+        if rest ~= '' then inl:insert(pandoc.Str(rest)) end
+      else inl:insert(x) end
+    end
+    while #inl > 0 and (inl[#inl].t == 'Space' or inl[#inl].t == 'SoftBreak') do
+      inl:remove(#inl)
+    end
+    if #inl == 0 then return nil end
+    block.content = inl
+    return block
+  end
+  -- ∎ nested in a list etc.: put the QED box on that line.
+  return block:walk({
+    Str = function(x)
+      if x.text:find('∎', 1, true) then
+        local rest = x.text:gsub('∎', '')
+        return { pandoc.Str(rest), pandoc.RawInline('latex', '\\qedhere') }
+      end
+    end,
+  })
+end
+
+-- A line inside a paragraph that starts with "*Proof.*" or a bold keyword
+-- ("**Lemma.**") begins a new block, so these can be written compactly:
+--   **Example (Powerset).** Let `S` be any set, …
+--   *Proof.* …
+--   ∎
+local function starts_block(inlines, k)
+  local probe = pandoc.Para({ inlines[k] })
+  return is_proof_start(probe) or theorem_head(probe) ~= nil
+end
+
+local function split_paras(blocks)
+  local out = pandoc.Blocks({})
+  for _, b in ipairs(blocks) do
+    if b.t == 'Para' then
+      local cur = pandoc.Inlines({})
+      for k, x in ipairs(b.content) do
+        if (x.t == 'SoftBreak' or x.t == 'LineBreak') and b.content[k + 1]
+            and starts_block(b.content, k + 1) then
+          if #cur > 0 then out:insert(pandoc.Para(cur)) end
+          cur = pandoc.Inlines({})
+        else
+          cur:insert(x)
+        end
+      end
+      if #cur > 0 then out:insert(pandoc.Para(cur)) end
+    else
+      out:insert(b)
+    end
+  end
+  return out
+end
+
+local function structure(blocks)
+  blocks = merge_displays(split_paras(blocks))
+  local out = pandoc.Blocks({})
+  local i = 1
+  while i <= #blocks do
+    local b = blocks[i]
+    local env, title = theorem_head(b)
+    if env then
+      b.content:remove(1)
+      drop_leading_space(b.content)
+      out:insert(begin_env(env, title))
+      if #b.content > 0 then out:insert(b)
+      elseif blocks[i + 1] then
+        i = i + 1
+        local nb = blocks[i]
+        if nb.t ~= 'Para' and nb.t ~= 'Plain' then
+          -- a list or display right after the head would run into it
+          out:insert(raw('\\leavevmode\\vspace{-\\baselineskip}'))
+        end
+        out:insert(nb)
+      end
+      out:insert(raw('\\end{md' .. env .. '}'))
+      i = i + 1
+    elseif is_proof_start(b) then
+      local j = i
+      while j <= #blocks and not has_qed(blocks[j]) do j = j + 1 end
+      if j > #blocks then j = i end
+      b.content:remove(1)
+      drop_leading_space(b.content)
+      out:insert(raw('\\begin{proof}'))
+      local body = pandoc.Blocks({})
+      for k = i, j do
+        local blk = blocks[k]
+        if k == j then blk = strip_qed(blk) end
+        if blk and not (blk.t == 'Para' and #blk.content == 0) then body:insert(blk) end
+      end
+      out:extend(close_proof(merge_displays(body)))
+      i = j + 1
+    else
+      out:insert(b)
+      i = i + 1
+    end
+  end
+  return out
+end
+
+return {
+  math_pass,
+  { Pandoc = function(doc) doc.blocks = structure(doc.blocks); return doc end },
+}
