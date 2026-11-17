@@ -60,10 +60,12 @@ notation.</p>
 <li><a href="#notation">Notation</a></li>
 <li><a href="#definitions">Definitions</a></li>
 <li><a href="#category">Definition 1. (Category)</a></li>
-<li><a href="#homsetsarrowsets">Definition 2.
+<li><a href="#dual-category-or-opposite-category">Definition 2. (Dual
+Category or Opposite Category)</a></li>
+<li><a href="#homsetsarrowsets">Definition 3.
 (Homsets/Arrowsets)</a></li>
-<li><a href="#initial-object">Definition 3. (Initial object)</a></li>
-<li><a href="#terminal-object">Definition 4. (Terminal object)</a></li>
+<li><a href="#initial-and-terminal-objects">Definition 4. (Initial and
+terminal objects)</a></li>
 <li><a href="#inverses">Definition 5. (Inverses)</a></li>
 <li><a href="#isomorphism">Definition 6. (Isomorphism)</a></li>
 <li><a href="#monomorphism-and-epimorphism">Definition 7. (Monomorphism
@@ -78,29 +80,27 @@ Transformations)</a></li>
 <li><a href="#product-category">Definition 12. (Product
 Category)</a></li>
 <li><a href="#bifunctor">Definition 13. (Bifunctor)</a></li>
-<li><a href="#dual-category-or-opposite-category">Definition 14. (Dual
-Category or Opposite Category)</a></li>
-<li><a href="#contravariant-functor">Definition 15. (Contravariant
+<li><a href="#contravariant-functor">Definition 14. (Contravariant
 Functor)</a></li>
-<li><a href="#covariant-homfunctor">Definition 16. (Covariant
+<li><a href="#covariant-homfunctor">Definition 15. (Covariant
 Homfunctor)</a></li>
-<li><a href="#contravariant-homfunctor">Definition 17. (Contravariant
+<li><a href="#contravariant-homfunctor">Definition 16. (Contravariant
 Homfunctor)</a></li>
-<li><a href="#homfunctor">Definition 18. (Homfunctor)</a></li>
-<li><a href="#left-and-right-adjoint-functors">Definition 19. (Left and
+<li><a href="#homfunctor">Definition 17. (Homfunctor)</a></li>
+<li><a href="#left-and-right-adjoint-functors">Definition 18. (Left and
 Right Adjoint Functors)</a></li>
 <li><a href="#examples">Examples</a></li>
-<li><a href="#the-monoid-category">Example 20. (The Monoid
+<li><a href="#the-monoid-category">Example 19. (The Monoid
 Category)</a></li>
-<li><a href="#the-category-of-categories">Example 21. (The Category of
+<li><a href="#the-category-of-categories">Example 20. (The Category of
 Categories)</a></li>
-<li><a href="#the-set-category">Example 22. (The Set Category)</a></li>
-<li><a href="#the-product-functor-in-set">Example 23. (The Product
+<li><a href="#the-set-category">Example 21. (The Set Category)</a></li>
+<li><a href="#the-product-functor-in-set">Example 22. (The Product
 Functor in Set)</a></li>
-<li><a href="#the-sum-functor-in-set">Example 24. (The Sum Functor in
+<li><a href="#the-sum-functor-in-set">Example 23. (The Sum Functor in
 Set)</a></li>
-<li><a href="#the-list-functor">Example 25. (The List Functor)</a></li>
-<li><a href="#haskell-functor">Example 26. (Haskell Functor)</a></li>
+<li><a href="#the-list-functor">Example 24. (The List Functor)</a></li>
+<li><a href="#haskell-functor">Example 25. (Haskell Functor)</a></li>
 </ul>
 <h2 id="notation"><a class="anchor" href="#notation"></a>Notation</h2>
 <ul>
@@ -135,8 +135,25 @@ any morphism <code>f: A → B</code>, we have
 <code>f ▹ id&lt;B&gt; = f = id&lt;A&gt; ▹ f</code>.</li>
 </ol>
 </section>
+<section id="dual-category-or-opposite-category" class="Definition">
+<h4><a class="anchor" href="#dual-category-or-opposite-category"></a>Definition
+2. (Dual Category or Opposite Category)</h4>
+<p>Every category <code>𝓒</code> has an opposite category, denoted
+<code>𝓒⁻</code>, which has the same objects as <code>𝓒</code>, but has
+the arrows reversed.</p>
+<ol type="1">
+<li><strong>Objects</strong>: every object <code>A</code> in
+<code>𝓒⁻</code> is an object in <code>𝓒</code></li>
+<li><strong>Morphisms</strong>: a morphism <code>f⁻: A → B</code> in
+<code>𝓒⁻</code> is a morphism <code>f: B → A</code> in <code>𝓒</code>.
+Composition <code>▹⁻</code> between <code>f⁻</code> and
+<code>g⁻: B → C</code> is defined <code>f⁻ ▹⁻ g⁻ = (g▹f)⁻</code>.</li>
+</ol>
+</section>
+<p>All definitions on categories can be defined on corresponding
+opposite categories. These are called <em>dual</em> definitions.</p>
 <section id="homsetsarrowsets" class="Definition">
-<h4><a class="anchor" href="#homsetsarrowsets"></a>Definition 2.
+<h4><a class="anchor" href="#homsetsarrowsets"></a>Definition 3.
 (Homsets/Arrowsets)</h4>
 <p>For two objects <code>A,B</code> in a category <code>𝓒</code>, the
 set of morphisms from <code>A</code> to <code>B</code> is called the
@@ -145,19 +162,14 @@ set of morphisms from <code>A</code> to <code>B</code> is called the
 <code>A→B</code>. In other words, the notation <code>m ∈ A→B</code> is
 equivalent to <code>m: A → B</code>.</p>
 </section>
-<section id="initial-object" class="Definition">
-<h4><a class="anchor" href="#initial-object"></a>Definition 3. (Initial
-object)</h4>
+<section id="initial-and-terminal-objects" class="Definition">
+<h4><a class="anchor" href="#initial-and-terminal-objects"></a>Definition
+4. (Initial and terminal objects)</h4>
 <p>An object <code>I</code> is called <strong>initial</strong> if for
 every object <code>X</code> in <code>𝓒</code>, there exists a unique
-morphism <code>I → X</code>.</p>
-</section>
-<section id="terminal-object" class="Definition">
-<h4><a class="anchor" href="#terminal-object"></a>Definition 4.
-(Terminal object)</h4>
-<p>An object <code>T</code> is called <strong>terminal</strong> if for
-every object <code>X</code> in <code>𝓒</code>, there exists a unique
-morphism <code>X → T</code>.</p>
+morphism <code>I → X</code>. Dually, an object <code>T</code> is called
+<strong>terminal</strong> if for every object <code>X</code> in
+<code>𝓒</code>, there exists a unique morphism <code>X → T</code>.</p>
 </section>
 <section id="inverses" class="Definition">
 <h4><a class="anchor" href="#inverses"></a>Definition 5. (Inverses)</h4>
@@ -189,7 +201,7 @@ morphism to <code>f</code>.</p>
 <code>X</code> and any two morphisms <code>g, h : X → A</code>,</p>
 <pre><code>f ∘ g = f ∘ h ⇒ g = h</code></pre>
 <p>This is the categorical generalization of <em>injectivity</em>.</p>
-<p><code>f</code> is <strong>epi</strong> if for any object
+<p>Dually, <code>f</code> is <strong>epi</strong> if for any object
 <code>X</code> and any two morphisms <code>g, h : B → X</code>,</p>
 <pre><code>g ∘ f = h ∘ f ⇒ g = h</code></pre>
 <p>This is the categorical generalization of <em>surjectivity</em>.</p>
@@ -321,29 +333,14 @@ id&lt;A,B&gt; ▹ (g, g&#39;) = (id&lt;A&gt;, id&lt;B&gt;) ▹ (g, g&#39;) = (id
 <code>𝓔</code>, a functor <code>F: 𝓒 ⨯ 𝓓 → 𝓔</code> is called a
 <em>bifunctor</em>.</p>
 </section>
-<section id="dual-category-or-opposite-category" class="Definition">
-<h4><a class="anchor" href="#dual-category-or-opposite-category"></a>Definition
-14. (Dual Category or Opposite Category)</h4>
-<p>Every category <code>𝓒</code> has an opposite category, denoted
-<code>𝓒⁻</code>, which has the same objects as <code>𝓒</code>, but has
-the arrows reversed.</p>
-<ol type="1">
-<li><strong>Objects</strong>: every object <code>A</code> in
-<code>𝓒⁻</code> is an object in <code>𝓒</code></li>
-<li><strong>Morphisms</strong>: a morphism <code>f⁻: A → B</code> in
-<code>𝓒⁻</code> is a morphism <code>f: B → A</code> in <code>𝓒</code>.
-Composition <code>▹⁻</code> between <code>f⁻</code> and
-<code>g⁻: B → C</code> is defined <code>f⁻ ▹⁻ g⁻ = (g▹f)⁻</code>.</li>
-</ol>
-</section>
 <section id="contravariant-functor" class="Definition">
-<h4><a class="anchor" href="#contravariant-functor"></a>Definition 15.
+<h4><a class="anchor" href="#contravariant-functor"></a>Definition 14.
 (Contravariant Functor)</h4>
 <p>Given categories <code>𝓒</code> and <code>𝓓</code>, a functor
 <code>F: 𝓒⁻ → 𝓓</code> is called a <em>contravariant functor</em>.</p>
 </section>
 <section id="covariant-homfunctor" class="Definition">
-<h4><a class="anchor" href="#covariant-homfunctor"></a>Definition 16.
+<h4><a class="anchor" href="#covariant-homfunctor"></a>Definition 15.
 (Covariant Homfunctor)</h4>
 <p>For a fixed object <code>A</code> in a category <code>𝓒</code>, the
 covariant Homfunctor (or covariant arrow functor) on <code>A</code>,
@@ -358,7 +355,7 @@ in <code>𝓒</code>, is mapped to a function between homsets
 </section>
 <section id="contravariant-homfunctor" class="Definition">
 <h4><a class="anchor" href="#contravariant-homfunctor"></a>Definition
-17. (Contravariant Homfunctor)</h4>
+16. (Contravariant Homfunctor)</h4>
 <p>For a fixed object <code>A</code> in a category <code>𝓒</code>, the
 contravariant Homfunctor (or contravariant arrow functor) on
 <code>A</code>, <code>→A: 𝓒 → Set</code>, is defined as follows.</p>
@@ -371,7 +368,7 @@ in <code>𝓒</code>, is mapped to a function between homsets
 </ol>
 </section>
 <section id="homfunctor" class="Definition">
-<h4><a class="anchor" href="#homfunctor"></a>Definition 18.
+<h4><a class="anchor" href="#homfunctor"></a>Definition 17.
 (Homfunctor)</h4>
 <p>For a category <code>𝓒</code>, it’s Homfunctor (or <em>arrow
 functor</em>) <code>→: 𝓒⁻ × 𝓒 → Set</code> is defined as follows.</p>
@@ -412,7 +409,7 @@ ii) Let (f₁⁻,f₂) : &lt;A₁,A₂&gt; → &lt;B₁,B₂&gt; and (g₁⁻,g�
 </section>
 <section id="left-and-right-adjoint-functors" class="Definition">
 <h4><a class="anchor" href="#left-and-right-adjoint-functors"></a>Definition
-19. (Left and Right Adjoint Functors)</h4>
+18. (Left and Right Adjoint Functors)</h4>
 <p>Let <code>L: 𝓒 → 𝓓</code>, <code>R: 𝓓 → 𝓒</code> functors such that
 for all <code>A</code> in <code>𝓒</code> there is a natural isomorphism
 between <code>R ▹ A→ : 𝓓 → Set</code> and
@@ -424,7 +421,7 @@ Then <code>L</code> is called the left-adjoint of <code>R</code>, and
 </section>
 <h2 id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
 <section id="the-monoid-category" class="Example">
-<h4><a class="anchor" href="#the-monoid-category"></a>Example 20. (The
+<h4><a class="anchor" href="#the-monoid-category"></a>Example 19. (The
 Monoid Category)</h4>
 <p>A monoid <code>M</code> is characterized by a set of values
 <code>M</code>, an identity value <code>0</code> and an operator
@@ -456,7 +453,7 @@ met.</p>
 <p>∎</p>
 </section>
 <section id="the-category-of-categories" class="Example">
-<h4><a class="anchor" href="#the-category-of-categories"></a>Example 21.
+<h4><a class="anchor" href="#the-category-of-categories"></a>Example 20.
 (The Category of Categories)</h4>
 <p>The category <em>Cat</em> where objects are categories and morphisms
 are functors between categories, is a category. Functors <code>F</code>
@@ -481,7 +478,7 @@ the underlying functions is associative. (Identity) For any object
 functions. ∎</p>
 </section>
 <section id="the-set-category" class="Example">
-<h4><a class="anchor" href="#the-set-category"></a>Example 22. (The Set
+<h4><a class="anchor" href="#the-set-category"></a>Example 21. (The Set
 Category)</h4>
 <p>The category <em>Set</em> is the category where objects are sets and
 morphisms are functions between sets. When programming with total
@@ -492,7 +489,7 @@ functions map types to other types. For example, <code>Bool</code> and
 morphism.</p>
 </section>
 <section id="the-product-functor-in-set" class="Example">
-<h4><a class="anchor" href="#the-product-functor-in-set"></a>Example 23.
+<h4><a class="anchor" href="#the-product-functor-in-set"></a>Example 22.
 (The Product Functor in Set)</h4>
 <p>The type constructor</p>
 <pre><code> Pair: Set ⨯ Set → Set
@@ -502,7 +499,7 @@ morphism.</p>
 <p><em>Proof.</em> TODO</p>
 </section>
 <section id="the-sum-functor-in-set" class="Example">
-<h4><a class="anchor" href="#the-sum-functor-in-set"></a>Example 24.
+<h4><a class="anchor" href="#the-sum-functor-in-set"></a>Example 23.
 (The Sum Functor in Set)</h4>
 <p>The type constructor</p>
 <pre><code> Either: Set ⨯ Set → Set
@@ -513,7 +510,7 @@ morphism.</p>
 <p><em>Proof.</em> TODO</p>
 </section>
 <section id="the-list-functor" class="Example">
-<h4><a class="anchor" href="#the-list-functor"></a>Example 25. (The List
+<h4><a class="anchor" href="#the-list-functor"></a>Example 24. (The List
 Functor)</h4>
 <p>The <em>List</em> type constructor forms an endofunctor in the
 category Set.</p>
@@ -558,7 +555,7 @@ List(id&lt;A&gt;)(Cons(x, xs)) = Cons(id&lt;A&gt;(x), List(id&lt;A&gt;)(xs))  (L
 <p>Both expressions simplify to <code>Cons(x, xs)</code>. ∎</p>
 </section>
 <section id="haskell-functor" class="Example">
-<h4><a class="anchor" href="#haskell-functor"></a>Example 26. (Haskell
+<h4><a class="anchor" href="#haskell-functor"></a>Example 25. (Haskell
 Functor)</h4>
 <p>Any Haskell type constructor <code>F</code> that has an instance of
 the <a href="https://wiki.haskell.org/Functor" class=" external" target="_blank">Haskell Functor class</a> forms an endofunctor in Set

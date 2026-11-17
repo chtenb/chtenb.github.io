@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Philosophy about Observations</title>
+  <style>code {
+  white-space: pre-wrap;
+}
+
+span.smallcaps {
+  font-variant: small-caps;
+}
+
+div.columns {
+  gap: min(4vw, 1.5em);
+  display: flex;
+}
+
+div.column {
+  flex: auto;
+  overflow-x: auto;
+}
+
+div.hanging-indent {
+  text-indent: -1.5em;
+  margin-left: 1.5em;
+}
+
+ul.task-list[class] {
+  list-style: none;
+}
+
+ul.task-list li input[type="checkbox"] {
+  font-size: inherit;
+  vertical-align: middle;
+  width: .8em;
+  margin: 0 .8em .2em -1.6em;
+}
+
+.display.math {
+  text-align: center;
+  margin: .5rem auto;
+  display: block;
+}
+</style>
+  <style type="text/css"></style>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">Philosophy about Observations</h1>
+</header>
+<div id="content">
+<p><strong>Observations</strong> An observation is a reported piece of
+information about the world, and nothing more: two observations that
+carry the same information are the same observation. Any further
+information about an observation, such as how often or when something
+was observed, counts as an observation in its own right.</p>
+<p><strong>Joint Observations</strong> Observations do not only come in
+isolation. Observations that were made together, such as the fields of
+one record or the parts of one sensor reading, form a joint observation.
+Observations that were made separately are independent. Independent
+observations can be interpreted together but don’t have to be, while the
+parts of a joint observation must always be considered together.</p>
+<p><strong>Blank Observations</strong> Having no observation is
+different from having an observation that carries no information. No
+observation means that no report was made: there is no witness, no
+record, no reading. A blank observation means that a report was made,
+but without any details.</p>
+<p><strong>Completion Principle</strong> A joint observation needs one
+of each of its parts. If a part consists of multiple independent
+observations, each such independent observation completes the joint
+observation on its own. If a part was never reported, the joint
+observation can’t be completed.</p>
+<p><strong>Open World Principle</strong> It is often not possible to
+know whether a set of observations is complete, so new observations must
+always be admissible. In particular, not having some observation is not
+evidence against it.</p>
+<p><strong>Safe Reasoning Principle</strong> Since a set of observations
+is never known to be complete, a conclusion is only safe if new
+independent observations cannot invalidate it.</p>
+<ul>
+<li><a href="#observation-algebra">Observation Algebra</a></li>
+<li><a href="#definition-observation-algebra">Definition Observation
+Algebra</a></li>
+<li><a href="#examples">Examples</a></li>
+<li><a href="#powerset">Powerset</a></li>
+<li><a href="#sets-of-half-open-intervals">Sets of half-open
+intervals</a></li>
+<li><a href="#lattice-dioid">Lattice dioid</a></li>
+<li><a href="#taxonomy-refinement">Taxonomy Refinement</a></li>
+<li><a href="#free-observation-algebra-with-names">Free Observation
+Algebra with Names</a></li>
+<li><a href="#information-ordering">Information ordering</a></li>
+<li><a href="#maps-and-polynomials">Maps and Polynomials</a></li>
+<li><a href="#maps">Maps</a></li>
+<li><a href="#operations">Operations</a></li>
+<li><a href="#polynomials">Polynomials</a></li>
+<li><a href="#notation">Notation</a></li>
+<li><a href="#monomials">Monomials</a></li>
+<li><a href="#monotonic-polynomials">Monotonic polynomials</a></li>
+<li><a href="#additive-operations">Additive operations</a></li>
+<li><a href="#homomorphisms">Homomorphisms</a></li>
+<li><a href="#homomorphisms-and-polynomials">Homomorphisms and
+polynomials</a></li>
+</ul>
+<h1 id="observation-algebra"><a class="anchor" href="#observation-algebra"></a>Observation
+Algebra</h1>
+<p>We propose an algebraic structure to encode observations while
+adhering to the philosophy described earlier. An element of the
+structure represents a collection of observations. The <em>sum</em>
+<code>a + b</code> combines <code>a</code> and <code>b</code> as
+independent observations, and the <em>product</em> <code>a ⋅ b</code>
+combines them into a joint observation. The element <code>0</code>
+represents no observation, and <code>1</code> represents the blank
+observation. The resulting structure is a <em>commutative idempotent
+dioid</em>.</p>
+<h3 id="definition-observation-algebra"><a class="anchor" href="#definition-observation-algebra"></a>Definition
+Observation Algebra</h3>
+<p>A <strong>commutative idempotent dioid</strong> is a set
+<code>D</code> closed under two binary operations <code>+</code> and
+<code>⋅</code> and with two distinguished elements
+<code>0, 1 ∈ D</code>, such that for all <code>a, b, c ∈ D</code>:</p>
+<p><strong>Addition: independent observations</strong></p>
+<ol type="1">
+<li><em>Associativity</em>: <code>a + (b + c) = (a + b) + c</code></li>
+<li><em>Identity</em>: <code>0 + a = a</code></li>
+<li><em>Commutativity</em>: <code>a + b = b + a</code></li>
+<li><em>Idempotency</em>: <code>a + a = a</code></li>
+</ol>
+<p>By the <em>Open World Principle</em>, new observations are always
+admissible, so any two collections of observations can be added. An
+observation is determined by its information alone
+(<em>Observations</em>), so it does not matter how independent
+observations are grouped (1), in which order they arrive (3), or whether
+one is repeated (4). Adding no observation changes nothing (2), by
+<em>Blank Observations</em>.</p>
+<p><strong>Multiplication: joint observations</strong></p>
+<ol start="5" type="1">
+<li><em>Associativity</em>: <code>a(bc) = (ab)c</code></li>
+<li><em>Identity</em>: <code>1 ⋅ a = a</code></li>
+<li><em>Commutativity</em>: <code>ab = ba</code></li>
+<li><em>Idempotency</em>: <code>aa = a</code></li>
+</ol>
+<p>Since independent observations can be considered together and any two
+collections can be added, by extension any two collections can be
+multiplied. A joint observation carries exactly the information of its
+parts, so by <em>Observations</em> it does not matter how its parts are
+grouped (5) or ordered (7), or whether a part is repeated (8). A blank
+part carries no information, so it does not change a joint observation
+(6), by <em>Blank Observations</em>.</p>
+<p><strong>Interaction: completion</strong></p>
+<ol start="9" type="1">
+<li><em>Distributivity</em>: <code>a(b + c) = ab + ac</code></li>
+<li><em>Annihilation</em>: <code>a ⋅ 0 = 0</code></li>
+</ol>
+<p>These two axioms are the <em>Completion Principle</em>. If a part of
+a joint observation was reported independently as <code>b</code> and as
+<code>c</code>, each report completes the joint observation
+independently (9). If a part was never reported, the joint observation
+cannot be completed (10).</p>
+<p>The <em>Safe Reasoning Principle</em> is not an axiom: it restricts
+which functions we use on observations for safe reasoning, which we will
+introduce later.</p>
+<p>In the remainder of the text, we will refer to this structure as an
+<strong>observation algebra</strong>. Another way of looking at this is
+as two commutative idempotent monoids that are combined by
+distributivity. Annihilation can intuitively be understood as
+distribution of an empty sum, just as a part that was never reported has
+no reports to complete the joint observation with.</p>
+<h3 id="examples"><a class="anchor" href="#examples"></a>Examples</h3>
+<h4 id="powerset"><a class="anchor" href="#powerset"></a>Powerset</h4>
+<p>Let <code>S</code> be any set, then <code>(𝒫(S), ∪, ∩, ∅, S)</code>
+is an observation algebra.</p>
+<p><em>Proof.</em> <code>𝒫(S)</code> is closed under <code>∪</code> and
+<code>∩</code>, and contains <code>∅</code> and <code>S</code>. Axioms
+1, 3, 4 and 5, 7, 8 are associativity, commutativity and idempotency of
+<code>∪</code> and <code>∩</code>; 2 is <code>∅ ∪ a = a</code>; 6 is
+<code>S ∩ a = a</code>, using <code>a ⊆ S</code>; 9 is distributivity of
+<code>∩</code> over <code>∪</code>; 10 is <code>∅ ∩ a = ∅</code>. ∎</p>
+<h4 id="sets-of-half-open-intervals"><a class="anchor" href="#sets-of-half-open-intervals"></a>Sets
+of half-open intervals</h4>
+<p>Let <code>(T, ≤)</code> be a totally ordered set of
+<em>positions</em>, including extrema <code>-∞, +∞</code> with
+<code>-∞ &lt; t &lt; +∞</code> for all <code>t ∈ T</code>. For
+<code>s, e ∈ T</code> write</p>
+<pre><code>[s, e) := { t ∈ T | s ≤ t &lt; e }</code></pre>
+<p>and note <code>[s, e) = ∅</code> whenever <code>e ≤ s</code>.</p>
+<p>Let <code>D</code> be the set of all finite unions of such intervals,
+with</p>
+<pre><code>a + b := a ∪ b     0 := ∅ = [s, s)
+a ⋅ b := a ∩ b     1 := T ∖ {+∞} = [-∞, +∞)</code></pre>
+<p>Then <code>(D, +, ⋅, 0, 1)</code> is an observation algebra.</p>
+<p><em>Proof.</em> First, the operations are well defined on
+<code>D</code>. Closure under <code>+</code> is immediate, since a union
+of two finite unions of intervals is one. For <code>⋅</code>, totality
+of <code>≤</code> gives</p>
+<pre><code>[s₁, e₁) ∩ [s₂, e₂) = [ max(s₁, s₂), min(e₁, e₂) )</code></pre>
+<p>so an intersection of intervals is an interval, and
+<code>(⋃ᵢ Iᵢ) ∩ (⋃ⱼ Jⱼ) = ⋃_{i,j} (Iᵢ ∩ Jⱼ)</code> is a finite union of
+intervals. Also <code>0 = [s, s) ∈ D</code> and
+<code>1 = [-∞, +∞) ∈ D</code>. Hence <code>D</code> is a sublattice of
+<code>(𝒫(T ∖ {+∞}), ∪, ∩)</code> containing <code>∅</code> and
+<code>T ∖ {+∞}</code>, and each axiom holds already in the powerset
+lattice. ∎</p>
+<p>The two examples above form bounded lattices. In fact, we can
+generalize these constructions for arbitrary bounded distributive
+lattices.</p>
+<h4 id="lattice-dioid"><a class="anchor" href="#lattice-dioid"></a>Lattice
+dioid</h4>
+<p>Generalizing the previous examples, any lattice is also an
+observation algebra. Let <code>(L, ∨, ∧, ⊥, ⊤)</code> be a bounded
+distributive lattice, and let <code>D = L</code>, with</p>
+<pre><code>0 := ⊥     1 := ⊤
+a + b := a ∨ b
+a ⋅ b := a ∧ b</code></pre>
+<p>Then <code>(D, +, ⋅, 0, 1)</code> is an observation algebra.</p>
+<h4 id="taxonomy-refinement"><a class="anchor" href="#taxonomy-refinement"></a>Taxonomy
+Refinement</h4>
+<p>Let <code>(T, ≤)</code> be a <em>taxonomy</em>: a partial order with
+a root <code>r</code> such that <code>x ≤ r</code> for all
+<code>x ∈ T</code>, and in which the ancestors
+<code>{ y ∈ T | x ≤ y }</code> of any <code>x</code> form a chain. Read
+<code>x ≤ y</code> as “<code>x</code> refines <code>y</code>”,
+e.g. <code>Amsterdam ≤ Netherlands ≤ Europe</code>. Two nodes are
+<em>compatible</em> if one refines the other, and then we write</p>
+<pre><code>x ⊓ y := x    if x ≤ y
+         y    if y ≤ x</code></pre>
+<p>Let <code>D = 𝒫(T)</code>, with</p>
+<pre><code>0 := ∅     1 := {r}
+a + b := a ∪ b
+a ⋅ b := { x ⊓ y | x ∈ a, y ∈ b, x and y compatible }</code></pre>
+<p>Then <code>(D, +, ⋅, 0, 1)</code> is an observation algebra.</p>
+<p>The product refines joint observations and drops the incompatible
+combinations:</p>
+<pre><code>{Netherlands} ⋅ {Amsterdam, Paris} = {Amsterdam}</code></pre>
+<h4 id="free-observation-algebra-with-names"><a class="anchor" href="#free-observation-algebra-with-names"></a>Free
+Observation Algebra with Names</h4>
+<p>We define <code>Obs(Atom, Attr)</code> as the free observation
+algebra over a set of atoms <code>Atom</code>, with names from a set of
+attributes <code>Attr</code>. When <code>Atom</code> and
+<code>Attr</code> are clear from context, we simply write
+<code>Obs</code>.</p>
+<p>An <strong>atom</strong> is an atomic observation. The set of all
+atoms is notated <code>Atom</code>. An <strong>attribute</strong> is an
+atomic name. The set of all attributes is notated <code>Attr</code>. An
+<strong>attribute path</strong> is an element of the free monoid on
+attributes, <code>Path := (Attr*, ., ε)</code>.</p>
+<p>Then there are the following operations that generate the rest of the
+algebra.</p>
+<ul>
+<li>The naming operation <code>:</code> attaches an attribute path to a
+value. This pairing is written <code>path:val</code>.</li>
+<li>The product <code>[_, _]</code> combines two values into a joint
+observation.</li>
+<li>The sum <code>{_, _}</code> combines two values as independent
+observations.</li>
+</ul>
+<p>The structure that is freely generated by these operations forms the
+algebra <code>Obs</code>.</p>
+<p>Let <code>x, y, z ∈ Obs</code> and <code>a, b ∈ Path</code>.</p>
+<ul>
+<li><p><em>Sum Associativity</em>:
+<code>{x, {y, z}} = {{x, y}, z}</code></p></li>
+<li><p><em>Sum Commutativity</em>: <code>{x, y} = {y, x}</code></p></li>
+<li><p><em>Sum Identity</em>: The identity value is denoted
+<code>{}</code>, and represents no observation:
+<code>{x, {}} = x</code>.</p></li>
+<li><p><em>Sum Idempotency</em>: <code>{x, x} = x</code> “Having an
+observation twice is the same as having it once”</p></li>
+<li><p><em>Product Associativity</em>:
+<code>[x, [y, z]] = [[x, y], z]</code></p></li>
+<li><p><em>Product Commutativity</em>:
+<code>[x, y] = [y, x]</code></p></li>
+<li><p><em>Product Identity</em>: The identity value is denoted
+<code>[]</code>, and represents the blank observation:
+<code>[x, []] = x</code>.</p></li>
+<li><p><em>Product Idempotency</em>: <code>[x, x] = x</code> “Having an
+observation twice is the same as having it once”</p></li>
+<li><p><em>Product-Sum Distributivity</em>:
+<code>[x, {y, z}] = {[x, y], [x, z]}</code> “An observation involving
+two independently observed values is the same as observing those values
+separately.”</p></li>
+<li><p><em>Product-Sum Annihilation</em>: <code>[x, {}] = {}</code> “A
+joint observation can only be completed if all its parts are
+observed”</p></li>
+<li><p><em>Named-Product Distributivity</em>:
+<code>a:[x, y] = [a:x, a:y]</code></p></li>
+<li><p><em>Named-Sum Distributivity</em>:
+<code>a:{x, y} = {a:x, a:y}</code></p></li>
+<li><p><em>Named Empty Sum</em>: <code>a:{} = {}</code> “No observation
+in general is the same as no observation on a subject”</p></li>
+<li><p><em>Named Empty Product</em>: <code>a:[] = []</code> “No
+information in general is the same as no information on a
+subject”</p></li>
+<li><p><em>Naming Associativity</em>: Naming is associative under this
+equality: <code>a:(b:x) = (a.b):x</code>.</p></li>
+<li><p><em>Naming Identity</em>: Naming with the identity name is the
+same as having no name at all: <code>ε:x = x</code>.</p></li>
+</ul>
+<p>While product and sum are defined as binary operations, we will often
+write them as n-ary operations, since they are both associative. So</p>
+<ul>
+<li><code>{x} = x</code></li>
+<li><code>{x, y, z, ...} = {x, {y, {z, ...}}}</code></li>
+<li><code>[x] = x</code></li>
+<li><code>[x, y, z, ...] = [x, [y, [z, ...]]]</code></li>
+</ul>
+<h1 id="information-ordering"><a class="anchor" href="#information-ordering"></a>Information
+ordering</h1>
+<p>Every observation algebra carries an order that compares how much is
+observed: <code>a ⊆ b</code> when <code>b</code> already includes every
+observation in <code>a</code>.</p>
+<p><strong>Definition:</strong> Let <code>D</code> be an observation
+algebra. Denote <code>a ⊆ b</code> iff <code>a + b = b</code>.</p>
+<p><strong>Theorem:</strong> <code>⊆</code> is a partial order on
+<code>D</code>, with least element <code>0</code>.</p>
+<p><em>Proof.</em> Let <code>a, b, c ∈ D</code>.</p>
+<ul>
+<li>Reflexivity: <code>a + a = a</code> by idempotency (4), hence
+<code>a ⊆ a</code>.</li>
+<li>Transitivity: Assume <code>a ⊆ b</code> and <code>b ⊆ c</code>.
+Then</li>
+</ul>
+<pre><code>a + c = a + (b + c)    (b ⊆ c)
+      = (a + b) + c    (1)
+      = b + c          (a ⊆ b)
+      = c              (b ⊆ c)</code></pre>
+<p>hence <code>a ⊆ c</code>. - Antisymmetry: Assume <code>a ⊆ b</code>
+and <code>b ⊆ a</code>. Then</p>
+<pre><code>b = a + b    (a ⊆ b)
+  = b + a    (3)
+  = a        (b ⊆ a)</code></pre>
+<ul>
+<li>Least element: <code>0 + a = a</code> by identity (2), hence
+<code>0 ⊆ a</code>. ∎</li>
+</ul>
+<p>The unit <code>1</code> need not be the greatest element: in the
+taxonomy algebra, <code>{r} + {x} = {r, x} ≠ {r}</code> for
+<code>x ≠ r</code>.</p>
+<p><strong>Theorem:</strong> For all <code>a, b ∈ D</code>,
+<code>ab ⊆ a + b</code>.</p>
+<p><em>Proof.</em> To prove: <code>ab + (a + b) = a + b</code>.</p>
+<pre><code>a + b = (a + b)(a + b)           (8)
+      = (a + b)a + (a + b)b      (9)
+      = a(a + b) + b(a + b)      (7)
+      = (aa + ab) + (ba + bb)    (9)
+      = (a + ab) + (ab + b)      (7, 8)
+      = ab + (a + b)             (1, 3, 4)</code></pre>
+<p>∎</p>
+<p><strong>Definition:</strong> The <em>join</em> <code>a ∪ b</code> is
+the least <code>c ∈ D</code> such that <code>a ⊆ c</code> and
+<code>b ⊆ c</code>.</p>
+<p><strong>Theorem:</strong> For all <code>a, b ∈ D</code>,
+<code>a ∪ b = a + b</code>.</p>
+<p><em>Proof.</em> <code>a + b</code> is an upper bound of
+<code>a</code> and <code>b</code>:</p>
+<pre><code>a + (a + b) = (a + a) + b    (1)
+            = a + b          (4)
+
+b + (a + b) = (a + b) + b    (3)
+            = a + (b + b)    (1)
+            = a + b          (4)</code></pre>
+<p>It is the least one: let <code>a ⊆ c</code> and <code>b ⊆ c</code>.
+Then</p>
+<pre><code>(a + b) + c = a + (b + c)    (1)
+            = a + c          (b ⊆ c)
+            = c              (a ⊆ c)</code></pre>
+<p>hence <code>a + b ⊆ c</code>. ∎</p>
+<p>So <code>(D, ⊆)</code> is a join-semilattice with least element
+<code>0</code>, and <code>+</code> is its join.</p>
+<p><strong>Theorem (Order Compatibility):</strong> For all
+<code>a, b, c ∈ D</code>, if <code>a ⊆ b</code>, then
+<code>a + c ⊆ b + c</code> and <code>ac ⊆ bc</code>.</p>
+<p><em>Proof.</em> Assume <code>a ⊆ b</code>. Then</p>
+<pre><code>(a + c) + (b + c) = (a + b) + (c + c)    (1, 3)
+                  = b + c                (a ⊆ b, 4)</code></pre>
+<p>and</p>
+<pre><code>bc = cb          (7)
+   = c(a + b)    (a ⊆ b)
+   = ca + cb     (9)
+   = ac + bc     (7)</code></pre>
+<p>∎</p>
+<p><strong>Definition:</strong> The <em>meet</em> <code>a ∩ b</code>, if
+it exists, is the greatest <code>c ∈ D</code> such that
+<code>c ⊆ a</code> and <code>c ⊆ b</code>. By antisymmetry, it is unique
+if it exists.</p>
+<p><strong>Theorem:</strong> For all <code>a, b, c ∈ D</code>, if
+<code>c ⊆ a</code> and <code>c ⊆ b</code>, then <code>c ⊆ ab</code>.</p>
+<p><em>Proof.</em> Assume <code>c ⊆ a</code> and <code>c ⊆ b</code>.
+Then</p>
+<pre><code>c = cc    (8)
+  ⊆ ac    (Monotonicity, c ⊆ a)
+  = ca    (7)
+  ⊆ ba    (Monotonicity, c ⊆ b)
+  = ab    (7)</code></pre>
+<p>so <code>c ⊆ ab</code> by transitivity. ∎</p>
+<p><strong>Corollary:</strong> <code>a ∩ b ⊆ ab</code> whenever
+<code>a ∩ b</code> exists.</p>
+<p><strong>Theorem:</strong> For all <code>a, b ∈ D</code>,
+<code>ab = a ∩ b</code> iff <code>ab ⊆ a</code> and
+<code>ab ⊆ b</code>.</p>
+<p><em>Proof.</em> (⟹) <code>a ∩ b</code> is a lower bound of
+<code>a</code> and <code>b</code> by definition. (⟸) <code>ab</code> is
+a lower bound of <code>a</code> and <code>b</code>, and every lower
+bound <code>c</code> of <code>a</code> and <code>b</code> satisfies
+<code>c ⊆ ab</code> by the previous theorem. So <code>ab</code> is the
+greatest lower bound, and <code>ab = a ∩ b</code> by uniqueness. ∎</p>
+<h1 id="maps-and-polynomials"><a class="anchor" href="#maps-and-polynomials"></a>Maps
+and Polynomials</h1>
+<h3 id="maps"><a class="anchor" href="#maps"></a>Maps</h3>
+<p>We study the following properties of functions between observation
+algebras, which we call <em>maps</em>. Let <code>X</code> and
+<code>Y</code> be observation algebras. A map <code>f : X → Y</code> is
+called</p>
+<ul>
+<li><em>monotonic</em> if <code>x ⊆ y</code> implies
+<code>f(x) ⊆ f(y)</code>,</li>
+<li><em>additive</em> if <code>f(x + y) = f(x) + f(y)</code>,</li>
+<li><em>multiplicative</em> if <code>f(x ⋅ y) = f(x) ⋅ f(y)</code>,</li>
+<li><em>normal</em> if <code>f(0) = 0</code>,</li>
+<li><em>unital</em> if <code>f(1) = 1</code>,</li>
+</ul>
+<p>for all <code>x, y ∈ X</code>. An operation <code>f : Aⁿ → A</code>
+of several arguments is said to have one of these properties if it has
+it in each argument separately, with the other arguments fixed.</p>
+<p>Additivity does not imply normality: a constant operation
+<code>f(x) = c</code> is additive by (4), but <code>f(0) = c</code>.</p>
+<p><code>+</code> and <code>⋅</code> are monotonic by <em>Order
+Compatibility</em>. <code>+</code> is additive by (1, 3, 4), and
+<code>⋅</code> is additive by (7, 9), multiplicative by (5, 7, 8) and
+normal by (10). <code>+</code> is multiplicative only if
+<code>x + yz = (x + y)(x + z)</code>, which with <code>y = 0</code>
+gives <code>x = x(x + z)</code>. This fails in the taxonomy algebra:
+<code>{r} ⋅ ({r} + {x}) = {r, x} ≠ {r}</code> for
+<code>x ≠ r</code>.</p>
+<p><strong>Theorem:</strong> Every additive map is monotonic.</p>
+<p><em>Proof.</em> Let <code>x ⊆ y</code>, so <code>x + y = y</code>.
+Then <code>f(y) = f(x + y) = f(x) + f(y)</code>, hence
+<code>f(x) ⊆ f(y)</code>. For several arguments, change one argument at
+a time and use transitivity. ∎</p>
+<h3 id="operations"><a class="anchor" href="#operations"></a>Operations</h3>
+<p>Let <code>A</code> be an observation algebra. An <em>n-ary
+operation</em> on <code>A</code> is a function
+<code>f : Aⁿ → A</code>.</p>
+<p>For example, <code>+</code> and <code>⋅</code> are binary operations
+on every observation algebra, and every constant <code>c</code> is a
+0-ary operation. The naming operations <code>a:</code> of
+<code>Obs</code> are unary operations, as are complement
+<code>x ↦ S ∖ x</code> on the powerset <code>𝒫(S)</code>, and the shift
+<code>[s, e) ↦ [s + 1, e + 1)</code> on the half-open intervals over
+<code>ℤ ∪ {-∞, +∞}</code>, where <code>±∞ + 1 = ±∞</code>.</p>
+<p>For operations <code>g, h : Aⁿ → A</code> we write <code>g + h</code>
+and <code>g ⋅ h</code> for the operations <code>x ↦ g(x) + h(x)</code>
+and <code>x ↦ g(x) ⋅ h(x)</code>.</p>
+<h3 id="polynomials"><a class="anchor" href="#polynomials"></a>Polynomials</h3>
+<p>Polynomials construct operations inductively from simpler ones. Let
+<code>A</code> be an observation algebra, and let <code>Γ</code> be a
+set of operations <code>γ : Aᵏ → A</code> on <code>A</code>, each with
+its own number of arguments <code>k</code>.</p>
+<p>A <em>polynomial</em> in the variables <code>x₁, …, xₙ</code> is an
+expression built from</p>
+<ul>
+<li>a variable <code>xᵢ</code>,</li>
+<li>a constant <code>c ∈ A</code>,</li>
+<li><code>p + q</code> and <code>p ⋅ q</code> for polynomials
+<code>p</code> and <code>q</code>,</li>
+<li><code>γ(p₁, …, p_k)</code> for <code>γ ∈ Γ</code> with
+<code>k</code> arguments and polynomials <code>p₁, …, p_k</code>.</li>
+</ul>
+<p>We write</p>
+<pre><code>f : Aⁿ → A
+f(x₁, …, xₙ) = p</code></pre>
+<p>for the operation that substitutes its arguments for the variables of
+<code>p</code> and evaluates the result in <code>A</code>, and call
+<code>f</code> a <em>polynomial operation</em>. We write
+<code>p(x₁, …, xₙ)</code> for the value of <code>p</code> at
+<code>x₁, …, xₙ ∈ A</code>.</p>
+<h4 id="notation"><a class="anchor" href="#notation"></a>Notation</h4>
+<p>We use <code>≡</code> for syntactic identity: <code>x ≡ y</code> when
+<code>x</code> and <code>y</code> are the same expression. We use
+<code>=</code> for equality in the algebra at hand: <code>x = y</code>
+when <code>x</code> and <code>y</code> denote the same element. For
+polynomials, <code>p = q</code> means that <code>p</code> and
+<code>q</code> define the same operation.</p>
+<h3 id="monomials"><a class="anchor" href="#monomials"></a>Monomials</h3>
+<p>A <em>monomial</em> is a product of variables and constants.</p>
+<p><strong>Theorem (Distributive Form):</strong> Every polynomial that
+uses no operations from <code>Γ</code> is equal to a sum of monomials
+<code>m₁ + ⋯ + mₖ</code>, where the empty sum is <code>0</code>. This is
+also known as the <em>sum-of-products form</em>.</p>
+<p><em>Proof.</em> By induction on the polynomial.</p>
+<ul>
+<li>A variable or a constant is a monomial.</li>
+<li>For a sum, <code>(m₁ + ⋯ + mₖ) + (m&#39;₁ + ⋯ + m&#39;ₗ)</code> is a sum of
+monomials by (1).</li>
+<li>For a product, <code>(m₁ + ⋯ + mₖ)(m&#39;₁ + ⋯ + m&#39;ₗ)</code> is the sum
+of all <code>mᵢm&#39;ⱼ</code> by (7, 9), and each <code>mᵢm&#39;ⱼ</code> is a
+monomial. If either sum is empty, the product is <code>0</code> by (7,
+10). ∎</li>
+</ul>
+<p>In <code>Obs</code>, the naming operations also distribute over sums
+and products, so every value has a distributive form. Here a
+<em>monomial</em> is a product <code>[p₁:s₁, ..., pₖ:sₖ]</code> of named
+atoms.</p>
+<p><strong>Theorem (Distributive Form of <code>Obs</code>):</strong> For
+all <code>x ∈ Obs</code>, there exists a possibly empty sequence of
+monomials <code>m₁, ..., mₙ</code> such that
+<code>x = {m₁, ..., mₙ}</code>.</p>
+<p><em>Proof.</em> By induction on the construction of
+<code>x</code>.</p>
+<ul>
+<li>An atom <code>s</code> is the monomial <code>[ε:s]</code>, by Naming
+Identity.</li>
+<li><code>{}</code> is the empty sequence, and <code>[]</code> is the
+single empty monomial: <code>[] = {[]}</code>.</li>
+<li>For a sum,
+<code>{{m₁, ..., mₙ}, {m&#39;₁, ..., m&#39;ₖ}} = {m₁, ..., mₙ, m&#39;₁, ..., m&#39;ₖ}</code>
+by Sum Associativity.</li>
+<li>For a product,
+<code>[{m₁, ..., mₙ}, {m&#39;₁, ..., m&#39;ₖ}] = {[mᵢ, m&#39;ⱼ] | i ≤ n, j ≤ k}</code>
+by Product-Sum Distributivity and Product Commutativity, and each
+<code>[mᵢ, m&#39;ⱼ]</code> is a monomial. If either sequence is empty, the
+result is <code>{}</code> by Product-Sum Annihilation.</li>
+<li>For a name, <code>a:{m₁, ..., mₙ} = {a:m₁, ..., a:mₙ}</code> by
+Named-Sum Distributivity, or <code>{}</code> by Named Empty Sum if
+<code>n = 0</code>. Each <code>a:mᵢ</code> is a monomial:
+<code>a:[p₁:s₁, ..., pₖ:sₖ] = [(a.p₁):s₁, ..., (a.pₖ):sₖ]</code> by
+Named-Product Distributivity and Naming Associativity, or
+<code>[]</code> by Named Empty Product if <code>k = 0</code>. ∎</li>
+</ul>
+<h4 id="monotonic-polynomials"><a class="anchor" href="#monotonic-polynomials"></a>Monotonic
+polynomials</h4>
+<p><strong>Theorem (Monotonic polynomials):</strong> If every
+<code>γ ∈ Γ</code> is monotonic, then every polynomial operation is
+monotonic.</p>
+<p><em>Proof.</em> Let <code>x ⊆ x&#39;</code> in <code>Aⁿ</code>, ordered
+componentwise. We show <code>p(x) ⊆ p(x&#39;)</code> by induction on
+<code>p</code>. For constants and variables this is immediate. If
+<code>p(x) ⊆ p(x&#39;)</code> and <code>q(x) ⊆ q(x&#39;)</code>, then by
+<em>Order Compatibility</em> and transitivity</p>
+<pre><code>p(x) + q(x) ⊆ p(x&#39;) + q(x) ⊆ p(x&#39;) + q(x&#39;)
+p(x) ⋅ q(x) ⊆ p(x&#39;) ⋅ q(x) ⊆ p(x&#39;) ⋅ q(x&#39;)</code></pre>
+<p>and <code>γ(p₁(x), …, p_k(x)) ⊆ γ(p₁(x&#39;), …, p_k(x&#39;))</code> since
+<code>γ</code> is monotonic. ∎</p>
+<p><strong>Corollary:</strong> If <code>f</code> is monotonic, then
+<code>f(x) + f(y) ⊆ f(x + y)</code>.</p>
+<p><em>Proof.</em> <code>x ⊆ x + y</code> and <code>y ⊆ x + y</code>, so
+<code>f(x) ⊆ f(x + y)</code> and <code>f(y) ⊆ f(x + y)</code>, and
+<code>+</code> is the join. ∎</p>
+<h4 id="additive-operations"><a class="anchor" href="#additive-operations"></a>Additive
+operations</h4>
+<p>A unary operation <code>f : A → A</code> is <em>affine</em> if there
+are <code>c₀, c₁ ∈ A</code> such that <code>f(x) = c₀ + c₁x</code> for
+all <code>x ∈ A</code>.</p>
+<p><strong>Lemma (Affine closure):</strong> Constant operations and the
+identity are affine, and if <code>g</code> and <code>h</code> are
+affine, so are <code>g + h</code> and <code>g ⋅ h</code>.</p>
+<p><em>Proof.</em> A constant <code>c</code> is <code>c + 0 ⋅ x</code>
+by (2, 3, 7, 10), and the identity is <code>0 + 1 ⋅ x</code> by (2, 6).
+Let <code>g(x) = c₀ + c₁x</code> and <code>h(x) = d₀ + d₁x</code>.
+Then</p>
+<pre><code>g(x) + h(x) = (c₀ + d₀) + (c₁ + d₁)x        (1, 3, 7, 9)</code></pre>
+<p>and</p>
+<pre><code>g(x) ⋅ h(x) = (c₀ + c₁x)(d₀ + d₁x)
+            = c₀d₀ + c₀d₁x + c₁d₀x + c₁d₁xx        (5, 7, 9)
+            = c₀d₀ + c₀d₁x + c₁d₀x + c₁d₁x         (8)
+            = c₀d₀ + (c₀d₁ + c₁d₀ + c₁d₁)x         (1, 7, 9)</code></pre>
+<p>∎</p>
+<p><strong>Lemma (Affine operations are additive):</strong> Every affine
+operation is additive.</p>
+<p><em>Proof.</em> Let <code>f(x) = c₀ + c₁x</code>. Then</p>
+<pre><code>f(x + y) = c₀ + c₁(x + y)
+         = c₀ + c₁x + c₁y                  (9)
+         = (c₀ + c₁x) + (c₀ + c₁y)         (1, 3, 4)
+         = f(x) + f(y)</code></pre>
+<p>∎</p>
+<p><strong>Theorem (Additivity):</strong> Let <code>g : A → A</code> be
+additive and <code>c ∈ A</code>. Then</p>
+<ol type="1">
+<li><code>g + h</code> is additive for every additive
+<code>h</code>,</li>
+<li><code>x ↦ g(x) ⋅ c</code> is additive,</li>
+<li><code>x ↦ γ(c₁, …, g(x), …, c_k)</code> is additive for every
+additive operation <code>γ : Aᵏ → A</code> and all constants
+<code>cᵢ</code>.</li>
+</ol>
+<p><em>Proof.</em> 1.</p>
+<pre><code>g(x + y) + h(x + y) = g(x) + g(y) + h(x) + h(y)            (g, h additive)
+                    = (g(x) + h(x)) + (g(y) + h(y))        (1, 3)</code></pre>
+<ol start="2" type="1">
+<li></li>
+</ol>
+<pre><code>g(x + y) ⋅ c = (g(x) + g(y)) ⋅ c        (g additive)
+             = g(x) ⋅ c + g(y) ⋅ c      (7, 9)</code></pre>
+<ol start="3" type="1">
+<li></li>
+</ol>
+<pre><code>γ(c₁, …, g(x + y), …, c_k) = γ(c₁, …, g(x) + g(y), …, c_k)                          (g additive)
+                           = γ(c₁, …, g(x), …, c_k) + γ(c₁, …, g(y), …, c_k)        (γ additive)</code></pre>
+<p>∎</p>
+<p>The theorem does not cover <code>g ⋅ h</code> when neither factor is
+constant. The next lemma says exactly when such a product is
+additive.</p>
+<p><strong>Lemma (Cross terms):</strong> Let <code>g, h : A → A</code>
+be additive, and <code>f = g ⋅ h</code>. Then <code>f</code> is additive
+iff for all <code>x, y ∈ A</code></p>
+<pre><code>g(x) h(y) + g(y) h(x) ⊆ f(x) + f(y)</code></pre>
+<p><em>Proof.</em></p>
+<pre><code>f(x + y) = (g(x) + g(y))(h(x) + h(y))                            (g, h additive)
+         = g(x) h(x) + g(x) h(y) + g(y) h(x) + g(y) h(y)         (7, 9)
+         = f(x) + f(y) + g(x) h(y) + g(y) h(x)                   (1, 3)</code></pre>
+<p>So <code>f(x + y) = f(x) + f(y)</code> iff
+<code>g(x) h(y) + g(y) h(x) ⊆ f(x) + f(y)</code>, by the definition of
+<code>⊆</code>. ∎</p>
+<p><strong>Corollary:</strong> If <code>g</code> is additive, then
+<code>g ⋅ g</code> is additive.</p>
+<p><em>Proof.</em> <code>g ⋅ g = g</code> by (8). ∎</p>
+<p><strong>Example:</strong> On the half-open intervals over
+<code>ℤ ∪ {-∞, +∞}</code>, the shift <code>σ</code> is additive, but
+<code>f(x) = x ⋅ σ(x)</code> is not. For <code>x = [0, 1)</code> and
+<code>y = [1, 2)</code>,</p>
+<pre><code>f(x) = [0, 1) ∩ [1, 2) = ∅
+f(y) = [1, 2) ∩ [2, 3) = ∅
+f(x + y) = [0, 2) ∩ [1, 3) = [1, 2)</code></pre>
+<p>The cross term <code>y ⋅ σ(x) = [1, 2)</code> is not contained in
+<code>f(x) + f(y) = ∅</code>.</p>
+<h3 id="homomorphisms"><a class="anchor" href="#homomorphisms"></a>Homomorphisms</h3>
+<p><strong>Definition:</strong> A <em>homomorphism</em> is a map that is
+additive, multiplicative, normal and unital. A homomorphism
+<code>A → A</code> is called an <em>endomorphism</em>. For example, the
+naming operations <code>a:</code> of the <code>Obs</code> algebra, and
+the shift on the half-open intervals over <code>ℤ ∪ {-∞, +∞}</code>.</p>
+<p><strong>Corollary:</strong> Every homomorphism is monotonic.</p>
+<p>Homomorphisms preserve the structure of observation algebras, and
+therefore commute with polynomials.</p>
+<h4 id="homomorphisms-and-polynomials"><a class="anchor" href="#homomorphisms-and-polynomials"></a>Homomorphisms
+and polynomials</h4>
+<p>Let <code>X</code> and <code>Y</code> be observation algebras, and
+let <code>η : X → Y</code> be an additive and multiplicative map. Let
+<code>Γ</code> be a set of operations on <code>X</code>, and assign to
+each <code>γ : Xᵏ → X</code> in <code>Γ</code> an operation
+<code>γ&#39; : Yᵏ → Y</code> with the same number of arguments, such that
+<code>η</code> <em>respects</em> <code>γ</code>:</p>
+<pre><code>η(γ(x₁, …, x_k)) = γ&#39;(η(x₁), …, η(x_k))    for all x₁, …, x_k ∈ X</code></pre>
+<p>For a polynomial <code>p</code> over <code>X</code>, the
+<em>image</em> <code>η[p]</code> is the polynomial over <code>Y</code>
+that replaces every constant <code>c</code> by <code>η(c)</code> and
+every <code>γ</code> by <code>γ&#39;</code>:</p>
+<pre><code>η[xᵢ]               ≡ xᵢ
+η[c]                ≡ η(c)
+η[p + q]            ≡ η[p] + η[q]
+η[p ⋅ q]            ≡ η[p] ⋅ η[q]
+η[γ(p₁, …, p_k)]    ≡ γ&#39;(η[p₁], …, η[p_k])</code></pre>
+<p><strong>Theorem (Homomorphisms commute with polynomials):</strong>
+For every polynomial <code>p</code> in <code>x₁, …, xₙ</code> and all
+<code>x₁, …, xₙ ∈ X</code>:</p>
+<pre><code>η(p(x₁, …, xₙ)) = η[p](η(x₁), …, η(xₙ))</code></pre>
+<p><em>Proof.</em> By induction on <code>p</code>. Write <code>x</code>
+for <code>x₁, …, xₙ</code> and <code>η(x)</code> for
+<code>η(x₁), …, η(xₙ)</code>.</p>
+<ul>
+<li>Variables: <code>η(xᵢ) = η[xᵢ](η(x))</code>.</li>
+<li>Constants: <code>η(c) = η[c](η(x))</code>, by the definition of
+<code>η[c]</code>.</li>
+<li>Sums:</li>
+</ul>
+<pre><code>η(p(x) + q(x)) = η(p(x)) + η(q(x))                (η additive)
+               = η[p](η(x)) + η[q](η(x))          (induction)
+               = η[p + q](η(x))</code></pre>
+<ul>
+<li>Products:</li>
+</ul>
+<pre><code>η(p(x) ⋅ q(x)) = η(p(x)) ⋅ η(q(x))                (η multiplicative)
+               = η[p](η(x)) ⋅ η[q](η(x))          (induction)
+               = η[p ⋅ q](η(x))</code></pre>
+<ul>
+<li>Operations from <code>Γ</code>:</li>
+</ul>
+<pre><code>η(γ(p₁(x), …, p_k(x))) = γ&#39;(η(p₁(x)), …, η(p_k(x)))              (η respects γ)
+                       = γ&#39;(η[p₁](η(x)), …, η[p_k](η(x)))        (induction)
+                       = η[γ(p₁, …, p_k)](η(x))</code></pre>
+<p>∎</p>
+<p>The proof does not need <code>η</code> to be normal or unital:
+<code>0</code> and <code>1</code> are constants, and are mapped to
+<code>η(0)</code> and <code>η(1)</code>. If <code>η</code> is a
+homomorphism, then <code>η[0] = 0</code> and <code>η[1] = 1</code>, so a
+polynomial without other constants, using only operations from
+<code>Γ</code> with <code>γ&#39; = γ</code>, is its own image.</p>
+<p><strong>Example:</strong> The shift <code>σ</code> is an endomorphism
+of the half-open intervals over <code>ℤ ∪ {-∞, +∞}</code>. For
+<code>p(x) = x ⋅ [0, 5)</code>,</p>
+<pre><code>σ[p](y) = y ⋅ [1, 6)</code></pre>
+<p>so <code>σ(x ∩ [0, 5)) = σ(x) ∩ [1, 6)</code>: restricting and then
+shifting is the same as shifting and then restricting to the shifted
+range.</p>
+</div>
+</body>
+</html>
