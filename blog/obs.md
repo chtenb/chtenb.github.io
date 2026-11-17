@@ -192,6 +192,8 @@ Every observation algebra carries an order that compares how much is observed: `
 
 **Definition (Information Ordering).** Let `D` be an observation algebra. Denote `a ⊆ b` iff `a + b = b`.
 
+<!--
+
 **Theorem.** `⊆` is a partial order on `D`, with least element `0`.
 *Proof.*
 Let `a, b, c ∈ D`.
@@ -294,7 +296,6 @@ so `c ⊆ ab` by transitivity.
 So `ab` is the greatest lower bound, and `ab = a ∩ b` by uniqueness.
 ∎
 
-<!--
 Maps and Polynomials
 ====================
 
