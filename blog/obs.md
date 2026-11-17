@@ -98,10 +98,7 @@ so an intersection of intervals is an interval, and `(⋃ᵢ Iᵢ) ∩ (⋃ⱼ J
 Hence `D` is a sublattice of `(𝒫(T ∖ {+∞}), ∪, ∩)` containing `∅` and `T ∖ {+∞}`, and each axiom holds already in the powerset lattice.
 ∎
 
-The two examples above form bounded lattices.
-In fact, we can generalize these constructions for arbitrary bounded distributive lattices.
-
-**Example (Lattice dioid).** Generalizing the previous examples, any lattice is also an observation algebra.
+**Example (Lattice dioid).** Generalizing the previous examples, any bounded distributive lattice is also an observation algebra.
 Let `(L, ∨, ∧, ⊥, ⊤)` be a bounded distributive lattice, and let `D = L`, with
 ```
 0 := ⊥     1 := ⊤
@@ -110,21 +107,21 @@ a ⋅ b := a ∧ b
 ```
 Then `(D, +, ⋅, 0, 1)` is an observation algebra.
 
-**Example (Taxonomy Refinement).** Let `(T, ≤)` be a *taxonomy*: a partial order with a root `r` such that `x ≤ r` for all `x ∈ T`, and in which the ancestors `{ y ∈ T | x ≤ y }` of any `x` form a chain.
+**Example (Taxonomy Refinement).** Let `(T, ≤)` be a *taxonomy*: a partial order with a root `ρ` such that `x ≤ ρ` for all `x ∈ T`, and in which the ancestors `{ y ∈ T | x ≤ y }` of any `x` form a chain.
 Read `x ≤ y` as "`x` refines `y`", e.g. `Amsterdam ≤ Netherlands ≤ Europe`.
 Two nodes are *compatible* if one refines the other, and then we write
 
 ```
-x ⊓ y := x    if x ≤ y
+x ∧ y := x    if x ≤ y
          y    if y ≤ x
 ```
 
 Let `D = 𝒫(T)`, with
 
 ```
-0 := ∅     1 := {r}
+0 := ∅     1 := {ρ}
 a + b := a ∪ b
-a ⋅ b := { x ⊓ y | x ∈ a, y ∈ b, x and y compatible }
+a ⋅ b := { x ∧ y | x ∈ a, y ∈ b, x and y compatible }
 ```
 
 Then `(D, +, ⋅, 0, 1)` is an observation algebra.
@@ -173,8 +170,9 @@ Let `x, y, z ∈ Obs` and `a, b ∈ Path`.
 - *Naming Associativity*: Naming is associative under this equality: `a:(b:x) = (a.b):x`.
 - *Naming Identity*: Naming with the identity name is the same as having no name at all: `ε:x = x`.
 
-These last naming axioms follow from the fact that a free naming operator does not change the structure of observations it names.
+The first four naming axioms follow from the fact that a free naming operator does not change the structure of observations it names.
 Hence all algebra primitives (addition, multiplication and identities) are preserved.
+The last two say that naming with a path is the same as naming with its attributes one after the other.
 
 While product and sum are defined as binary operations, we will often write them as n-ary operations, since they are both associative.
 So
@@ -191,8 +189,6 @@ Information Ordering
 Every observation algebra carries an order that compares how much is observed: `a ⊆ b` when `b` already includes every observation in `a`.
 
 **Definition (Information Ordering).** Let `D` be an observation algebra. Denote `a ⊆ b` iff `a + b = b`.
-
-<!--
 
 **Theorem.** `⊆` is a partial order on `D`, with least element `0`.
 *Proof.*
@@ -216,9 +212,9 @@ b = a + b    (a ⊆ b)
 - Least element: `0 + a = a` by identity (2), hence `0 ⊆ a`.
 ∎
 
-The unit `1` need not be the greatest element: in the taxonomy algebra, `{r} + {x} = {r, x} ≠ {r}` for `x ≠ r`.
+The unit `1` need not be the greatest element: in the taxonomy algebra, `{ρ} + {x} = {ρ, x} ≠ {ρ}` for `x ≠ ρ`.
 
-**Theorem.** For all `a, b ∈ D`, `ab ⊆ a + b`.
+**Theorem (Sum implies Product).** For all `a, b ∈ D`, `ab ⊆ a + b`.
 *Proof.*
 To prove: `ab + (a + b) = a + b`.
 ```
@@ -230,6 +226,9 @@ a + b = (a + b)(a + b)           (8)
       = ab + (a + b)             (1, 3, 4)
 ```
 ∎
+
+Note that this theorem aligns with the philosopical idea of joint observations, in that independent observations can be considered together.
+This theorem confirms that the joint combination of independent observation is indeed implied.
 
 **Definition.** The *join* `a ∪ b` is the least `c ∈ D` such that `a ⊆ c` and `b ⊆ c`.
 
@@ -279,9 +278,9 @@ By antisymmetry, it is unique if it exists.
 Assume `c ⊆ a` and `c ⊆ b`. Then
 ```
 c = cc    (8)
-  ⊆ ac    (Monotonicity, c ⊆ a)
+  ⊆ ac    (Order Compatibility, c ⊆ a)
   = ca    (7)
-  ⊆ ba    (Monotonicity, c ⊆ b)
+  ⊆ ba    (Order Compatibility, c ⊆ b)
   = ab    (7)
 ```
 so `c ⊆ ab` by transitivity.
@@ -295,6 +294,8 @@ so `c ⊆ ab` by transitivity.
 (⟸) `ab` is a lower bound of `a` and `b`, and every lower bound `c` of `a` and `b` satisfies `c ⊆ ab` by the previous theorem.
 So `ab` is the greatest lower bound, and `ab = a ∩ b` by uniqueness.
 ∎
+
+<!--
 
 Maps and Polynomials
 ====================
@@ -317,7 +318,7 @@ Additivity does not imply normality: a constant operation `f(x) = c` is additive
 
 `+` and `⋅` are monotonic by *Order Compatibility*.
 `+` is additive by (1, 3, 4), and `⋅` is additive by (7, 9), multiplicative by (5, 7, 8) and normal by (10).
-`+` is multiplicative only if `x + yz = (x + y)(x + z)`, which with `y = 0` gives `x = x(x + z)`. This fails in the taxonomy algebra: `{r} ⋅ ({r} + {x}) = {r, x} ≠ {r}` for `x ≠ r`.
+`+` is multiplicative only if `x + yz = (x + y)(x + z)`, which with `y = 0` gives `x = x(x + z)`. This fails in the taxonomy algebra: `{ρ} ⋅ ({ρ} + {x}) = {ρ, x} ≠ {ρ}` for `x ≠ ρ`.
 
 **Theorem:** Every additive map is monotonic.
 
