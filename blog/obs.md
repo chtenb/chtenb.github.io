@@ -329,6 +329,8 @@ _ so `c ⊆ ab` by transitivity.
 So `ab` is the greatest lower bound, and `ab = a ∩ b` by uniqueness.
 ∎
 
+<!--
+
 Maps and Polynomials
 ====================
 
@@ -414,7 +416,8 @@ We write
 f : Aⁿ → A
 f(x₁, …, xₙ) = p
 ```
-_ for the operation that substitutes its arguments for the variables of `p` and evaluates the result in `A`, and call `f` a *polynomial operation*.
+_ for the operation that substitutes its arguments for the variables of `p` and evaluates the result in `A`, and call `f` the *operation induced by `p`*.
+We often say and use *polynomial* when we technically mean the operation induced by it.
 We write `p(x₁, …, xₙ)` for the value of `p` at `x₁, …, xₙ ∈ A`.
 
 ### Monomials
