@@ -24,7 +24,7 @@ No observation means that no report was made: there is no witness, no record, no
 A trivial observation means that a report was made, but without any details.
 
 **Completion Principle**
-: A joint observation needs one of each of its parts.
+: A joint observation needs each one of its parts.
 If a part consists of multiple independent observations, each such independent observation completes the joint observation on its own.
 If a part was never reported, the joint observation can't be completed.
 
@@ -108,12 +108,12 @@ a ⋅ b := a ∧ b
 _ Then `(D, +, ⋅, 0, 1)` is an observation algebra.
 
 **Example (Lineage).** Let `S` be a set of *sources*, and `⊥ ∉ 𝒫(S)` a separate element representing no observation.
-An element is either `⊥`, or the set of sources that contributed to it. Let `D = 𝒫(S) ∪ {⊥}`, with
+An element is either `⊥`, or the set of sources that contributed to it. Let `D = 𝒫(S) ∪ {⊥}`, with `for a, b ⊆ S`
 ```
 0 := ⊥     1 := ∅
-a + b := a ∪ b      a ⋅ b := a ∪ b      for a, b ⊆ S
-⊥ + a := a + ⊥ := a
-⊥ ⋅ a := a ⋅ ⊥ := ⊥
+a + b := a ∪ b             a ⋅ b := a ∪ b      
+⊥ + a := a + ⊥ := a        ⊥ ⋅ a := a ⋅ ⊥ := ⊥
+⊥ ⋅ ⊥ := ⊥ + ⊥ := ⊥
 ```
 _ Then `(D, +, ⋅, 0, 1)` is an observation algebra.
 
@@ -125,23 +125,6 @@ Lineage records *which* sources contributed, but not *how*: it cannot distinguis
 It is not a lattice: `∅ + {s} = {s} ≠ ∅`.
 
 This algebra is known as the *lineage semiring* in database provenance (Green, ICDT 2009).
-
-**Example (Minimum Count).** Let `⊥ ∉ ℕ` be a separate element representing no observation.
-An element `n ∈ ℕ` means "at least `n` were observed". Let `D = ℕ ∪ {⊥}`, with
-```
-0 := ⊥     1 := 0 ∈ ℕ
-a + b := max(a, b)      a ⋅ b := max(a, b)      for a, b ∈ ℕ
-⊥ + a := a + ⊥ := a
-⊥ ⋅ a := a ⋅ ⊥ := ⊥
-```
-_ Then `(D, +, ⋅, 0, 1)` is an observation algebra.
-
-The information ordering is `⊥ ⊆ 0 ⊆ 1 ⊆ 2 ⊆ ⋯`: counts only grow as reports accumulate.
-It is not a lattice: `0 + 5 = 5 ≠ 0`.
-
-By the *Open World Principle*, an exact count can never be observed, since a further report may always arrive: only a lower bound can.
-This is why counting takes this form, and why exact counts do not form an observation algebra.
-The trivial observation is "at least 0", which differs from no observation `⊥`.
 
 **Example (Discrete).** Let `S` be a set of *values*, and `* ∉ S` a separate element representing an unspecified value. Let `D = 𝒫(S ∪ {*})`, with
 ```
@@ -157,6 +140,7 @@ Two different values observed jointly cancel each other, while independent repor
 {red} ⋅ {green} = ∅
 {red} ⋅ {*} = {red}
 {red, green} ⋅ {green, blue} = {green}
+{red, *} ⋅ {green, blue} = {green, blue}
 ```
 Typical uses are categorical attributes, such as colours, statuses or country codes.
 
