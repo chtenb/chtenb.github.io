@@ -262,12 +262,12 @@ a + b = (a + b)(a + b)           (8)
 ```
 ∎
 
-Note that this theorem aligns with the philosopical idea of joint observations, in that independent observations can be considered together.
-This theorem confirms that the joint combination of independent observation is indeed implied.
+Note that this theorem aligns with the philosophical idea of joint observations, in that independent observations can be considered together.
+This theorem confirms that the joint combination of independent observations is indeed implied.
 
 **Definition.** The *join* `a ∪ b` is the least `c ∈ D` such that `a ⊆ c` and `b ⊆ c`.
 
-**Theorem.** For all `a, b ∈ D`, `a ∪ b = a + b`.
+**Theorem (Join is Sum).** For all `a, b ∈ D`, `a ∪ b = a + b`.
 *Proof.*
 `a + b` is an upper bound of `a` and `b`:
 ```
@@ -289,7 +289,7 @@ hence `a + b ⊆ c`.
 
 So `(D, ⊆)` is a join-semilattice with least element `0`, and `+` is its join.
 
-**Theorem (Order Preservation).** For all `a, b, c ∈ D`, if `a ⊆ b`, then `a + c ⊆ b + c` and `ac ⊆ bc`.
+**Theorem (Sum and Product Monotonicity).** For all `a, b, c ∈ D`, if `a ⊆ b`, then `a + c ⊆ b + c` and `ac ⊆ bc`.
 *Proof.* Assume `a ⊆ b`. Then
 ```
 (a + c) + (b + c) = (a + b) + (c + c)    (1, 3)
@@ -304,33 +304,42 @@ bc = cb          (7)
 ```
 ∎
 
+**Theorem (Closure).** Let `c ∈ D`. For all `a, b ∈ D`:
+
+- if `a ⊆ c` and `b ⊆ c`, then `a + b ⊆ c` and `ab ⊆ c`,
+- if `c ⊆ a` and `c ⊆ b`, then `c ⊆ a + b` and `c ⊆ ab`.
+
+*Proof.*
+Assume `a ⊆ c` and `b ⊆ c`.
+Then `a + b ⊆ c`, since `a + b` is the least upper bound of `a` and `b` by Join is Sum.
+Moreover `ab ⊆ a + b` by *Sum implies Product*, so `ab ⊆ c` by transitivity.
+
+Assume `c ⊆ a` and `c ⊆ b`.
+Since `a + b` is an upper bound of `a` by Join is Sum, `c ⊆ a ⊆ a + b`, so `c ⊆ a + b` by transitivity.
+Moreover
+```
+c = cc    (8)
+  ⊆ ac    (Product Monotonicity, c ⊆ a)
+  = ca    (7)
+  ⊆ ba    (Product Monotonicity, c ⊆ b)
+  = ab    (7)
+```
+so `c ⊆ ab` by transitivity.
+∎
+
 **Definition.** The *meet* `a ∩ b`, if it exists, is the greatest `c ∈ D` such that `c ⊆ a` and `c ⊆ b`.
 By antisymmetry, it is unique if it exists.
 
-**Theorem.** For all `a, b, c ∈ D`, if `c ⊆ a` and `c ⊆ b`, then `c ⊆ ab`.
-*Proof.*
-Assume `c ⊆ a` and `c ⊆ b`. Then
-```
-c = cc    (8)
-  ⊆ ac    (Order Preservation, c ⊆ a)
-  = ca    (7)
-  ⊆ ba    (Order Preservation, c ⊆ b)
-  = ab    (7)
-```
-_ so `c ⊆ ab` by transitivity.
-∎
-
-**Corollary.** `a ∩ b ⊆ ab` whenever `a ∩ b` exists.
+**Corollary.** `a ∩ b ⊆ ab` whenever `a ∩ b` exists, by Closure.
 
 **Theorem.** For all `a, b ∈ D`, `ab = a ∩ b` iff `ab ⊆ a` and `ab ⊆ b`.
 *Proof.*
 (⟹) `a ∩ b` is a lower bound of `a` and `b` by definition.
-(⟸) `ab` is a lower bound of `a` and `b`, and every lower bound `c` of `a` and `b` satisfies `c ⊆ ab` by the previous theorem.
+(⟸) `ab` is a lower bound of `a` and `b`, and every lower bound `c` of `a` and `b` satisfies `c ⊆ ab` by Closure.
 So `ab` is the greatest lower bound, and `ab = a ∩ b` by uniqueness.
 ∎
 
 <!--
-
 Maps and Polynomials
 ====================
 
@@ -367,7 +376,7 @@ Note that `(x, 0)` is not `0`: it has observations in `X` and none in `Y`.
 We will study functions between observation algebras, which we call *maps*.
 Let `X` and `Y` be observation algebras. A map `f : X → Y` is called
 
-- *monotonic* if `x ⊆ y` implies `f(x) ⊆ f(y)`,
+- *monotone* if `x ⊆ y` implies `f(x) ⊆ f(y)`,
 - *additive* if `f(x + y) = f(x) + f(y)`,
 - *multiplicative* if `f(x ⋅ y) = f(x) ⋅ f(y)`,
 - *normal* if `f(0) = 0`,
@@ -379,11 +388,11 @@ For maps `g, h : X → Y` we write `g + h` and `g ⋅ h` for the operations `x �
 
 **Remark.**
 Additivity does not imply normality: a constant map `f(x) = c` where `c ≠ 0` is additive by (4), but `f(0) = c`.
-The operations `+` and `⋅` are monotonic by *Order Preservation* and (3, 7).
+The operations `+` and `⋅` are monotone binary operations by *Sum and Product Monotonicity* and (3, 7).
 The operation `+` is additive by (1, 3, 4), and `⋅` is additive by (7, 9), multiplicative by (5, 7, 8) and normal by (10).
 The operation `+` is multiplicative only if `x + yz = (x + y)(x + z)`, which with `y = 0` gives `x = x(x + z)`. This fails in the taxonomy refinement: `{*} ⋅ ({*} + {x}) = {*, x} ≠ {*}` for `x ≠ *`.
 
-**Theorem.** Every additive map is monotonic.
+**Theorem.** Every additive map is monotone.
 *Proof.* Let `x ⊆ y`, so `x + y = y`. Then `f(y) = f(x + y) = f(x) + f(y)`, hence `f(x) ⊆ f(y)`.
 For several arguments, change one argument at a time and use transitivity.
 ∎
@@ -401,7 +410,7 @@ The naming operations `a:` of `Obs` are unary operations, as are complement `x �
 Polynomials construct operations inductively from simpler ones.
 Let `A` be an observation algebra, and let `Γ` be a set of operations `γ : Aᵏ → A` on `A`, each with its own number of arguments `k`.
 
-A *polynomial* in the variables `x₁, …, xₙ` is an expression built from
+A *`Γ`-polynomial over `A`* in the variables `x₁, …, xₙ` is an expression built from
 
 - a variable `xᵢ`,
 - a constant `c ∈ A`,
@@ -424,7 +433,7 @@ We write `p(x₁, …, xₙ)` for the value of `p` at `x₁, …, xₙ ∈ A`.
 
 A *monomial* is a product of variables and constants.
 
-**Theorem (Distributive Form):** Every polynomial that uses no operations from `Γ` is equal to a sum of monomials `m₁ + ⋯ + mₖ`, where the empty sum is `0`.
+**Theorem (Distributive Form):** Every `Γ`-polynomial that uses no operations from `Γ` is equal to a sum of monomials `m₁ + ⋯ + mₖ`, where the empty sum is `0`.
 This is also known as the *sum-of-products form*.
 *Proof.* By induction on the polynomial.
 
@@ -433,38 +442,44 @@ This is also known as the *sum-of-products form*.
 - For a product, `(m₁ + ⋯ + mₖ)(m'₁ + ⋯ + m'ₗ)` is the sum of all `mᵢm'ⱼ` by (7, 9), and each `mᵢm'ⱼ` is a monomial. If either sum is empty, the product is `0` by (7, 10).
 ∎
 
-<!--
-
-In `Obs`, the naming operations also distribute over sums and products, so every value has a distributive form.
-Here a *monomial* is a product `[p₁:s₁, ..., pₖ:sₖ]` of named atoms.
-
-**Theorem (Distributive Form of `Obs`):** For all `x ∈ Obs`, there exists a possibly empty sequence of monomials `m₁, ..., mₙ` such that `x = {m₁, ..., mₙ}`.
-
+**Lemma (Names on Atoms).** Every `x ∈ Obs` can be written using only named atoms `p:s`, `{}`, `[]`, and sums and products thereof.
 *Proof.* By induction on the construction of `x`.
 
-- An atom `s` is the monomial `[ε:s]`, by Naming Identity.
-- `{}` is the empty sequence, and `[]` is the single empty monomial: `[] = {[]}`.
-- For a sum, `{{m₁, ..., mₙ}, {m'₁, ..., m'ₖ}} = {m₁, ..., mₙ, m'₁, ..., m'ₖ}` by Sum Associativity.
-- For a product, `[{m₁, ..., mₙ}, {m'₁, ..., m'ₖ}] = {[mᵢ, m'ⱼ] | i ≤ n, j ≤ k}` by Product-Sum Distributivity and Product Commutativity, and each `[mᵢ, m'ⱼ]` is a monomial. If either sequence is empty, the result is `{}` by Product-Sum Annihilation.
-- For a name, `a:{m₁, ..., mₙ} = {a:m₁, ..., a:mₙ}` by Named-Sum Distributivity, or `{}` by Named Empty Sum if `n = 0`.
-  Each `a:mᵢ` is a monomial: `a:[p₁:s₁, ..., pₖ:sₖ] = [(a.p₁):s₁, ..., (a.pₖ):sₖ]` by Named-Product Distributivity and Naming Associativity, or `[]` by Named Empty Product if `k = 0`.
+- An atom `s` is the named atom `ε:s`, by Naming Identity.
+- `{}` and `[]` need no rewriting, and products and sums follow by induction.
+- For `a:x` push `a` inward:
+```
+a:{y, z} = {a:y, a:z}      (Named-Sum Distributivity)
+a:[y, z] = [a:y, a:z]      (Named-Product Distributivity)
+a:{}     = {}              (Named Empty Sum)
+a:[]     = []              (Named Empty Product)
+a:(p:s)  = (a.p):s         (Naming Associativity)
+```
 ∎
 
-#### Monotonic polynomials
+A *record* is a product of named variables and named atoms in `Obs`.
 
-**Theorem (Monotonic polynomials):** If every `γ ∈ Γ` is monotonic, then every polynomial operation is monotonic.
+**Theorem (Distributive Form over `Obs`).** If `Γ` consists of only the naming operations over `Attr`, every `Γ`-polynomial over `Obs` is a sum of records.
+
+
+<!--
+
+
+#### Monotone Polynomials
+
+**Theorem (Monotone Polynomials):** If every `γ ∈ Γ` is monotone, then every polynomial operation is monotone.
 
 *Proof.* Let `x ⊆ x'` in `Aⁿ`, ordered componentwise. We show `p(x) ⊆ p(x')` by induction on `p`.
 For constants and variables this is immediate.
-If `p(x) ⊆ p(x')` and `q(x) ⊆ q(x')`, then by *Order Preservation* and transitivity
+If `p(x) ⊆ p(x')` and `q(x) ⊆ q(x')`, then by *Sum and Product Monotonicity* and transitivity
 ```
 p(x) + q(x) ⊆ p(x') + q(x) ⊆ p(x') + q(x')
 p(x) ⋅ q(x) ⊆ p(x') ⋅ q(x) ⊆ p(x') ⋅ q(x')
 ```
-and `γ(p₁(x), …, p_k(x)) ⊆ γ(p₁(x'), …, p_k(x'))` since `γ` is monotonic.
+and `γ(p₁(x), …, p_k(x)) ⊆ γ(p₁(x'), …, p_k(x'))` since `γ` is monotone.
 ∎
 
-**Corollary:** If `f` is monotonic, then `f(x) + f(y) ⊆ f(x + y)`.
+**Corollary:** If `f` is monotone, then `f(x) + f(y) ⊆ f(x + y)`.
 
 *Proof.* `x ⊆ x + y` and `y ⊆ x + y`, so `f(x) ⊆ f(x + y)` and `f(y) ⊆ f(x + y)`, and `+` is the join.
 ∎
@@ -560,7 +575,7 @@ The cross term `y ⋅ σ(x) = [1, 2)` is not contained in `f(x) + f(y) = ∅`.
 A homomorphism `A → A` is called an *endomorphism*.
 For example, the naming operations `a:` of the `Obs` algebra, and the shift on the half-open intervals over `ℤ ∪ {-∞, +∞}`.
 
-**Corollary:** Every homomorphism is monotonic.
+**Corollary:** Every homomorphism is monotone.
 
 Homomorphisms preserve the structure of observation algebras, and therefore commute with polynomials.
 

@@ -63,6 +63,19 @@ local SYM = {
   ['ψ']='\\psi ', ['ω']='\\omega ', ['Γ']='\\Gamma ', ['Δ']='\\Delta ',
   ['Θ']='\\Theta ', ['Λ']='\\Lambda ', ['Ξ']='\\Xi ', ['Π']='\\Pi ',
   ['Σ']='\\Sigma ', ['Φ']='\\Phi ', ['Ψ']='\\Psi ', ['Ω']='\\Omega ',
+  ['±']='\\pm ', ['∓']='\\mp ', ['÷']='\\div ', ['∙']='\\bullet ', ['⋆']='\\star ',
+  ['⊖']='\\ominus ', ['⊙']='\\odot ', ['⊎']='\\uplus ', ['⋄']='\\diamond ',
+  ['≪']='\\ll ', ['≫']='\\gg ', ['≻']='\\succ ', ['≽']='\\succeq ',
+  ['⊏']='\\sqsubset ', ['⊐']='\\sqsupset ', ['⊑']='\\sqsubseteq ', ['⊒']='\\sqsupseteq ',
+  ['⊈']='\\nsubseteq ', ['⊉']='\\nsupseteq ', ['⊄']='\\not\\subset ',
+  ['≃']='\\simeq ', ['≲']='\\lesssim ', ['≳']='\\gtrsim ', ['∝']='\\propto ',
+  ['≔']='\\coloneqq ', ['≜']='\\triangleq ', ['∤']='\\nmid ', ['⊩']='\\Vdash ',
+  ['⊲']='\\lhd ', ['⊳']='\\rhd ', ['⊸']='\\multimap ',
+  ['⟶']='\\longrightarrow ', ['⟵']='\\longleftarrow ', ['⟼']='\\longmapsto ',
+  ['↑']='\\uparrow ', ['↓']='\\downarrow ', ['⇑']='\\Uparrow ', ['⇓']='\\Downarrow ',
+  ['⋮']='\\vdots ', ['⋱']='\\ddots ', ['∴']='\\therefore ', ['∵']='\\because ',
+  ['ℓ']='\\ell ', ['℘']='\\wp ', ['°']='^{\\circ}', ['□']='\\square ',
+  ['◇']='\\Diamond ', ['△']='\\triangle ', ['∮']='\\oint', ['∬']='\\iint',
 }
 -- Mathematical script / blackboard capitals (𝒜…𝒵, 𝔸…𝕐)
 do
@@ -123,7 +136,11 @@ tex = function(s, text_words)
       emit('\\' .. c[i + 1], true); i = i + 2
     elseif ch:match('^%a$') then
       local j = i
-      while j <= n and c[j]:match('^%a$') do j = j + 1 end
+      while j <= n and (c[j]:match('^%a$')
+          -- in justifications "Named-Sum" is one hyphenated word, not a minus
+          or (text_words and c[j] == '-' and c[j + 1] and c[j + 1]:match('^%a$'))) do
+        j = j + 1
+      end
       local w = table.concat(c, '', i, j - 1)
       -- keep a word space between an identifier and a following word
       local gap = (prev_atom and c[i - 1] == ' ') and '\\ ' or ''
@@ -171,6 +188,13 @@ tex = function(s, text_words)
     elseif ch == '~' then emit('\\sim ', false); i = i + 1
     elseif ch == ' ' or ch == '\t' then emit(' ', prev_atom); i = i + 1
     elseif SYM[ch] then emit(SYM[ch], ch:match('[)%]]') ~= nil); i = i + 1
+    elseif #ch > 1 then
+      -- a non-ASCII character with no TeX equivalent above: in math mode
+      -- pdflatex would print whatever glyph sits at that slot (± came out
+      -- as ś), so set it as text instead and say so
+      io.stderr:write('[mathdown] no math symbol for "' .. ch .. '" (U+' ..
+        string.format('%04X', utf8.codepoint(ch)) .. '); add it to SYM\n')
+      emit('\\text{' .. ch .. '}', true); i = i + 1
     else emit(ch, ch:match('^[%d%)%]]$') ~= nil); i = i + 1 end
   end
   return (table.concat(out):gsub('%s+', ' '):gsub('^ ', ''):gsub(' $', ''))
@@ -260,12 +284,28 @@ local function split_just(line)
   return line, nil
 end
 
+local function starts_with_rel(seg)
+  for _, r in ipairs(ALL_RELS) do
+    if seg:sub(1, #r) == r then return true end
+  end
+  return false
+end
+
+-- Split a line into columns at runs of 3+ spaces. A segment that starts with
+-- a relation is not a new column but the rest of the same equation, padded
+-- to line up with the lines around it:  a:{}     = {}
 local function split_cols(s)
   local cols, pos = {}, 1
   while true do
     local a, b = s:find('%s%s%s+', pos)
-    if not a then cols[#cols + 1] = s:sub(pos); break end
-    cols[#cols + 1] = s:sub(pos, a - 1); pos = b + 1
+    local seg = a and s:sub(pos, a - 1) or s:sub(pos)
+    if #cols > 0 and starts_with_rel(seg) then
+      cols[#cols] = cols[#cols] .. ' ' .. seg
+    else
+      cols[#cols + 1] = seg
+    end
+    if not a then break end
+    pos = b + 1
   end
   return cols
 end
