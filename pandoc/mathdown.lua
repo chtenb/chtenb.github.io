@@ -11,7 +11,9 @@ mathdown.lua — turn Markdown with Unicode math in backticks into a math paper.
   For all …                head, like a heading. The body is the rest of that
                            paragraph, or the next block if a blank line follows.
                            (Also Definition, Example, Lemma, Corollary, Remark, …)
-  _ text after a display → continues the paragraph (otherwise a new one starts)
+  _ text after a display → continues the paragraph (otherwise a new one starts);
+                           custom/mathdown-reader.lua inserts these markers
+                           wherever no blank line follows a display, list or quote
   *Proof.* … ∎           → proof environment, up to the block holding ∎.
                            A proof or keyword may also start on a new line
                            inside a paragraph (no blank line needed).
@@ -643,10 +645,39 @@ local function starts_block(inlines, k)
   return is_proof_start(probe) or theorem_head(probe) ~= nil
 end
 
-local function split_paras(blocks)
+-- Markdown folds a line that follows a list item into that item ("lazy
+-- continuation"), so a "*Proof.*" line right after a list ends up inside its
+-- last item. Cut it out again: returns the list and the text after the cut.
+local function cut_list_tail(b)
+  local items = b.content
+  local item = items[#items]
+  local last = item and item[#item]
+  if not last or (last.t ~= 'Plain' and last.t ~= 'Para') then return b, nil end
+  local inl = last.content
+  for k, x in ipairs(inl) do
+    if (x.t == 'SoftBreak' or x.t == 'LineBreak') and inl[k + 1] and starts_block(inl, k + 1) then
+      local keep, rest = pandoc.Inlines({}), pandoc.Inlines({})
+      for m = 1, k - 1 do keep:insert(inl[m]) end
+      for m = k + 1, #inl do rest:insert(inl[m]) end
+      last.content = keep
+      item[#item] = last
+      items[#items] = item
+      b.content = items
+      return b, pandoc.Para(rest)
+    end
+  end
+  return b, nil
+end
+
+local split_paras
+split_paras = function(blocks)
   local out = pandoc.Blocks({})
   for _, b in ipairs(blocks) do
-    if b.t == 'Para' then
+    if (b.t == 'BulletList' or b.t == 'OrderedList') and #b.content > 0 then
+      local list, tail = cut_list_tail(b)
+      out:insert(list)
+      if tail then out:extend(split_paras({ tail })) end
+    elseif b.t == 'Para' then
       local cur = pandoc.Inlines({})
       for k, x in ipairs(b.content) do
         if (x.t == 'SoftBreak' or x.t == 'LineBreak') and b.content[k + 1]
@@ -676,7 +707,16 @@ local function structure(blocks)
       b.content:remove(1)
       drop_leading_space(b.content)
       out:insert(begin_env(env, title))
-      if #b.content > 0 then out:insert(b)
+      if #b.content > 0 then
+        out:insert(b)
+        -- "For all a, b ∈ D:" followed by a list: the list is part of it
+        local tail = b.content[#b.content]
+        local nb = blocks[i + 1]
+        if tail.t == 'Str' and tail.text:match(':$') and nb
+            and (nb.t == 'BulletList' or nb.t == 'OrderedList') then
+          out:insert(nb)
+          i = i + 1
+        end
       elseif blocks[i + 1] then
         i = i + 1
         local nb = blocks[i]
@@ -711,8 +751,30 @@ local function structure(blocks)
   return out
 end
 
+-- A ∎ that did not end a proof (e.g. no "*Proof.*" was found before it)
+-- would stop pdflatex; set the QED box there instead and say so.
+local qed_pass = {
+  Str = function(el)
+    if el.text:find('∎', 1, true) then
+      io.stderr:write('[mathdown] ∎ outside a proof; check the "*Proof.*" before it\n')
+      local parts = pandoc.Inlines({})
+      local rest = el.text
+      while true do
+        local a, b = rest:find('∎', 1, true)
+        if not a then break end
+        if a > 1 then parts:insert(pandoc.Str(rest:sub(1, a - 1))) end
+        parts:insert(pandoc.RawInline('latex', '\\qed'))
+        rest = rest:sub(b + 1)
+      end
+      if rest ~= '' then parts:insert(pandoc.Str(rest)) end
+      return parts
+    end
+  end,
+}
+
 return {
   align_pass,
   math_pass,
   { Pandoc = function(doc) doc.blocks = structure(doc.blocks); return doc end },
+  qed_pass,
 }

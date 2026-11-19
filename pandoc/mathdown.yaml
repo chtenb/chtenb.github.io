@@ -1,5 +1,10 @@
 # pandoc --defaults mathdown.yaml notes.md -o notes.pdf
-from: commonmark_x
+# CommonMark, but a blank line after a display, list or quote decides
+# whether the paragraph continues (see custom/mathdown-reader.lua).
+# Pandoc finds custom readers in <data-dir>/custom/, and data-dir is the
+# folder of this file.
+from: mathdown-reader.lua
+data-dir: ${.}
 # pdflatex is the fastest engine (about 2x xelatex, more vs lualatex).
 # Switch to xelatex or lualatex only if you need OpenType fonts
 # or Unicode text the filter does not translate.

@@ -16,17 +16,12 @@ Any further information about an observation, such as how often or when somethin
 : Observations do not only come in isolation.
 Observations that were made together, such as the fields of one record or the parts of one sensor reading, form a joint observation.
 Observations that were made separately are independent.
-Independent observations can be interpreted together but don't have to be, while the parts of a joint observation must always be considered together.
+Independent observations can be interpreted together but don’t have to be.
+The parts of a joint observation, however, are only claimed in the context of each other: none of them stands on its own.
 
 **Trivial Observations**
-: Having no observation is different from having an observation that carries no information.
-No observation means that no report was made: there is no witness, no record, no reading.
-A trivial observation means that a report was made, but without any details.
-
-**Completion Principle**
-: A joint observation needs each one of its parts.
-If a part consists of multiple independent observations, each such independent observation completes the joint observation on its own.
-If a part was never reported, the joint observation can't be completed.
+: That something was reported is information in its own right, even if the report says nothing more.
+This means we can have a trivial observation, that does not have any details, which is different from having no observation at all.
 
 **Open World Principle**
 : It is often not possible to know whether a set of observations is complete, so new observations must always be admissible.
@@ -64,9 +59,9 @@ Adding no observation changes nothing (2), by *Trivial Observations*.
 Since independent observations can be considered together and any two collections can be added, by extension any two collections can be multiplied.
 A joint observation carries exactly the information of its parts, so by *Observations* it does not matter how its parts are grouped (5) or ordered (7), or whether a part is repeated (8).
 A trivial part carries no information, so it does not change a joint observation (6), by *Trivial Observations*.
-Distributivity and Annihilation follow from the *Completion Principle*.
-If a part of a joint observation was reported independently as `b` and as `c`, each report completes the joint observation independently (9).
-If a part was never reported, the joint observation cannot be completed (10).
+A joint observation claims its parts only in the context of each other (Joint Observations).
+If one of its parts was never observed, there is no context in which the others were claimed, so the joint observation cannot be made (10).
+If a part was observed several times independently, each of these observations provides its own context for the others, so each forms a separate joint observation (9).
 Annihilation can intuitively be understood as distribution of an empty sum, just as a part that was never reported has no reports to complete the joint observation with.
 
 The *Safe Reasoning Principle* is not an axiom: it restricts which functions we use on observations for safe reasoning, which we will introduce later.
@@ -89,7 +84,7 @@ Let `D` be the set of all finite unions of such intervals, with
 a + b := a ∪ b     0 := ∅ = [s, s)
 a ⋅ b := a ∩ b     1 := T ∖ {+∞} = [-∞, +∞)
 ```
-_ Then `(D, +, ⋅, 0, 1)` is an observation algebra.
+Then `(D, +, ⋅, 0, 1)` is an observation algebra.
 *Proof.* First, the operations are well defined on `D`. Closure under `+` is immediate, since a union of two finite unions of intervals is one. For `⋅`, totality of `≤` gives
 ```
 [s₁, e₁) ∩ [s₂, e₂) = [ max(s₁, s₂), min(e₁, e₂) )
@@ -105,7 +100,7 @@ Let `(L, ∨, ∧, ⊥, ⊤)` be a bounded distributive lattice, and let `D = L`
 a + b := a ∨ b
 a ⋅ b := a ∧ b
 ```
-_ Then `(D, +, ⋅, 0, 1)` is an observation algebra.
+Then `(D, +, ⋅, 0, 1)` is an observation algebra.
 
 **Example (Lineage).** Let `S` be a set of *sources*, and `⊥ ∉ 𝒫(S)` a separate element representing no observation.
 An element is either `⊥`, or the set of sources that contributed to it. Let `D = 𝒫(S) ∪ {⊥}`, with `for a, b ⊆ S`
@@ -115,7 +110,7 @@ a + b := a ∪ b             a ⋅ b := a ∪ b
 ⊥ + a := a + ⊥ := a        ⊥ ⋅ a := a ⋅ ⊥ := ⊥
 ⊥ ⋅ ⊥ := ⊥ + ⊥ := ⊥
 ```
-_ Then `(D, +, ⋅, 0, 1)` is an observation algebra.
+Then `(D, +, ⋅, 0, 1)` is an observation algebra.
 
 Both independent and joint observations draw on the sources of all their parts.
 The trivial observation `∅` involves no sources, which is different from not observing anything at all.
@@ -132,7 +127,7 @@ This algebra is known as the *lineage semiring* in database provenance (Green, I
 a + b := a ∪ b
 a ⋅ b := (a ∩ b) ∪ (a if * ∈ b) ∪ (b if * ∈ a)
 ```
-_ Then `(D, +, ⋅, 0, 1)` is an observation algebra: it is the taxonomy refinement (see below) with root `*`, where every value refines `*` and no value refines another.
+Then `(D, +, ⋅, 0, 1)` is an observation algebra: it is the taxonomy refinement (see below) with root `*`, where every value refines `*` and no value refines another.
 
 Two different values observed jointly cancel each other, while independent reports of them coexist:
 ```
@@ -154,13 +149,13 @@ Two nodes are *compatible* if one refines the other, and then we write
 x ∧ y := x    if x ≤ y
          y    if y ≤ x
 ```
-_ Let `D = 𝒫(T)`, with
+Let `D = 𝒫(T)`, with
 ```
 0 := ∅     1 := {*}
 a + b := a ∪ b
 a ⋅ b := { x ∧ y | x ∈ a, y ∈ b, x and y compatible }
 ```
-_ Then `(D, +, ⋅, 0, 1)` is an observation algebra.
+Then `(D, +, ⋅, 0, 1)` is an observation algebra.
 
 The product refines joint observations and drops the incompatible combinations:
 ```
@@ -305,10 +300,8 @@ bc = cb          (7)
 ∎
 
 **Theorem (Closure).** Let `c ∈ D`. For all `a, b ∈ D`:
-
-- if `a ⊆ c` and `b ⊆ c`, then `a + b ⊆ c` and `ab ⊆ c`,
-- if `c ⊆ a` and `c ⊆ b`, then `c ⊆ a + b` and `c ⊆ ab`.
-
+- if `a ⊆ c` and `b ⊆ c`, then `ab ⊆ a + b ⊆ c`
+- if `c ⊆ a` and `c ⊆ b`, then `c ⊆ ab ⊆ a + b`
 *Proof.*
 Assume `a ⊆ c` and `b ⊆ c`.
 Then `a + b ⊆ c`, since `a + b` is the least upper bound of `a` and `b` by Join is Sum.
@@ -352,6 +345,9 @@ Maps and Polynomials
 ```
 We write `Xⁿ` for the Cartesian product of `n` copies of `X`.
 
+An element of `X × Y` is a pair of collections of observations, one in each algebra, kept side by side.
+Note that `(x, 0)` is not `0`: it has observations in `X` and none in `Y`.
+
 **Theorem.** `X × Y` is an observation algebra.
 *Proof.* Each axiom holds componentwise, since it holds in `X` and in `Y`.
 For example, `(x, y) ⋅ (0, 0) = (x ⋅ 0, y ⋅ 0) = (0, 0)` by (10).
@@ -365,11 +361,6 @@ For example, `(x, y) ⋅ (0, 0) = (x ⋅ 0, y ⋅ 0) = (0, 0)` by (10).
                    ⟺  x ⊆ x'  and  y ⊆ y'
 ```
 ∎
-
-The *projections* `π₁ : X × Y → X` and `π₂ : X × Y → Y`, with `π₁(x, y) = x` and `π₂(x, y) = y`, are homomorphisms, since all operations are componentwise.
-
-An element of `X × Y` is a pair of collections of observations, one in each algebra, kept side by side.
-Note that `(x, 0)` is not `0`: it has observations in `X` and none in `Y`.
 
 ## Maps
 
@@ -397,6 +388,23 @@ The operation `+` is multiplicative only if `x + yz = (x + y)(x + z)`, which wit
 For several arguments, change one argument at a time and use transitivity.
 ∎
 
+**Theorem (Superadditivity).** If `f` is monotone, then `f(x) + f(y) ⊆ f(x + y)`.
+*Proof.* `x ⊆ x + y` and `y ⊆ x + y`, so `f(x) ⊆ f(x + y)` and `f(y) ⊆ f(x + y)`, and `+` is the join.
+∎
+
+**Theorem (Cartesian Monotonicity).** A map `f : Xⁿ → Y` is monotone in each argument iff it is monotone on `Xⁿ`.
+*Proof.*
+(⟸) Fix all arguments but the `i`-th. If `x ⊆ y`, then `(a₁, …, x, …, aₙ) ⊆ (a₁, …, y, …, aₙ)` componentwise, by reflexivity in the other components, so `f(a₁, …, x, …, aₙ) ⊆ f(a₁, …, y, …, aₙ)`.
+(⟹) Let `a ⊆ b`. Replace the arguments one at a time, using monotonicity in each argument:
+```
+f(a₁, a₂, …, aₙ) ⊆ f(b₁, a₂, …, aₙ)
+                 ⊆ f(b₁, b₂, …, aₙ)
+                 ⋯
+                 ⊆ f(b₁, b₂, …, bₙ)
+```
+so `f(a) ⊆ f(b)` by transitivity.
+∎
+
 ## Operations
 
 Let `A` be an observation algebra.
@@ -417,72 +425,34 @@ A *`Γ`-polynomial over `A`* in the variables `x₁, …, xₙ` is an expression
 - `p + q` and `p ⋅ q` for polynomials `p` and `q`,
 - `γ(p₁, …, p_k)` for `γ ∈ Γ` with `k` arguments and polynomials `p₁, …, p_k`.
 
-We use `≡` for syntactic identity: `x ≡ y` when `x` and `y` are the same polynomial expression.
-We use `=` for equality in the algebra at hand: `x = y` when `x` and `y` denote the same element.
-
 We write
 ```
 f : Aⁿ → A
 f(x₁, …, xₙ) = p
 ```
-_ for the operation that substitutes its arguments for the variables of `p` and evaluates the result in `A`, and call `f` the *operation induced by `p`*.
+for the operation that substitutes its arguments for the variables of `p` and evaluates the result in `A`, and call `f` the *operation induced by `p`*.
 We often say and use *polynomial* when we technically mean the operation induced by it.
 We write `p(x₁, …, xₙ)` for the value of `p` at `x₁, …, xₙ ∈ A`.
 
-### Monomials
+We use `≡` for syntactic identity: `p ≡ q` when `p` and `q` are the same polynomial expression.
+We use `=` for equality in the algebra at hand: `x = y` when `x` and `y` denote the same element.
+For polynomials, we write `p = q` to say that they induce the same operation.
 
-A *monomial* is a product of variables and constants.
+### Monotone Polynomials
 
-**Theorem (Distributive Form):** Every `Γ`-polynomial that uses no operations from `Γ` is equal to a sum of monomials `m₁ + ⋯ + mₖ`, where the empty sum is `0`.
-This is also known as the *sum-of-products form*.
-*Proof.* By induction on the polynomial.
+**Theorem (Monotone Polynomials).** If every `γ ∈ Γ` is monotone, then every `Γ`-polynomial is monotone.
+*Proof.* Let `p` be a `Γ`-polynomial over `A` in the variables `x₁, …, xₙ`, and let `a, b ∈ Aⁿ` with `a ⊆ b`.
+We show `p(a) ⊆ p(b)` by induction on `p`.
 
-- A variable or a constant is a monomial.
-- For a sum, `(m₁ + ⋯ + mₖ) + (m'₁ + ⋯ + m'ₗ)` is a sum of monomials by (1).
-- For a product, `(m₁ + ⋯ + mₖ)(m'₁ + ⋯ + m'ₗ)` is the sum of all `mᵢm'ⱼ` by (7, 9), and each `mᵢm'ⱼ` is a monomial. If either sum is empty, the product is `0` by (7, 10).
+- If `p ≡ xᵢ`, then `p(a) = aᵢ ⊆ bᵢ = p(b)`.
+- If `p ≡ c` for a constant `c`, then `p(a) = c = p(b)`.
+- If `p ≡ q + r` or `p ≡ q ⋅ r`, then `q(a) ⊆ q(b)` and `r(a) ⊆ r(b)` by induction, so `p(a) ⊆ p(b)` by *Cartesian Monotonicity*, since `+` and `⋅` are monotone by *Sum and Product Monotonicity*.
+- If `p ≡ γ(p₁, …, p_k)` for `γ ∈ Γ`, then `pᵢ(a) ⊆ pᵢ(b)` for each `i` by induction, so `p(a) ⊆ p(b)` by *Cartesian Monotonicity*, since `γ` is monotone.
 ∎
-
-**Lemma (Names on Atoms).** Every `x ∈ Obs` can be written using only named atoms `p:s`, `{}`, `[]`, and sums and products thereof.
-*Proof.* By induction on the construction of `x`.
-
-- An atom `s` is the named atom `ε:s`, by Naming Identity.
-- `{}` and `[]` need no rewriting, and products and sums follow by induction.
-- For `a:x` push `a` inward:
-```
-a:{y, z} = {a:y, a:z}      (Named-Sum Distributivity)
-a:[y, z] = [a:y, a:z]      (Named-Product Distributivity)
-a:{}     = {}              (Named Empty Sum)
-a:[]     = []              (Named Empty Product)
-a:(p:s)  = (a.p):s         (Naming Associativity)
-```
-∎
-
-A *record* is a product of named variables and named atoms in `Obs`.
-
-**Theorem (Distributive Form over `Obs`).** If `Γ` consists of only the naming operations over `Attr`, every `Γ`-polynomial over `Obs` is a sum of records.
 
 
 <!--
 
-
-#### Monotone Polynomials
-
-**Theorem (Monotone Polynomials):** If every `γ ∈ Γ` is monotone, then every polynomial operation is monotone.
-
-*Proof.* Let `x ⊆ x'` in `Aⁿ`, ordered componentwise. We show `p(x) ⊆ p(x')` by induction on `p`.
-For constants and variables this is immediate.
-If `p(x) ⊆ p(x')` and `q(x) ⊆ q(x')`, then by *Sum and Product Monotonicity* and transitivity
-```
-p(x) + q(x) ⊆ p(x') + q(x) ⊆ p(x') + q(x')
-p(x) ⋅ q(x) ⊆ p(x') ⋅ q(x) ⊆ p(x') ⋅ q(x')
-```
-and `γ(p₁(x), …, p_k(x)) ⊆ γ(p₁(x'), …, p_k(x'))` since `γ` is monotone.
-∎
-
-**Corollary:** If `f` is monotone, then `f(x) + f(y) ⊆ f(x + y)`.
-
-*Proof.* `x ⊆ x + y` and `y ⊆ x + y`, so `f(x) ⊆ f(x + y)` and `f(y) ⊆ f(x + y)`, and `+` is the join.
-∎
 
 #### Additive operations
 
@@ -633,5 +603,56 @@ If `η` is a homomorphism, then `η[0] = 0` and `η[1] = 1`, so a polynomial wit
 σ[p](y) = y ⋅ [1, 6)
 ```
 so `σ(x ∩ [0, 5)) = σ(x) ∩ [1, 6)`: restricting and then shifting is the same as shifting and then restricting to the shifted range.
+
+### Monomials
+
+A *factor* is a variable, a constant, or `γ(p₁, …, p_k)` for `γ ∈ Γ` and polynomials `p₁, …, p_k`.
+A *monomial* is a product of factors.
+If `Γ = ∅`, a monomial is a product of variables and constants.
+
+**Theorem (Distributive Form).** Every polynomial is equal to a sum `m₁ + ⋯ + mₖ` of monomials, with `k ≥ 1`.
+This is also known as the *sum-of-products form*.
+
+*Proof.* By induction on the polynomial.
+
+- A factor is a monomial.
+- For a sum, `(m₁ + ⋯ + mₖ) + (m'₁ + ⋯ + m'ₗ)` is a sum of monomials by (1).
+- For a product, `(m₁ + ⋯ + mₖ)(m'₁ + ⋯ + m'ₗ)` is the sum of all `mᵢm'ⱼ` by (7, 9), and each `mᵢm'ⱼ` is a monomial.
+∎
+
+Since `0` is a constant, and hence a monomial, sums of monomials never need to be empty.
+
+**Theorem (Additive Distributive Form).** Every polynomial is equal to a sum of monomials in which every operation that is additive in each argument is applied only to monomials.
+
+*Proof.* As for *Distributive Form*, with one further case.
+For `γ(p₁, …, p_k)`, write each `pᵢ` in this form, by induction.
+If `γ` is not additive in each argument, `γ(p₁, …, p_k)` is a factor.
+If it is, then by additivity in each argument, `γ(p₁, …, p_k)` is the sum of `γ(m₁, …, m_k)` over all choices of a monomial `mᵢ` from the sum for `pᵢ`, and each `γ(m₁, …, m_k)` is a factor.
+∎
+
+**Theorem (Multiplicative Distributive Form).** Every polynomial is equal to a sum of monomials in which, moreover, every operation that is additive and multiplicative in each argument is applied only to factors.
+
+*Proof.* As for *Additive Distributive Form*, with one further step when `γ` is additive and multiplicative in each argument.
+Each argument `mᵢ` is a product of factors, or the constant `1`, which is itself a factor.
+By multiplicativity in each argument, `γ(m₁, …, m_k)` is the product of `γ(f₁, …, f_k)` over all choices of a factor `fᵢ` of `mᵢ`, which is a monomial.
+∎
+
+Neither normality nor unitality is needed: an operation applied to `0` or to `1` gives a constant, which is already a factor.
+They are the empty cases of additivity and multiplicativity, as *Annihilation* is the empty case of *Distributivity*.
+
+#### Distributive form over `Obs`
+
+A *record* is a product of named variables `p:xᵢ` and named atoms `p:s`.
+
+**Corollary (Distributive Form over `Obs`).** If `Γ` consists of the naming operations, every polynomial over `Obs` is equal to a sum of records, where the empty sum is `{}`.
+
+*Proof.* Write each constant as an expression built from atoms, `{}` and `[]` by sums, products and naming.
+The naming operations are additive and multiplicative, so by *Multiplicative Distributive Form*, the polynomial is a sum of monomials in which every name is applied only to a variable, an atom, `{}`, `[]`, or another name.
+Nested names merge into one, `a₁:(⋯aⱼ:v⋯) = (a₁. ⋯ .aⱼ):v`, by Naming Associativity.
+Names on `{}` and `[]` vanish, by Named Empty Sum and Named Empty Product, and unnamed variables and atoms are named by `ε`, by Naming Identity.
+Finally, factors `[]` are dropped by Product Identity, and monomials containing `{}` are equal to `{}` by Product-Sum Annihilation and dropped by Sum Identity.
+∎
+
+With no variables, the corollary says that every element of `Obs` is a sum of products of named atoms, which replaces the *Names on Atoms* lemma.
 
 -->
