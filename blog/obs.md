@@ -9,7 +9,7 @@ Philosophy
 ==========
 
 **Observations**
-: An observation is a reported piece of information about the world, and nothing more: two observations that carry the same information are the same observation.
+: An observation is a reported piece of information about the world, possibly made up of several independent or joint observations, and nothing more: two observations that carry the same information are the same observation.
 Any further information about an observation, such as how often or when something was observed, counts as an observation in its own right.
 
 **Joint Observations**
@@ -35,7 +35,8 @@ Observation Algebra
 ===================
 
 We propose an algebraic structure to encode observations while adhering to the philosophy described earlier.
-An element of the structure represents a collection of observations.
+An element of the structure represents an observation, which may itself consist of several independent or joint observations.
+An observation that cannot be split into independent observations is called *irreducible*.
 
 **Definition (Observation Algebra).** An *observation algebra*, or *commutative idempotent dioid*, is a set `D` closed under two binary operations `+` and `⋅` and with two distinguished elements `0, 1 ∈ D`, such that for all `a, b, c ∈ D`:
 
@@ -52,11 +53,11 @@ An element of the structure represents a collection of observations.
 
 The *sum* `a + b` combines `a` and `b` as independent observations, and the *product* `a ⋅ b` combines them into a joint observation.
 The element `0` represents no observation, and `1` represents the trivial observation.
-By the *Open World Principle*, new observations are always admissible, so any two collections of observations can be added.
+By the *Open World Principle*, new observations are always admissible, so any two observations can be added.
 Hence the observation algebra is closed under addition.
 An observation is determined by its information alone (*Observations*), so it does not matter how independent observations are grouped (1), in which order they arrive (3), or whether one is repeated (4).
 Adding no observation changes nothing (2), by *Trivial Observations*.
-Since independent observations can be considered together and any two collections can be added, by extension any two collections can be multiplied.
+Since independent observations can be considered together and any two observations can be added, by extension any two observations can be multiplied.
 A joint observation carries exactly the information of its parts, so by *Observations* it does not matter how its parts are grouped (5) or ordered (7), or whether a part is repeated (8).
 A trivial part carries no information, so it does not change a joint observation (6), by *Trivial Observations*.
 A joint observation claims its parts only in the context of each other (Joint Observations).
@@ -103,12 +104,11 @@ a ⋅ b := a ∧ b
 Then `(D, +, ⋅, 0, 1)` is an observation algebra.
 
 **Example (Lineage).** Let `S` be a set of *sources*, and `⊥ ∉ 𝒫(S)` a separate element representing no observation.
-An element is either `⊥`, or the set of sources that contributed to it. Let `D = 𝒫(S) ∪ {⊥}`, with `for a, b ⊆ S`
+An element is either `⊥`, or the set of sources that contributed to it. Let `D = 𝒫(S) ∪ {⊥}`, with, for `a, b ⊆ S`,
 ```
 0 := ⊥     1 := ∅
 a + b := a ∪ b             a ⋅ b := a ∪ b      
 ⊥ + a := a + ⊥ := a        ⊥ ⋅ a := a ⋅ ⊥ := ⊥
-⊥ ⋅ ⊥ := ⊥ + ⊥ := ⊥
 ```
 Then `(D, +, ⋅, 0, 1)` is an observation algebra.
 
@@ -242,7 +242,21 @@ b = a + b    (a ⊆ b)
 - Least element: `0 + a = a` by identity (2), hence `0 ⊆ a`.
 ∎
 
-The unit `1` need not be the greatest element: in the taxonomy refinement, `{*} + {x} = {*, x} ≠ {*}` for `x ≠ *`.
+**Theorem (Natural Order).** For all `a, b ∈ D`, `a ⊆ b` iff there is an `x ∈ D` with `a + x = b`.
+*Proof.*
+(⟹) If `a + b = b`, take `x = b`.
+(⟸) If `a + x = b`, then
+```
+a + b = a + (a + x)    (a + x = b)
+      = (a + a) + x    (1)
+      = a + x          (4)
+      = b
+```
+∎
+
+So `b` includes `a` exactly when `b` is `a` together with some further independent observations.
+
+The unit `1` need not be the greatest element: in the discrete observation algebra, `{*} + {x} = {*, x} ≠ {*}` for `x ≠ *`.
 
 **Theorem (Sum implies Product).** For all `a, b ∈ D`, `ab ⊆ a + b`.
 *Proof.*
@@ -299,17 +313,14 @@ bc = cb          (7)
 ```
 ∎
 
-**Theorem (Closure).** Let `c ∈ D`. For all `a, b ∈ D`:
-- if `a ⊆ c` and `b ⊆ c`, then `ab ⊆ a + b ⊆ c`
-- if `c ⊆ a` and `c ⊆ b`, then `c ⊆ ab ⊆ a + b`
-*Proof.*
-Assume `a ⊆ c` and `b ⊆ c`.
-Then `a + b ⊆ c`, since `a + b` is the least upper bound of `a` and `b` by Join is Sum.
-Moreover `ab ⊆ a + b` by *Sum implies Product*, so `ab ⊆ c` by transitivity.
+**Theorem (Bounds).** Let `c ∈ D`. For all `a, b ∈ D`:
+- if `a ⊆ c` and `b ⊆ c`, then `ab ⊆ a + b ⊆ c`,
+- if `c ⊆ a` and `c ⊆ b`, then `c ⊆ ab ⊆ a + b`.
 
-Assume `c ⊆ a` and `c ⊆ b`.
-Since `a + b` is an upper bound of `a` by Join is Sum, `c ⊆ a ⊆ a + b`, so `c ⊆ a + b` by transitivity.
-Moreover
+*Proof.*
+In both cases, `ab ⊆ a + b` by *Sum implies Product*.
+If `a ⊆ c` and `b ⊆ c`, then `a + b ⊆ c`, since `a + b` is the least upper bound of `a` and `b` by *Join is Sum*.
+If `c ⊆ a` and `c ⊆ b`, then
 ```
 c = cc    (8)
   ⊆ ac    (Product Monotonicity, c ⊆ a)
@@ -323,16 +334,75 @@ so `c ⊆ ab` by transitivity.
 **Definition.** The *meet* `a ∩ b`, if it exists, is the greatest `c ∈ D` such that `c ⊆ a` and `c ⊆ b`.
 By antisymmetry, it is unique if it exists.
 
-**Corollary.** `a ∩ b ⊆ ab` whenever `a ∩ b` exists, by Closure.
+**Corollary.** `a ∩ b ⊆ ab` whenever `a ∩ b` exists, by *Bounds*.
 
-**Theorem.** For all `a, b ∈ D`, `ab = a ∩ b` iff `ab ⊆ a` and `ab ⊆ b`.
+**Theorem (Meet by Product).** For all `a, b ∈ D`, `ab = a ∩ b` iff `ab ⊆ a` and `ab ⊆ b`.
 *Proof.*
 (⟹) `a ∩ b` is a lower bound of `a` and `b` by definition.
-(⟸) `ab` is a lower bound of `a` and `b`, and every lower bound `c` of `a` and `b` satisfies `c ⊆ ab` by Closure.
+(⟸) `ab` is a lower bound of `a` and `b`, and every lower bound `c` of `a` and `b` satisfies `c ⊆ ab` by *Bounds*.
 So `ab` is the greatest lower bound, and `ab = a ∩ b` by uniqueness.
 ∎
 
+The product need not be the meet: in the discrete observation algebra, `{*} ⋅ {red} = {red}`, which is not included in `{*}`, while the meet of `{*}` and `{red}` is `∅`.
+
 <!--
+## Irreducible Observations
+
+An observation may consist of several independent observations, but those that do not are of special interest as they convey something about what the basic observations are for an algebra.
+
+**Definition (Irreducible Observation).** An observation `x ∈ D` is *irreducible* if `x ≠ 0`, and `x = y + z` implies `x = y` or `x = z` for all `y, z ∈ D`.
+
+**Definition (Prime Observation).** An observation `x ∈ D` is *prime* if `x ≠ 0`, and `x ⊆ y + z` implies `x ⊆ y` or `x ⊆ z` for all `y, z ∈ D`.
+
+**Remark.** If observations are given as sums of primes, inclusion and redundancy can be decided term by term.
+Let `x = x₁ + ⋯ + xₘ` with every `xᵢ` prime, and `y = y₁ + ⋯ + yₙ`.
+Then `x ⊆ y` iff every `xᵢ` is included in some `yⱼ`.
+In particular, a term `xₖ` can be removed from `x` without changing it iff `xₖ` is included in another term `xⱼ`.
+Without primality, this fails: in `Obs`, `{a, [a, b]} ⊆ {a, b}`, although `[a, b]` is included in neither term, and `[a, b]` is redundant in `{a, [a, b]}`, even though `[a, b]` is not included in `a`.
+
+**Example (Powerset).** The irreducible observations are the singletons `{s}`, and they are prime, since `{s} ⊆ y ∪ z` implies `s ∈ y` or `s ∈ z`.
+The same holds in the discrete observation algebra and the taxonomy refinement.
+The unit need not be irreducible: in the powerset, if `S` has at least two elements, then obviously `S` is not a singleton.
+
+**Example (Lineage).** The irreducible observations are the trivial observation `∅` and the singletons `{s}`, and they are all prime.
+
+**Example (Half-open intervals).** Over `ℤ ∪ {-∞, +∞}`, the irreducible observations are the unit intervals `[n, n + 1)`, and they are prime.
+Over `ℝ ∪ {-∞, +∞}`, there are no irreducible observations at all: every non-empty interval `[s, e)` is the sum of `[s, m)` and `[m, e)` for any `s < m < e`.
+
+**Example (Free Named Observations).** The joint observation `[a, b]` of two atoms is irreducible but not necessarily prime.
+Intuitively this can be understood by *Sum implies Product*, `[a, b] ⊆ {a, b}`, while it is not the case that `[a, b] ⊆ a` or `[a, b] ⊆ b`.
+
+**Theorem (Primes are Irreducible).** Every prime observation is irreducible.
+*Proof.* Let `x` be prime and `x = y + z`. Then `x ⊆ y + z`, so `x ⊆ y` or `x ⊆ z`.
+Also `y ⊆ y + z = x` and `z ⊆ y + z = x` by *Join is Sum*, so `x = y` or `x = z` by antisymmetry.
+∎
+
+**Theorem (Prime by Irreducibility).** If `ab ⊆ a` for all `a, b ∈ D`, then every irreducible observation is prime.
+*Proof.* First, if `x ⊆ w`, then `xw = x`: `xw ⊆ x` by assumption, and `x ⊆ xw` by *Bounds*, since `x ⊆ x` and `x ⊆ w`.
+Now let `x` be irreducible and `x ⊆ y + z`. Then
+```
+x = x(y + z)    (x ⊆ y + z)
+  = xy + xz     (9)
+```
+so `x = xy` or `x = xz`, since `x` is irreducible.
+In the first case, `x = xy = yx ⊆ y` by (7) and the assumption, and likewise `x ⊆ z` in the second case.
+∎
+
+By the *Meet by Product* theorem, the assumption says that the product is always the meet, as in a lattice.
+So primality and irreducibility only differ in observation algebras where the product is not the meet.
+
+**Theorem (Irreducible Decomposition).** If `D` is finite, then every observation is the sum of the irreducible observations it includes.
+*Proof.* By strong induction on the number of observations included in `x`.
+If `x = 0`, it is the empty sum, since `0` is not irreducible.
+If `x` is irreducible, it is one of the irreducible observations it includes, and all others are included in it.
+Otherwise `x = y + z` with `y ≠ x` and `z ≠ x`.
+Then `y, z ⊆ x` by *Join is Sum*, so `y` and `z` include fewer observations than `x`, and are sums of irreducible observations by induction, all of which are included in `x`.
+So `x` is a sum of irreducible observations it includes, and adding the remaining ones does not change the sum, since they are all included in `x`.
+∎
+
+In infinite observation algebras this can fail: over `ℤ ∪ {-∞, +∞}`, the interval `[0, +∞)` is not a finite sum of irreducible observations, since every finite sum of unit intervals is bounded.
+
+
 Maps and Polynomials
 ====================
 
@@ -343,24 +413,30 @@ Maps and Polynomials
 (x, y) + (x', y') := (x + x', y + y')      0 := (0, 0)
 (x, y) ⋅ (x', y') := (x ⋅ x', y ⋅ y')      1 := (1, 1)
 ```
-We write `Xⁿ` for the Cartesian product of `n` copies of `X`.
+We write `Xⁿ` for the Cartesian product of `n` copies of `X`, whose elements are the tuples `(x₁, …, xₙ)` with operations taken componentwise, where `X⁰` has the single element `()`.
 
-An element of `X × Y` is a pair of collections of observations, one in each algebra, kept side by side.
-Note that `(x, 0)` is not `0`: it has observations in `X` and none in `Y`.
+An element of `X × Y` is a pair of observations, one in each algebra, kept side by side.
 
-**Theorem.** `X × Y` is an observation algebra.
-*Proof.* Each axiom holds componentwise, since it holds in `X` and in `Y`.
+**Theorem.** `X × Y` is an observation algebra, and so is `Xⁿ`.
+*Proof.* Each axiom holds componentwise, since it holds in each factor.
 For example, `(x, y) ⋅ (0, 0) = (x ⋅ 0, y ⋅ 0) = (0, 0)` by (10).
 ∎
 
-**Theorem.** The information ordering on `X × Y` is componentwise: `(x, y) ⊆ (x', y')` iff `x ⊆ x'` and `y ⊆ y'`.
+**Theorem.** The information ordering on `X × Y` is componentwise: `(x, y) ⊆ (x', y')` iff `x ⊆ x'` and `y ⊆ y'`. Likewise for `Xⁿ`.
 *Proof.*
 ```
 (x, y) ⊆ (x', y')  ⟺  (x + x', y + y') = (x', y')
                    ⟺  x + x' = x'  and  y + y' = y'
                    ⟺  x ⊆ x'  and  y ⊆ y'
 ```
+The same argument applies to each component of a tuple.
 ∎
+
+**Remark.** The Cartesian product `X × Y` keeps observations in separate algebras: `+` and `⋅` act on each component separately, so observations in `X` never interact with observations in `Y` by addition or multiplication.
+Contrast this with two subjects in `Obs`, distinctly labeled by their own attributes `a` and `b`.
+As independent observations `{a:x, b:y}`, they still combine jointly: `[{a:x, b:y}, {a:x', b:y'}]` contains the joint observations `[a:x, b:y']` and `[a:x', b:y]`.
+As a joint observation `[a:x, b:y]`, they stand or fall together: independent alternatives for one part give independent records, `[a:{x, x'}, b:y] = {[a:x, b:y], [a:x', b:y]}`, and a missing part leaves no record at all, `[a:{}, b:y] = {}`.
+In the Cartesian product, by contrast, a missing part leaves the other intact: `(x, 0) ≠ 0`.
 
 ## Maps
 
@@ -374,25 +450,18 @@ Let `X` and `Y` be observation algebras. A map `f : X → Y` is called
 - *unital* if `f(1) = 1`,
 
 for all `x, y ∈ X`.
-A map `f : Xⁿ → Y` of several arguments is a map from the Cartesian product.
-For maps `g, h : X → Y` we write `g + h` and `g ⋅ h` for the operations `x ↦ g(x) + h(x)` and `x ↦ g(x) ⋅ h(x)`.
+A map `f : Xⁿ → Y` of several arguments is a map from the Cartesian product `Xⁿ`, so these properties apply to it directly.
+We say that `f` has a property *in each argument* if it has it in each argument separately, with the other arguments fixed.
+
+For maps `g, h : X → Y` we write `g + h` and `g ⋅ h` for the maps `x ↦ g(x) + h(x)` and `x ↦ g(x) ⋅ h(x)`.
 
 **Remark.**
-Additivity does not imply normality: a constant map `f(x) = c` where `c ≠ 0` is additive by (4), but `f(0) = c`.
-The operations `+` and `⋅` are monotone binary operations by *Sum and Product Monotonicity* and (3, 7).
-The operation `+` is additive by (1, 3, 4), and `⋅` is additive by (7, 9), multiplicative by (5, 7, 8) and normal by (10).
-The operation `+` is multiplicative only if `x + yz = (x + y)(x + z)`, which with `y = 0` gives `x = x(x + z)`. This fails in the taxonomy refinement: `{*} ⋅ ({*} + {x}) = {*, x} ≠ {*}` for `x ≠ *`.
+Additivity does not imply normality: a constant map `f(x) = c` with `c ≠ 0` is additive by (4), but `f(0) = c`.
 
-**Theorem.** Every additive map is monotone.
-*Proof.* Let `x ⊆ y`, so `x + y = y`. Then `f(y) = f(x + y) = f(x) + f(y)`, hence `f(x) ⊆ f(y)`.
-For several arguments, change one argument at a time and use transitivity.
-∎
+### Monotone Maps
 
-**Theorem (Superadditivity).** If `f` is monotone, then `f(x) + f(y) ⊆ f(x + y)`.
-*Proof.* `x ⊆ x + y` and `y ⊆ x + y`, so `f(x) ⊆ f(x + y)` and `f(y) ⊆ f(x + y)`, and `+` is the join.
-∎
+**Theorem (Cartesian Monotonicity).** A map `f : Xⁿ → Y` is monotone in each argument iff it is monotone.
 
-**Theorem (Cartesian Monotonicity).** A map `f : Xⁿ → Y` is monotone in each argument iff it is monotone on `Xⁿ`.
 *Proof.*
 (⟸) Fix all arguments but the `i`-th. If `x ⊆ y`, then `(a₁, …, x, …, aₙ) ⊆ (a₁, …, y, …, aₙ)` componentwise, by reflexivity in the other components, so `f(a₁, …, x, …, aₙ) ⊆ f(a₁, …, y, …, aₙ)`.
 (⟹) Let `a ⊆ b`. Replace the arguments one at a time, using monotonicity in each argument:
@@ -404,6 +473,222 @@ f(a₁, a₂, …, aₙ) ⊆ f(b₁, a₂, …, aₙ)
 ```
 so `f(a) ⊆ f(b)` by transitivity.
 ∎
+
+In contrast to additivity, a product of monotone maps is always monotone: there are no cross terms to account for.
+
+**Theorem (Monotone Sums and Products).** If `g, h : X → Y` are monotone, then so are `g + h` and `g ⋅ h`.
+
+*Proof.* `+` and `⋅` are monotone in each argument by *Sum and Product Monotonicity* and (3, 7), hence monotone by *Cartesian Monotonicity*.
+`g + h` and `g ⋅ h` are their compositions with `x ↦ (g(x), h(x))`, which is monotone by *Monotone Pairing*. Conclude by *Monotone Composition*.
+∎
+
+**Theorem (Additive implies Monotone).** Every additive map is monotone.
+
+*Proof.* Let `x ⊆ y`, so `x + y = y`. Then `f(y) = f(x + y) = f(x) + f(y)`, hence `f(x) ⊆ f(y)`.
+∎
+
+**Corollary.** Every map that is additive in each argument is monotone.
+
+*Proof.* By *Additive implies Monotone*, it is monotone in each argument, hence monotone by *Cartesian Monotonicity*.
+∎
+
+In particular, `+` and `⋅` are monotone, as are all operations that are additive in each argument.
+
+**Theorem (Superadditivity).** If `f : X → Y` is monotone, then `f(x) + f(y) ⊆ f(x + y)` for all `x, y ∈ X`.
+
+*Proof.* By *Join is Sum*, `x ⊆ x + y` and `y ⊆ x + y`, so `f(x) ⊆ f(x + y)` and `f(y) ⊆ f(x + y)` by monotonicity.
+Hence `f(x) + f(y) ⊆ f(x + y)` by *Bounds*.
+∎
+
+**Lemma (Basic Monotone Maps).** Constant maps, the identity, and the projections `πᵢ : Xⁿ → X, (x₁, …, xₙ) ↦ xᵢ` are monotone.
+
+*Proof.* For a constant `c`, `c ⊆ c` by reflexivity. The identity is immediate. For projections, `a ⊆ b` in `Xⁿ` means `aᵢ ⊆ bᵢ` for all `i`, since the order on `Xⁿ` is componentwise.
+∎
+
+**Lemma (Monotone Composition).** If `g : X → Y` and `h : Y → Z` are monotone, then so is `h ∘ g`.
+
+*Proof.* If `x ⊆ y`, then `g(x) ⊆ g(y)`, so `h(g(x)) ⊆ h(g(y))`.
+∎
+
+So for monotonicity it makes no difference whether we consider each argument separately or all arguments at once.
+In particular, a map that is monotone in each argument stays monotone when the same argument is used several times, as the next lemma shows.
+
+**Lemma (Monotone Pairing).** For maps `g : X → Y` and `h : X → Z`, the map `x ↦ (g(x), h(x))` into `Y × Z` is monotone iff `g` and `h` are.
+
+*Proof.* The order on `Y × Z` is componentwise, so `(g(x), h(x)) ⊆ (g(y), h(y))` holds iff `g(x) ⊆ g(y)` and `h(x) ⊆ h(y)`.
+∎
+
+**Lemma (Monotone Diagonal).** If `f : X × X → Y` is monotone in each argument, then `d(x) = f(x, x)` is monotone.
+
+*Proof.* `d` is the composition of `x ↦ (x, x)`, which is monotone by *Basic Monotone Maps* and *Monotone Pairing*, with `f`, which is monotone by *Cartesian Monotonicity*. Conclude by *Monotone Composition*.
+∎
+
+### Additive Maps
+
+**Lemma (Basic Additive Maps).** Constant maps, the identity, and the projections `πᵢ : Xⁿ → X` are additive.
+
+*Proof.* For a constant `c`, `c = c + c` by (4). The identity is immediate. For projections, `πᵢ(a + b) = aᵢ + bᵢ = πᵢ(a) + πᵢ(b)`, since `+` on `Xⁿ` is componentwise.
+∎
+
+**Lemma (Additive Composition).** If `g : X → Y` and `h : Y → Z` are additive, then so is `h ∘ g`.
+
+*Proof.* `h(g(x + y)) = h(g(x) + g(y)) = h(g(x)) + h(g(y))`.
+∎
+
+**Lemma (Additive Pairing).** For maps `g : X → Y` and `h : X → Z`, the map `x ↦ (g(x), h(x))` into `Y × Z` is additive iff `g` and `h` are.
+
+*Proof.* `+` on `Y × Z` is componentwise, so `(g(x + y), h(x + y)) = (g(x), h(x)) + (g(y), h(y))` holds iff it holds in each component.
+∎
+
+**Lemma (Additive Sums and Scaling).** If `g, h : X → Y` are additive and `c ∈ Y`, then `g + h` and `x ↦ c ⋅ g(x)` are additive.
+
+*Proof.*
+```
+g(x + y) + h(x + y) = (g(x) + h(x)) + (g(y) + h(y))      (1, 3)
+c ⋅ g(x + y)        = c ⋅ g(x) + c ⋅ g(y)                (9)
+```
+∎
+
+**Theorem (Cartesian Additivity).** If `f : Xⁿ → Y` is additive, then it is additive in each argument. The converse does not hold.
+
+*Proof.* Fix all arguments but the `i`-th. By (4), `(a₁, …, x, …, aₙ) + (a₁, …, y, …, aₙ) = (a₁, …, x + y, …, aₙ)`, so additivity of `f` gives
+```
+f(a₁, …, x + y, …, aₙ) = f(a₁, …, x, …, aₙ) + f(a₁, …, y, …, aₙ)
+```
+For the converse, `⋅` is additive in each argument, but in the powerset of `{1, 2}`, `({1} + {2}) ⋅ ({2} + {1}) = {1, 2}`, while `{1} ⋅ {2} + {2} ⋅ {1} = ∅`.
+∎
+
+Unlike for monotonicity, additivity in each argument does not imply additivity.
+Additivity in each argument is the weaker property, and the one that `⋅` and most operations satisfy.
+The next lemma measures exactly what is lost when the same argument is used twice.
+
+**Lemma (Additive Diagonal).** Let `f : X × X → Y` be additive in each argument, and `d(x) = f(x, x)`. Then
+```
+d(x + y) = d(x) + d(y) + f(x, y) + f(y, x)
+```
+so `d` is additive iff `f(x, y) + f(y, x) ⊆ d(x) + d(y)` for all `x, y ∈ X`.
+
+*Proof.*
+```
+d(x + y) = f(x + y, x + y)
+         = f(x, x + y) + f(y, x + y)                     (additive in the first argument)
+         = f(x, x) + f(x, y) + f(y, x) + f(y, y)         (additive in the second argument)
+         = d(x) + d(y) + f(x, y) + f(y, x)               (1, 3)
+```
+∎
+
+**Corollary (Additive Cross Terms).** If `g, h : X → Y` are additive, then `g ⋅ h` is additive iff `g(x) h(y) + g(y) h(x) ⊆ g(x) h(x) + g(y) h(y)` for all `x, y ∈ X`.
+
+*Proof.* Apply *Additive Diagonal* to `f(u, v) = g(u) ⋅ h(v)`, which is additive in each argument by *Additive Sums and Scaling* and (7).
+∎
+
+**Corollary.** If `g : X → Y` is additive, then `g ⋅ g` is additive.
+
+*Proof.* `g ⋅ g = g` by (8).
+∎
+
+**Example.** On the half-open intervals over `ℤ ∪ {-∞, +∞}`, the shift `σ` is additive, but `x ↦ x ⋅ σ(x)` is not: for `x = [0, 1)` and `y = [1, 2)`, the cross term `y ⋅ σ(x) = [1, 2)` is not contained in `x ⋅ σ(x) + y ⋅ σ(y) = ∅`.
+
+I'd split them across two chapters, because they answer different questions:
+
+- **Evaluating an operation term by term** is about maps. It belongs in *Maps and Polynomials*, as a subsection right after *Additive Maps*, since it only uses additivity and normality.
+- **Inclusion tests and removing redundant terms** are about the order. They belong in *Irreducible Observations*, right after *Prime Terms*, which they follow from directly.
+
+Here's the text for both.
+
+### Evaluation on Sums
+
+When observations are given as finite sums, maps that are additive and normal in each argument can be evaluated term by term.
+
+**Theorem (Pairwise Evaluation).** Let `f : X × Y → Z` be additive and normal in each argument. If `x = x₁ + ⋯ + xₘ` and `y = y₁ + ⋯ + yₙ`, with `m, n ≥ 0`, then
+```
+f(x, y) = Σ_{i ≤ m, j ≤ n} f(xᵢ, yⱼ)
+```
+*Proof.* For `m, n ≥ 1`, expand the first argument by additivity in the first argument, and then each term by additivity in the second argument.
+If `m = 0` or `n = 0`, then `x = 0` or `y = 0`, and both sides are `0`: the left side by normality, and the right side because it is the empty sum.
+∎
+
+The result does not depend on how `x` and `y` are written as sums.
+Normality is needed for the empty sum: without it, `f(0, y)` could be a non-zero constant that the sum on the right does not produce.
+
+Often, most pairs of terms contribute nothing. If this is governed by a key, only pairs with matching keys need to be considered.
+
+**Corollary (Keyed Evaluation).** Let `f` be as in *Pairwise Evaluation*, and let `k : X → K` and `k' : Y → K` be maps into a set `K` such that `f(xᵢ, yⱼ) = 0` whenever `k(xᵢ) ≠ k'(yⱼ)`. Then
+```
+f(x, y) = Σ_{k(xᵢ) = k'(yⱼ)} f(xᵢ, yⱼ)
+```
+*Proof.* By *Pairwise Evaluation*, dropping the pairs with different keys, which are `0`, by (2).
+∎
+
+If `K` is totally ordered, the pairs with matching keys can be found by sorting both sums by key and scanning them once, as in a sort-merge join, rather than checking all `m ⋅ n` pairs.
+
+**Example.** In the powerset, `⋅` is additive and normal in each argument. For singletons, `{s} ⋅ {t} = 0` whenever `s ≠ t`, so with `k({s}) = s`, the intersection of two finite sets can be computed by sorting their elements and scanning both lists once.
+
+### Multiplicative Maps
+
+**Lemma (Basic Multiplicative Maps).** Constant maps, the identity, and the projections `πᵢ : Xⁿ → X` are multiplicative.
+
+*Proof.* For a constant `c`, `c = c ⋅ c` by (8). The identity is immediate. For projections, `πᵢ(a ⋅ b) = aᵢ ⋅ bᵢ = πᵢ(a) ⋅ πᵢ(b)`, since `⋅` on `Xⁿ` is componentwise.
+∎
+
+**Lemma (Multiplicative Composition).** If `g : X → Y` and `h : Y → Z` are multiplicative, then so is `h ∘ g`.
+
+*Proof.* `h(g(x ⋅ y)) = h(g(x) ⋅ g(y)) = h(g(x)) ⋅ h(g(y))`.
+∎
+
+**Lemma (Multiplicative Pairing).** For maps `g : X → Y` and `h : X → Z`, the map `x ↦ (g(x), h(x))` into `Y × Z` is multiplicative iff `g` and `h` are.
+
+*Proof.* `⋅` on `Y × Z` is componentwise, so `(g(x ⋅ y), h(x ⋅ y)) = (g(x), h(x)) ⋅ (g(y), h(y))` holds iff it holds in each component.
+∎
+
+**Lemma (Multiplicative Products).** If `g, h : X → Y` are multiplicative, then so is `g ⋅ h`.
+
+*Proof.*
+```
+g(x ⋅ y) ⋅ h(x ⋅ y) = g(x) ⋅ g(y) ⋅ h(x) ⋅ h(y)            (g, h multiplicative)
+                    = (g(x) ⋅ h(x)) ⋅ (g(y) ⋅ h(y))        (5, 7)
+```
+∎
+
+With a constant map for `h`, this shows in particular that `x ↦ c ⋅ g(x)` is multiplicative.
+
+**Theorem (Cartesian Multiplicativity).** If `f : Xⁿ → Y` is multiplicative, then it is multiplicative in each argument. The converse does not hold.
+
+*Proof.* Fix all arguments but the `i`-th. By (8), `(a₁, …, x, …, aₙ) ⋅ (a₁, …, y, …, aₙ) = (a₁, …, x ⋅ y, …, aₙ)`, so multiplicativity of `f` gives
+```
+f(a₁, …, x ⋅ y, …, aₙ) = f(a₁, …, x, …, aₙ) ⋅ f(a₁, …, y, …, aₙ)
+```
+For the converse, in the powerset of `{1}`, `+` is multiplicative in each argument by distributivity of `∪` over `∩`, but with `x = y' = {1}` and `x' = y = ∅`, we get `x ⋅ x' + y ⋅ y' = ∅`, while `(x + y) ⋅ (x' + y') = {1}`.
+∎
+
+**Lemma (Multiplicative Cross Terms).** If `g, h : X → Y` are multiplicative, then `g + h` is multiplicative iff `g(x) h(y) + h(x) g(y) ⊆ g(x) g(y) + h(x) h(y)` for all `x, y ∈ X`.
+
+*Proof.*
+```
+(g(x) + h(x)) ⋅ (g(y) + h(y)) = g(x) g(y) + g(x) h(y) + h(x) g(y) + h(x) h(y)      (7, 9)
+g(x ⋅ y) + h(x ⋅ y)           = g(x) g(y) + h(x) h(y)                              (g, h multiplicative)
+```
+so the two sides are equal iff `g(x) h(y) + h(x) g(y) ⊆ g(x) g(y) + h(x) h(y)`, by the definition of `⊆` and (1, 3).
+∎
+
+So additivity and multiplicativity are dual in this respect: sums of additive maps and products of multiplicative maps are always well behaved, while products of additive maps and sums of multiplicative maps produce cross terms.
+
+### Homomorphisms
+
+**Definition (Homomorphism).** A *homomorphism* is a map that is additive, multiplicative, normal and unital.
+A homomorphism `A → A` is called an *endomorphism*.
+
+For example, the projections `πᵢ : Xⁿ → X` are homomorphisms, the naming operations `a:` are endomorphisms of `Obs`, and the shift `[s, e) ↦ [s + 1, e + 1)` is an endomorphism of the half-open intervals over `ℤ ∪ {-∞, +∞}`.
+
+**Corollary.** Every homomorphism is monotone, by *Additive implies Monotone*.
+
+**Corollary.** Compositions of homomorphisms are homomorphisms, and `x ↦ (g(x), h(x))` is a homomorphism iff `g` and `h` are.
+
+*Proof.* By *Additive Composition*, *Multiplicative Composition*, *Additive Pairing* and *Multiplicative Pairing*. Normality and unitality are preserved by composition, since `h(g(0)) = h(0) = 0` and likewise for `1`, and hold for a pairing iff they hold in each component, since `0` and `1` on `Y × Z` are componentwise.
+∎
+
+
+<!--
 
 ## Operations
 
@@ -450,159 +735,6 @@ We show `p(a) ⊆ p(b)` by induction on `p`.
 - If `p ≡ γ(p₁, …, p_k)` for `γ ∈ Γ`, then `pᵢ(a) ⊆ pᵢ(b)` for each `i` by induction, so `p(a) ⊆ p(b)` by *Cartesian Monotonicity*, since `γ` is monotone.
 ∎
 
-
-<!--
-
-
-#### Additive operations
-
-A unary operation `f : A → A` is *affine* if there are `c₀, c₁ ∈ A` such that `f(x) = c₀ + c₁x` for all `x ∈ A`.
-
-**Lemma (Affine closure):** Constant operations and the identity are affine, and if `g` and `h` are affine, so are `g + h` and `g ⋅ h`.
-
-*Proof.* A constant `c` is `c + 0 ⋅ x` by (2, 3, 7, 10), and the identity is `0 + 1 ⋅ x` by (2, 6).
-Let `g(x) = c₀ + c₁x` and `h(x) = d₀ + d₁x`. Then
-```
-g(x) + h(x) = (c₀ + d₀) + (c₁ + d₁)x        (1, 3, 7, 9)
-```
-and
-```
-g(x) ⋅ h(x) = (c₀ + c₁x)(d₀ + d₁x)
-            = c₀d₀ + c₀d₁x + c₁d₀x + c₁d₁xx        (5, 7, 9)
-            = c₀d₀ + c₀d₁x + c₁d₀x + c₁d₁x         (8)
-            = c₀d₀ + (c₀d₁ + c₁d₀ + c₁d₁)x         (1, 7, 9)
-```
-∎
-
-**Lemma (Affine operations are additive):** Every affine operation is additive.
-
-*Proof.* Let `f(x) = c₀ + c₁x`. Then
-```
-f(x + y) = c₀ + c₁(x + y)
-         = c₀ + c₁x + c₁y                  (9)
-         = (c₀ + c₁x) + (c₀ + c₁y)         (1, 3, 4)
-         = f(x) + f(y)
-```
-∎
-
-**Theorem (Additivity):** Let `g : A → A` be additive and `c ∈ A`. Then
-
-1. `g + h` is additive for every additive `h`,
-2. `x ↦ g(x) ⋅ c` is additive,
-3. `x ↦ γ(c₁, …, g(x), …, c_k)` is additive for every additive operation `γ : Aᵏ → A` and all constants `cᵢ`.
-
-*Proof.*
-1.
-```
-g(x + y) + h(x + y) = g(x) + g(y) + h(x) + h(y)            (g, h additive)
-                    = (g(x) + h(x)) + (g(y) + h(y))        (1, 3)
-```
-2.
-```
-g(x + y) ⋅ c = (g(x) + g(y)) ⋅ c        (g additive)
-             = g(x) ⋅ c + g(y) ⋅ c      (7, 9)
-```
-3.
-```
-γ(c₁, …, g(x + y), …, c_k) = γ(c₁, …, g(x) + g(y), …, c_k)                          (g additive)
-                           = γ(c₁, …, g(x), …, c_k) + γ(c₁, …, g(y), …, c_k)        (γ additive)
-```
-∎
-
-The theorem does not cover `g ⋅ h` when neither factor is constant. The next lemma says exactly when such a product is additive.
-
-**Lemma (Cross terms):** Let `g, h : A → A` be additive, and `f = g ⋅ h`. Then `f` is additive iff for all `x, y ∈ A`
-```
-g(x) h(y) + g(y) h(x) ⊆ f(x) + f(y)
-```
-
-*Proof.*
-```
-f(x + y) = (g(x) + g(y))(h(x) + h(y))                            (g, h additive)
-         = g(x) h(x) + g(x) h(y) + g(y) h(x) + g(y) h(y)         (7, 9)
-         = f(x) + f(y) + g(x) h(y) + g(y) h(x)                   (1, 3)
-```
-So `f(x + y) = f(x) + f(y)` iff `g(x) h(y) + g(y) h(x) ⊆ f(x) + f(y)`, by the definition of `⊆`.
-∎
-
-**Corollary:** If `g` is additive, then `g ⋅ g` is additive.
-
-*Proof.* `g ⋅ g = g` by (8).
-∎
-
-**Example:** On the half-open intervals over `ℤ ∪ {-∞, +∞}`, the shift `σ` is additive, but `f(x) = x ⋅ σ(x)` is not.
-For `x = [0, 1)` and `y = [1, 2)`,
-```
-f(x) = [0, 1) ∩ [1, 2) = ∅
-f(y) = [1, 2) ∩ [2, 3) = ∅
-f(x + y) = [0, 2) ∩ [1, 3) = [1, 2)
-```
-The cross term `y ⋅ σ(x) = [1, 2)` is not contained in `f(x) + f(y) = ∅`.
-
-### Homomorphisms
-
-**Definition:** A *homomorphism* is a map that is additive, multiplicative, normal and unital.
-A homomorphism `A → A` is called an *endomorphism*.
-For example, the naming operations `a:` of the `Obs` algebra, and the shift on the half-open intervals over `ℤ ∪ {-∞, +∞}`.
-
-**Corollary:** Every homomorphism is monotone.
-
-Homomorphisms preserve the structure of observation algebras, and therefore commute with polynomials.
-
-#### Homomorphisms and polynomials
-
-Let `X` and `Y` be observation algebras, and let `η : X → Y` be an additive and multiplicative map.
-Let `Γ` be a set of operations on `X`, and assign to each `γ : Xᵏ → X` in `Γ` an operation `γ' : Yᵏ → Y` with the same number of arguments, such that `η` *respects* `γ`:
-```
-η(γ(x₁, …, x_k)) = γ'(η(x₁), …, η(x_k))    for all x₁, …, x_k ∈ X
-```
-
-For a polynomial `p` over `X`, the *image* `η[p]` is the polynomial over `Y` that replaces every constant `c` by `η(c)` and every `γ` by `γ'`:
-```
-η[xᵢ]               ≡ xᵢ
-η[c]                ≡ η(c)
-η[p + q]            ≡ η[p] + η[q]
-η[p ⋅ q]            ≡ η[p] ⋅ η[q]
-η[γ(p₁, …, p_k)]    ≡ γ'(η[p₁], …, η[p_k])
-```
-
-**Theorem (Homomorphisms commute with polynomials):** For every polynomial `p` in `x₁, …, xₙ` and all `x₁, …, xₙ ∈ X`:
-```
-η(p(x₁, …, xₙ)) = η[p](η(x₁), …, η(xₙ))
-```
-
-*Proof.* By induction on `p`. Write `x` for `x₁, …, xₙ` and `η(x)` for `η(x₁), …, η(xₙ)`.
-
-- Variables: `η(xᵢ) = η[xᵢ](η(x))`.
-- Constants: `η(c) = η[c](η(x))`, by the definition of `η[c]`.
-- Sums:
-```
-η(p(x) + q(x)) = η(p(x)) + η(q(x))                (η additive)
-               = η[p](η(x)) + η[q](η(x))          (induction)
-               = η[p + q](η(x))
-```
-- Products:
-```
-η(p(x) ⋅ q(x)) = η(p(x)) ⋅ η(q(x))                (η multiplicative)
-               = η[p](η(x)) ⋅ η[q](η(x))          (induction)
-               = η[p ⋅ q](η(x))
-```
-- Operations from `Γ`:
-```
-η(γ(p₁(x), …, p_k(x))) = γ'(η(p₁(x)), …, η(p_k(x)))              (η respects γ)
-                       = γ'(η[p₁](η(x)), …, η[p_k](η(x)))        (induction)
-                       = η[γ(p₁, …, p_k)](η(x))
-```
-∎
-
-The proof does not need `η` to be normal or unital: `0` and `1` are constants, and are mapped to `η(0)` and `η(1)`.
-If `η` is a homomorphism, then `η[0] = 0` and `η[1] = 1`, so a polynomial without other constants, using only operations from `Γ` with `γ' = γ`, is its own image.
-
-**Example:** The shift `σ` is an endomorphism of the half-open intervals over `ℤ ∪ {-∞, +∞}`. For `p(x) = x ⋅ [0, 5)`,
-```
-σ[p](y) = y ⋅ [1, 6)
-```
-so `σ(x ∩ [0, 5)) = σ(x) ∩ [1, 6)`: restricting and then shifting is the same as shifting and then restricting to the shifted range.
 
 ### Monomials
 
