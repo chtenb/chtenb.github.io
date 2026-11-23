@@ -13,8 +13,8 @@ watch-html:
   watchexec --print-events -w . -e md,pikchr,lua,yaml "just html"
 
 pdf:
-  echo "pandoc --defaults pandoc/mathdown.yaml blog/obs.md -o blog/obs.pdf"; \
-  pandoc --defaults pandoc/mathdown.yaml blog/obs.md -o blog/obs.pdf
+  echo "pandoc --data-dir=pandoc/mathdown -d mathdown -d mathdown-default blog/obs.md -o blog/obs.pdf"; \
+  pandoc --data-dir=pandoc/mathdown -d mathdown -d mathdown-default blog/obs.md -o blog/obs.pdf
 
 watch-pdf:
   echo "watching pandoc pdf"

@@ -1,0 +1,3 @@
+[submodule "pandoc/mathdown"]
+	path = pandoc/mathdown
+	url = https://github.com/chtenb/mathdown
