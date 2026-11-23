@@ -115,7 +115,7 @@ Then `(D, +, ⋅, 0, 1)` is an observation algebra.
 Both independent and joint observations draw on the sources of all their parts.
 The trivial observation `∅` involves no sources, which is different from not observing anything at all.
 
-Unlike in a lattice, the product grows: `a ⊆ ab`.
+Unlike in a lattice, the product grows: `a ⊑ ab`.
 Lineage records *which* sources contributed, but not *how*: it cannot distinguish independent from joint observations, since `+` and `⋅` coincide on sets.
 
 This algebra is known as the *lineage semiring* in database provenance (Green, ICDT 2009).
@@ -213,33 +213,33 @@ So
 Information Ordering
 ====================
 
-Every observation algebra carries an order that compares how much is observed: `a ⊆ b` when `b` already includes every observation in `a`.
+Every observation algebra carries an order that compares how much is observed: `a ⊑ b` when `b` already includes every observation in `a`.
 
-**Definition (Information Ordering).** Let `D` be an observation algebra. Denote `a ⊆ b` iff `a + b = b`.
+**Definition (Information Ordering).** Let `D` be an observation algebra. Denote `a ⊑ b` iff `a + b = b`.
 
-**Theorem.** `⊆` is a partial order on `D`, with least element `0`.
+**Theorem.** `⊑` is a partial order on `D`, with least element `0`.
 *Proof.*
 Let `a, b, c ∈ D`.
 
-- Reflexivity: `a + a = a` by idempotency (4), hence `a ⊆ a`.
-- Transitivity: Assume `a ⊆ b` and `b ⊆ c`. Then
+- Reflexivity: `a + a = a` by idempotency (4), hence `a ⊑ a`.
+- Transitivity: Assume `a ⊑ b` and `b ⊑ c`. Then
 ```
-a + c = a + (b + c)    (b ⊆ c)
+a + c = a + (b + c)    (b ⊑ c)
       = (a + b) + c    (1)
-      = b + c          (a ⊆ b)
-      = c              (b ⊆ c)
+      = b + c          (a ⊑ b)
+      = c              (b ⊑ c)
 ```
-hence `a ⊆ c`.
-- Antisymmetry: Assume `a ⊆ b` and `b ⊆ a`. Then
+hence `a ⊑ c`.
+- Antisymmetry: Assume `a ⊑ b` and `b ⊑ a`. Then
 ```
-b = a + b    (a ⊆ b)
+b = a + b    (a ⊑ b)
   = b + a    (3)
-  = a        (b ⊆ a)
+  = a        (b ⊑ a)
 ```
-- Least element: `0 + a = a` by identity (2), hence `0 ⊆ a`.
+- Least element: `0 + a = a` by identity (2), hence `0 ⊑ a`.
 ∎
 
-**Theorem (Natural Order).** For all `a, b ∈ D`, `a ⊆ b` iff there is an `x ∈ D` with `a + x = b`.
+**Theorem (Natural Order).** For all `a, b ∈ D`, `a ⊑ b` iff there is an `x ∈ D` with `a + x = b`.
 *Proof.*
 (⟹) If `a + b = b`, take `x = b`.
 (⟸) If `a + x = b`, then
@@ -255,7 +255,7 @@ So `b` includes `a` exactly when `b` is `a` together with some further independe
 
 The unit `1` need not be the greatest element: in the discrete observation algebra, `{*} + {x} = {*, x} ≠ {*}` for `x ≠ *`.
 
-**Theorem (Sum implies Product).** For all `a, b ∈ D`, `ab ⊆ a + b`.
+**Theorem (Sum implies Product).** For all `a, b ∈ D`, `ab ⊑ a + b`.
 *Proof.*
 To prove: `ab + (a + b) = a + b`.
 ```
@@ -271,9 +271,9 @@ a + b = (a + b)(a + b)           (8)
 Note that this theorem aligns with the philosophical idea of joint observations, in that independent observations can be considered together.
 This theorem confirms that the joint combination of independent observations is indeed implied.
 
-**Definition.** The *join* `a ∪ b` is the least `c ∈ D` such that `a ⊆ c` and `b ⊆ c`.
+**Definition.** The *join* `a ⊔ b` is the least `c ∈ D` such that `a ⊑ c` and `b ⊑ c`.
 
-**Theorem (Join is Sum).** For all `a, b ∈ D`, `a ∪ b = a + b`.
+**Theorem (Join is Sum).** For all `a, b ∈ D`, `a ⊔ b = a + b`.
 *Proof.*
 `a + b` is an upper bound of `a` and `b`:
 ```
@@ -284,77 +284,78 @@ b + (a + b) = (a + b) + b    (3)
             = a + (b + b)    (1)
             = a + b          (4)
 ```
-It is the least one: let `a ⊆ c` and `b ⊆ c`. Then
+It is the least one: let `a ⊑ c` and `b ⊑ c`. Then
 ```
 (a + b) + c = a + (b + c)    (1)
-            = a + c          (b ⊆ c)
-            = c              (a ⊆ c)
+            = a + c          (b ⊑ c)
+            = c              (a ⊑ c)
 ```
-hence `a + b ⊆ c`.
+hence `a + b ⊑ c`.
 ∎
 
-So `(D, ⊆)` is a join-semilattice with least element `0`, and `+` is its join.
+So `(D, ⊑)` is a join-semilattice with least element `0`, and `+` is its join.
 
-**Theorem (Sum and Product Monotonicity).** For all `a, b, c ∈ D`, if `a ⊆ b`, then `a + c ⊆ b + c` and `ac ⊆ bc`.
-*Proof.* Assume `a ⊆ b`. Then
+**Theorem (Sum and Product Monotonicity).** For all `a, b, c ∈ D`, if `a ⊑ b`, then `a + c ⊑ b + c` and `ac ⊑ bc`.
+*Proof.* Assume `a ⊑ b`. Then
 ```
 (a + c) + (b + c) = (a + b) + (c + c)    (1, 3)
-                  = b + c                (a ⊆ b, 4)
+                  = b + c                (a ⊑ b, 4)
 ```
 and
 ```
 bc = cb          (7)
-   = c(a + b)    (a ⊆ b)
+   = c(a + b)    (a ⊑ b)
    = ca + cb     (9)
    = ac + bc     (7)
 ```
 ∎
 
 **Theorem (Bounds).** Let `c ∈ D`. For all `a, b ∈ D`:
-- if `a ⊆ c` and `b ⊆ c`, then `ab ⊆ a + b ⊆ c`,
-- if `c ⊆ a` and `c ⊆ b`, then `c ⊆ ab ⊆ a + b`.
+- if `a ⊑ c` and `b ⊑ c`, then `ab ⊑ a + b ⊑ c`,
+- if `c ⊑ a` and `c ⊑ b`, then `c ⊑ ab ⊑ a + b`.
 
 *Proof.*
-In both cases, `ab ⊆ a + b` by *Sum implies Product*.
-If `a ⊆ c` and `b ⊆ c`, then `a + b ⊆ c`, since `a + b` is the least upper bound of `a` and `b` by *Join is Sum*.
-If `c ⊆ a` and `c ⊆ b`, then
+In both cases, `ab ⊑ a + b` by *Sum implies Product*.
+If `a ⊑ c` and `b ⊑ c`, then `a + b ⊑ c`, since `a + b` is the least upper bound of `a` and `b` by *Join is Sum*.
+If `c ⊑ a` and `c ⊑ b`, then
 ```
 c = cc    (8)
-  ⊆ ac    (Product Monotonicity, c ⊆ a)
+  ⊑ ac    (Product Monotonicity, c ⊑ a)
   = ca    (7)
-  ⊆ ba    (Product Monotonicity, c ⊆ b)
+  ⊑ ba    (Product Monotonicity, c ⊑ b)
   = ab    (7)
 ```
-so `c ⊆ ab` by transitivity.
+so `c ⊑ ab` by transitivity.
 ∎
 
-**Definition.** The *meet* `a ∩ b`, if it exists, is the greatest `c ∈ D` such that `c ⊆ a` and `c ⊆ b`.
+**Definition.** The *meet* `a ⊓ b`, if it exists, is the greatest `c ∈ D` such that `c ⊑ a` and `c ⊑ b`.
 By antisymmetry, it is unique if it exists.
 
-**Corollary.** `a ∩ b ⊆ ab` whenever `a ∩ b` exists, by *Bounds*.
+**Corollary.** `a ⊓ b ⊑ ab` whenever `a ⊓ b` exists, by *Bounds*.
 
-**Theorem (Meet by Product).** For all `a, b ∈ D`, `ab = a ∩ b` iff `ab ⊆ a` and `ab ⊆ b`.
+**Theorem (Meet by Product).** For all `a, b ∈ D`, `ab = a ⊓ b` iff `ab ⊑ a` and `ab ⊑ b`.
 *Proof.*
-(⟹) `a ∩ b` is a lower bound of `a` and `b` by definition.
-(⟸) `ab` is a lower bound of `a` and `b`, and every lower bound `c` of `a` and `b` satisfies `c ⊆ ab` by *Bounds*.
-So `ab` is the greatest lower bound, and `ab = a ∩ b` by uniqueness.
+(⟹) `a ⊓ b` is a lower bound of `a` and `b` by definition.
+(⟸) `ab` is a lower bound of `a` and `b`, and every lower bound `c` of `a` and `b` satisfies `c ⊑ ab` by *Bounds*.
+So `ab` is the greatest lower bound, and `ab = a ⊓ b` by uniqueness.
 ∎
 
 The product need not be the meet: in the discrete observation algebra, `{*} ⋅ {red} = {red}`, which is not included in `{*}`, while the meet of `{*}` and `{red}` is `∅`.
 
+<!--
 ## Irreducible Observations
 
 An observation may consist of several independent observations, but those that do not are of special interest as they convey something about what the basic observations are for an algebra.
 
 **Definition (Irreducible Observation).** An observation `x ∈ D` is *irreducible* if `x ≠ 0`, and `x = y + z` implies `x = y` or `x = z` for all `y, z ∈ D`.
 
-**Definition (Prime Observation).** An observation `x ∈ D` is *prime* if `x ≠ 0`, and `x ⊆ y + z` implies `x ⊆ y` or `x ⊆ z` for all `y, z ∈ D`.
+**Definition (Prime Observation).** An observation `x ∈ D` is *prime* if `x ≠ 0`, and `x ⊑ y + z` implies `x ⊑ y` or `x ⊑ z` for all `y, z ∈ D`.
 
 **Remark.** If observations are given as sums of primes, inclusion and redundancy can be decided term by term.
 Let `x = x₁ + ⋯ + xₘ` with every `xᵢ` prime, and `y = y₁ + ⋯ + yₙ`.
-Then `x ⊆ y` iff every `xᵢ` is included in some `yⱼ`.
+Then `x ⊑ y` iff every `xᵢ` is included in some `yⱼ`.
 In particular, a term `xₖ` can be removed from `x` without changing it iff `xₖ` is included in another term `xⱼ`.
-Without primality, this fails: in `Obs`, `{a, [a, b]} ⊆ {a, b}`, although `[a, b]` is included in neither term, and `[a, b]` is redundant in `{a, [a, b]}`, even though `[a, b]` is not included in `a`.
+Without primality, this fails: in `Obs`, `{a, [a, b]} ⊑ {a, b}`, although `[a, b]` is included in neither term, and `[a, b]` is redundant in `{a, [a, b]}`, even though `[a, b]` is not included in `a`.
 
 **Example (Powerset).** The irreducible observations are the singletons `{s}`, and they are prime, since `{s} ⊆ y ∪ z` implies `s ∈ y` or `s ∈ z`.
 The same holds in the discrete observation algebra and the taxonomy refinement.
@@ -366,22 +367,22 @@ The unit need not be irreducible: in the powerset, if `S` has at least two eleme
 Over `ℝ ∪ {-∞, +∞}`, there are no irreducible observations at all: every non-empty interval `[s, e)` is the sum of `[s, m)` and `[m, e)` for any `s < m < e`.
 
 **Example (Free Named Observations).** The joint observation `[a, b]` of two atoms is irreducible but not necessarily prime.
-Intuitively this can be understood by *Sum implies Product*, `[a, b] ⊆ {a, b}`, while it is not the case that `[a, b] ⊆ a` or `[a, b] ⊆ b`.
+Intuitively this can be understood by *Sum implies Product*, `[a, b] ⊑ {a, b}`, while it is not the case that `[a, b] ⊑ a` or `[a, b] ⊑ b`.
 
 **Theorem (Primes are Irreducible).** Every prime observation is irreducible.
-*Proof.* Let `x` be prime and `x = y + z`. Then `x ⊆ y + z`, so `x ⊆ y` or `x ⊆ z`.
-Also `y ⊆ y + z = x` and `z ⊆ y + z = x` by *Join is Sum*, so `x = y` or `x = z` by antisymmetry.
+*Proof.* Let `x` be prime and `x = y + z`. Then `x ⊑ y + z`, so `x ⊑ y` or `x ⊑ z`.
+Also `y ⊑ y + z = x` and `z ⊑ y + z = x` by *Join is Sum*, so `x = y` or `x = z` by antisymmetry.
 ∎
 
-**Theorem (Prime by Irreducibility).** If `ab ⊆ a` for all `a, b ∈ D`, then every irreducible observation is prime.
-*Proof.* First, if `x ⊆ w`, then `xw = x`: `xw ⊆ x` by assumption, and `x ⊆ xw` by *Bounds*, since `x ⊆ x` and `x ⊆ w`.
-Now let `x` be irreducible and `x ⊆ y + z`. Then
+**Theorem (Prime by Irreducibility).** If `ab ⊑ a` for all `a, b ∈ D`, then every irreducible observation is prime.
+*Proof.* First, if `x ⊑ w`, then `xw = x`: `xw ⊑ x` by assumption, and `x ⊑ xw` by *Bounds*, since `x ⊑ x` and `x ⊑ w`.
+Now let `x` be irreducible and `x ⊑ y + z`. Then
 ```
-x = x(y + z)    (x ⊆ y + z)
+x = x(y + z)    (x ⊑ y + z)
   = xy + xz     (9)
 ```
 so `x = xy` or `x = xz`, since `x` is irreducible.
-In the first case, `x = xy = yx ⊆ y` by (7) and the assumption, and likewise `x ⊆ z` in the second case.
+In the first case, `x = xy = yx ⊑ y` by (7) and the assumption, and likewise `x ⊑ z` in the second case.
 ∎
 
 By the *Meet by Product* theorem, the assumption says that the product is always the meet, as in a lattice.
@@ -392,7 +393,7 @@ So primality and irreducibility only differ in observation algebras where the pr
 If `x = 0`, it is the empty sum, since `0` is not irreducible.
 If `x` is irreducible, it is one of the irreducible observations it includes, and all others are included in it.
 Otherwise `x = y + z` with `y ≠ x` and `z ≠ x`.
-Then `y, z ⊆ x` by *Join is Sum*, so `y` and `z` include fewer observations than `x`, and are sums of irreducible observations by induction, all of which are included in `x`.
+Then `y, z ⊑ x` by *Join is Sum*, so `y` and `z` include fewer observations than `x`, and are sums of irreducible observations by induction, all of which are included in `x`.
 So `x` is a sum of irreducible observations it includes, and adding the remaining ones does not change the sum, since they are all included in `x`.
 ∎
 
@@ -418,12 +419,12 @@ An element of `X × Y` is a pair of observations, one in each algebra, kept side
 For example, `(x, y) ⋅ (0, 0) = (x ⋅ 0, y ⋅ 0) = (0, 0)` by (10).
 ∎
 
-**Theorem.** The information ordering on `X × Y` is componentwise: `(x, y) ⊆ (x', y')` iff `x ⊆ x'` and `y ⊆ y'`. Likewise for `Xⁿ`.
+**Theorem.** The information ordering on `X × Y` is componentwise: `(x, y) ⊑ (x', y')` iff `x ⊑ x'` and `y ⊑ y'`. Likewise for `Xⁿ`.
 *Proof.*
 ```
-(x, y) ⊆ (x', y')  ⟺  (x + x', y + y') = (x', y')
+(x, y) ⊑ (x', y')  ⟺  (x + x', y + y') = (x', y')
                    ⟺  x + x' = x'  and  y + y' = y'
-                   ⟺  x ⊆ x'  and  y ⊆ y'
+                   ⟺  x ⊑ x'  and  y ⊑ y'
 ```
 The same argument applies to each component of a tuple.
 ∎
@@ -439,7 +440,7 @@ In the Cartesian product, by contrast, a missing part leaves the other intact: `
 We will study functions between observation algebras, which we call *maps*.
 Let `X` and `Y` be observation algebras. A map `f : X → Y` is called
 
-- *monotone* if `x ⊆ y` implies `f(x) ⊆ f(y)`,
+- *monotone* if `x ⊑ y` implies `f(x) ⊑ f(y)`,
 - *additive* if `f(x + y) = f(x) + f(y)`,
 - *multiplicative* if `f(x ⋅ y) = f(x) ⋅ f(y)`,
 - *normal* if `f(0) = 0`,
@@ -459,15 +460,15 @@ Additivity does not imply normality: a constant map `f(x) = c` with `c ≠ 0` is
 **Theorem (Cartesian Monotonicity).** A map `f : Xⁿ → Y` is monotone in each argument iff it is monotone.
 
 *Proof.*
-(⟸) Fix all arguments but the `i`-th. If `x ⊆ y`, then `(a₁, …, x, …, aₙ) ⊆ (a₁, …, y, …, aₙ)` componentwise, by reflexivity in the other components, so `f(a₁, …, x, …, aₙ) ⊆ f(a₁, …, y, …, aₙ)`.
-(⟹) Let `a ⊆ b`. Replace the arguments one at a time, using monotonicity in each argument:
+(⟸) Fix all arguments but the `i`-th. If `x ⊑ y`, then `(a₁, …, x, …, aₙ) ⊑ (a₁, …, y, …, aₙ)` componentwise, by reflexivity in the other components, so `f(a₁, …, x, …, aₙ) ⊑ f(a₁, …, y, …, aₙ)`.
+(⟹) Let `a ⊑ b`. Replace the arguments one at a time, using monotonicity in each argument:
 ```
-f(a₁, a₂, …, aₙ) ⊆ f(b₁, a₂, …, aₙ)
-                 ⊆ f(b₁, b₂, …, aₙ)
+f(a₁, a₂, …, aₙ) ⊑ f(b₁, a₂, …, aₙ)
+                 ⊑ f(b₁, b₂, …, aₙ)
                  ⋯
-                 ⊆ f(b₁, b₂, …, bₙ)
+                 ⊑ f(b₁, b₂, …, bₙ)
 ```
-so `f(a) ⊆ f(b)` by transitivity.
+so `f(a) ⊑ f(b)` by transitivity.
 ∎
 
 In contrast to additivity, a product of monotone maps is always monotone: there are no cross terms to account for.
@@ -480,7 +481,7 @@ In contrast to additivity, a product of monotone maps is always monotone: there 
 
 **Theorem (Additive implies Monotone).** Every additive map is monotone.
 
-*Proof.* Let `x ⊆ y`, so `x + y = y`. Then `f(y) = f(x + y) = f(x) + f(y)`, hence `f(x) ⊆ f(y)`.
+*Proof.* Let `x ⊑ y`, so `x + y = y`. Then `f(y) = f(x + y) = f(x) + f(y)`, hence `f(x) ⊑ f(y)`.
 ∎
 
 **Corollary.** Every map that is additive in each argument is monotone.
@@ -490,20 +491,20 @@ In contrast to additivity, a product of monotone maps is always monotone: there 
 
 In particular, `+` and `⋅` are monotone, as are all operations that are additive in each argument.
 
-**Theorem (Superadditivity).** If `f : X → Y` is monotone, then `f(x) + f(y) ⊆ f(x + y)` for all `x, y ∈ X`.
+**Theorem (Superadditivity).** If `f : X → Y` is monotone, then `f(x) + f(y) ⊑ f(x + y)` for all `x, y ∈ X`.
 
-*Proof.* By *Join is Sum*, `x ⊆ x + y` and `y ⊆ x + y`, so `f(x) ⊆ f(x + y)` and `f(y) ⊆ f(x + y)` by monotonicity.
-Hence `f(x) + f(y) ⊆ f(x + y)` by *Bounds*.
+*Proof.* By *Join is Sum*, `x ⊑ x + y` and `y ⊑ x + y`, so `f(x) ⊑ f(x + y)` and `f(y) ⊑ f(x + y)` by monotonicity.
+Hence `f(x) + f(y) ⊑ f(x + y)` by *Bounds*.
 ∎
 
 **Lemma (Basic Monotone Maps).** Constant maps, the identity, and the projections `πᵢ : Xⁿ → X, (x₁, …, xₙ) ↦ xᵢ` are monotone.
 
-*Proof.* For a constant `c`, `c ⊆ c` by reflexivity. The identity is immediate. For projections, `a ⊆ b` in `Xⁿ` means `aᵢ ⊆ bᵢ` for all `i`, since the order on `Xⁿ` is componentwise.
+*Proof.* For a constant `c`, `c ⊑ c` by reflexivity. The identity is immediate. For projections, `a ⊑ b` in `Xⁿ` means `aᵢ ⊑ bᵢ` for all `i`, since the order on `Xⁿ` is componentwise.
 ∎
 
 **Lemma (Monotone Composition).** If `g : X → Y` and `h : Y → Z` are monotone, then so is `h ∘ g`.
 
-*Proof.* If `x ⊆ y`, then `g(x) ⊆ g(y)`, so `h(g(x)) ⊆ h(g(y))`.
+*Proof.* If `x ⊑ y`, then `g(x) ⊑ g(y)`, so `h(g(x)) ⊑ h(g(y))`.
 ∎
 
 So for monotonicity it makes no difference whether we consider each argument separately or all arguments at once.
@@ -511,7 +512,7 @@ In particular, a map that is monotone in each argument stays monotone when the s
 
 **Lemma (Monotone Pairing).** For maps `g : X → Y` and `h : X → Z`, the map `x ↦ (g(x), h(x))` into `Y × Z` is monotone iff `g` and `h` are.
 
-*Proof.* The order on `Y × Z` is componentwise, so `(g(x), h(x)) ⊆ (g(y), h(y))` holds iff `g(x) ⊆ g(y)` and `h(x) ⊆ h(y)`.
+*Proof.* The order on `Y × Z` is componentwise, so `(g(x), h(x)) ⊑ (g(y), h(y))` holds iff `g(x) ⊑ g(y)` and `h(x) ⊑ h(y)`.
 ∎
 
 **Lemma (Monotone Diagonal).** If `f : X × X → Y` is monotone in each argument, then `d(x) = f(x, x)` is monotone.
@@ -562,7 +563,7 @@ The next lemma measures exactly what is lost when the same argument is used twic
 ```
 d(x + y) = d(x) + d(y) + f(x, y) + f(y, x)
 ```
-so `d` is additive iff `f(x, y) + f(y, x) ⊆ d(x) + d(y)` for all `x, y ∈ X`.
+so `d` is additive iff `f(x, y) + f(y, x) ⊑ d(x) + d(y)` for all `x, y ∈ X`.
 
 *Proof.*
 ```
@@ -573,7 +574,7 @@ d(x + y) = f(x + y, x + y)
 ```
 ∎
 
-**Corollary (Additive Cross Terms).** If `g, h : X → Y` are additive, then `g ⋅ h` is additive iff `g(x) h(y) + g(y) h(x) ⊆ g(x) h(x) + g(y) h(y)` for all `x, y ∈ X`.
+**Corollary (Additive Cross Terms).** If `g, h : X → Y` are additive, then `g ⋅ h` is additive iff `g(x) h(y) + g(y) h(x) ⊑ g(x) h(x) + g(y) h(y)` for all `x, y ∈ X`.
 
 *Proof.* Apply *Additive Diagonal* to `f(u, v) = g(u) ⋅ h(v)`, which is additive in each argument by *Additive Sums and Scaling* and (7).
 ∎
@@ -584,13 +585,6 @@ d(x + y) = f(x + y, x + y)
 ∎
 
 **Example.** On the half-open intervals over `ℤ ∪ {-∞, +∞}`, the shift `σ` is additive, but `x ↦ x ⋅ σ(x)` is not: for `x = [0, 1)` and `y = [1, 2)`, the cross term `y ⋅ σ(x) = [1, 2)` is not contained in `x ⋅ σ(x) + y ⋅ σ(y) = ∅`.
-
-I'd split them across two chapters, because they answer different questions:
-
-- **Evaluating an operation term by term** is about maps. It belongs in *Maps and Polynomials*, as a subsection right after *Additive Maps*, since it only uses additivity and normality.
-- **Inclusion tests and removing redundant terms** are about the order. They belong in *Irreducible Observations*, right after *Prime Terms*, which they follow from directly.
-
-Here's the text for both.
 
 ### Evaluation on Sums
 
@@ -657,14 +651,14 @@ f(a₁, …, x ⋅ y, …, aₙ) = f(a₁, …, x, …, aₙ) ⋅ f(a₁, …, y
 For the converse, in the powerset of `{1}`, `+` is multiplicative in each argument by distributivity of `∪` over `∩`, but with `x = y' = {1}` and `x' = y = ∅`, we get `x ⋅ x' + y ⋅ y' = ∅`, while `(x + y) ⋅ (x' + y') = {1}`.
 ∎
 
-**Lemma (Multiplicative Cross Terms).** If `g, h : X → Y` are multiplicative, then `g + h` is multiplicative iff `g(x) h(y) + h(x) g(y) ⊆ g(x) g(y) + h(x) h(y)` for all `x, y ∈ X`.
+**Lemma (Multiplicative Cross Terms).** If `g, h : X → Y` are multiplicative, then `g + h` is multiplicative iff `g(x) h(y) + h(x) g(y) ⊑ g(x) g(y) + h(x) h(y)` for all `x, y ∈ X`.
 
 *Proof.*
 ```
 (g(x) + h(x)) ⋅ (g(y) + h(y)) = g(x) g(y) + g(x) h(y) + h(x) g(y) + h(x) h(y)      (7, 9)
 g(x ⋅ y) + h(x ⋅ y)           = g(x) g(y) + h(x) h(y)                              (g, h multiplicative)
 ```
-so the two sides are equal iff `g(x) h(y) + h(x) g(y) ⊆ g(x) g(y) + h(x) h(y)`, by the definition of `⊆` and (1, 3).
+so the two sides are equal iff `g(x) h(y) + h(x) g(y) ⊑ g(x) g(y) + h(x) h(y)`, by the definition of `⊑` and (1, 3).
 ∎
 
 So additivity and multiplicativity are dual in this respect: sums of additive maps and products of multiplicative maps are always well behaved, while products of additive maps and sums of multiplicative maps produce cross terms.
@@ -722,13 +716,13 @@ For polynomials, we write `p = q` to say that they induce the same operation.
 ### Monotone Polynomials
 
 **Theorem (Monotone Polynomials).** If every `γ ∈ Γ` is monotone, then every `Γ`-polynomial is monotone.
-*Proof.* Let `p` be a `Γ`-polynomial over `A` in the variables `x₁, …, xₙ`, and let `a, b ∈ Aⁿ` with `a ⊆ b`.
-We show `p(a) ⊆ p(b)` by induction on `p`.
+*Proof.* Let `p` be a `Γ`-polynomial over `A` in the variables `x₁, …, xₙ`, and let `a, b ∈ Aⁿ` with `a ⊑ b`.
+We show `p(a) ⊑ p(b)` by induction on `p`.
 
-- If `p ≡ xᵢ`, then `p(a) = aᵢ ⊆ bᵢ = p(b)`.
+- If `p ≡ xᵢ`, then `p(a) = aᵢ ⊑ bᵢ = p(b)`.
 - If `p ≡ c` for a constant `c`, then `p(a) = c = p(b)`.
-- If `p ≡ q + r` or `p ≡ q ⋅ r`, then `q(a) ⊆ q(b)` and `r(a) ⊆ r(b)` by induction, so `p(a) ⊆ p(b)` by *Cartesian Monotonicity*, since `+` and `⋅` are monotone by *Sum and Product Monotonicity*.
-- If `p ≡ γ(p₁, …, p_k)` for `γ ∈ Γ`, then `pᵢ(a) ⊆ pᵢ(b)` for each `i` by induction, so `p(a) ⊆ p(b)` by *Cartesian Monotonicity*, since `γ` is monotone.
+- If `p ≡ q + r` or `p ≡ q ⋅ r`, then `q(a) ⊑ q(b)` and `r(a) ⊑ r(b)` by induction, so `p(a) ⊑ p(b)` by *Cartesian Monotonicity*, since `+` and `⋅` are monotone by *Sum and Product Monotonicity*.
+- If `p ≡ γ(p₁, …, p_k)` for `γ ∈ Γ`, then `pᵢ(a) ⊑ pᵢ(b)` for each `i` by induction, so `p(a) ⊑ p(b)` by *Cartesian Monotonicity*, since `γ` is monotone.
 ∎
 
 
