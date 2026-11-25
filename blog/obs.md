@@ -342,7 +342,12 @@ So `ab` is the greatest lower bound, and `ab = a ⊓ b` by uniqueness.
 
 The product need not be the meet: in the discrete observation algebra, `{*} ⋅ {red} = {red}`, which is not included in `{*}`, while the meet of `{*}` and `{red}` is `∅`.
 
-<!--
+**Corollary (Lattice Product).** The product is the meet, `ab = a ⊓ b` for all `a, b ∈ D`, iff `1` is the greatest element of `D`.
+*Proof.*
+(⟹) For every `a`, `a = 1 ⋅ a = 1 ⊓ a ⊑ 1`, by (6).
+(⟸) If `1` is the greatest element, then `b ⊑ 1` gives `ab ⊑ a ⋅ 1 = a`, and likewise `ab ⊑ b`, by *Sum and Product Monotonicity* and (6, 7). So `ab = a ⊓ b` by *Meet by Product*.
+∎
+
 ## Irreducible Observations
 
 An observation may consist of several independent observations, but those that do not are of special interest as they convey something about what the basic observations are for an algebra.
@@ -374,19 +379,15 @@ Intuitively this can be understood by *Sum implies Product*, `[a, b] ⊑ {a, b}`
 Also `y ⊑ y + z = x` and `z ⊑ y + z = x` by *Join is Sum*, so `x = y` or `x = z` by antisymmetry.
 ∎
 
-**Theorem (Prime by Irreducibility).** If `ab ⊑ a` for all `a, b ∈ D`, then every irreducible observation is prime.
-*Proof.* First, if `x ⊑ w`, then `xw = x`: `xw ⊑ x` by assumption, and `x ⊑ xw` by *Bounds*, since `x ⊑ x` and `x ⊑ w`.
-Now let `x` be irreducible and `x ⊑ y + z`. Then
+**Theorem (Prime by Irreducibility).** If `1` is the greatest element of `D`, then every irreducible observation is prime.
+*Proof.* By the assumption and *Lattice Product*, the product is the meet. Let `x` be irreducible and `x ⊑ y + z`. Then
 ```
-x = x(y + z)    (x ⊑ y + z)
-  = xy + xz     (9)
+x = x ⊓ (y + z)    (x ⊑ y + z)
+  = x(y + z)       (product is meet)
+  = xy + xz        (9)
 ```
-so `x = xy` or `x = xz`, since `x` is irreducible.
-In the first case, `x = xy = yx ⊑ y` by (7) and the assumption, and likewise `x ⊑ z` in the second case.
+so `x = xy` or `x = xz`, since `x` is irreducible, and hence `x = x ⊓ y ⊑ y` or `x = x ⊓ z ⊑ z`.
 ∎
-
-By the *Meet by Product* theorem, the assumption says that the product is always the meet, as in a lattice.
-So primality and irreducibility only differ in observation algebras where the product is not the meet.
 
 **Theorem (Irreducible Decomposition).** If `D` is finite, then every observation is the sum of the irreducible observations it includes.
 *Proof.* By strong induction on the number of observations included in `x`.
@@ -400,6 +401,7 @@ So `x` is a sum of irreducible observations it includes, and adding the remainin
 In infinite observation algebras this can fail: over `ℤ ∪ {-∞, +∞}`, the interval `[0, +∞)` is not a finite sum of irreducible observations, since every finite sum of unit intervals is bounded.
 
 
+<!--
 Maps and Polynomials
 ====================
 
@@ -598,6 +600,8 @@ f(x, y) = Σ_{i ≤ m, j ≤ n} f(xᵢ, yⱼ)
 If `m = 0` or `n = 0`, then `x = 0` or `y = 0`, and both sides are `0`: the left side by normality, and the right side because it is the empty sum.
 ∎
 
+TODO: additivity is enough?
+
 The result does not depend on how `x` and `y` are written as sums.
 Normality is needed for the empty sum: without it, `f(0, y)` could be a non-zero constant that the sum on the right does not produce.
 
@@ -677,8 +681,6 @@ For example, the projections `πᵢ : Xⁿ → X` are homomorphisms, the naming 
 *Proof.* By *Additive Composition*, *Multiplicative Composition*, *Additive Pairing* and *Multiplicative Pairing*. Normality and unitality are preserved by composition, since `h(g(0)) = h(0) = 0` and likewise for `1`, and hold for a pairing iff they hold in each component, since `0` and `1` on `Y × Z` are componentwise.
 ∎
 
-
-<!--
 
 ## Operations
 
